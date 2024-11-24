@@ -1,3 +1,6 @@
+package Model;
+
+
 //contain attributes and methods related to places.
 public class Place extends Instance {
 

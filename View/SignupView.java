@@ -1,4 +1,18 @@
+package View;
+
 // CHANGE!! SEE ANO PANG KULANG!!!
+// reminder: error-handling netong lahat is mostly sa validate form expcept sa username validity, so need ng method for that to make it visible
+// notUniqueUsername method, make that label visible
+
+// HUWAG ALISIN UUNG ERRORMESSAGEVISIBLE NA METHOD OR THAT NAME GANON
+
+
+
+
+
+
+
+
 
 import javax.swing.*;
 import java.awt.*;
@@ -109,7 +123,7 @@ public class SignupView extends JFrame {
         birthdayErrorLabel.setVisible(visible);
     }
 
-    // Method to validate form
+    // CHECK ALL NECESSARY SHITTT TAS GAWA
     public boolean validateForm() {
         boolean valid = true;
         setErrorLabelsVisible(false); // Reset error visibility

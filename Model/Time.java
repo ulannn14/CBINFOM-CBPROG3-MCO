@@ -1,3 +1,6 @@
+package Model;
+
+
 // edit time categories
 public class Time extends Instance {
 

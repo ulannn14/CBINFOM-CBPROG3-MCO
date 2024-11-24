@@ -1,82 +1,84 @@
+package View;
+
 import java.awt.*;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 
 public class HomepageView extends JFrame {
-
     private JButton forgotPasswordButton = new JButton("Forgot password?");
     private JButton loginButton = new JButton("Login");
     private JButton signupButton = new JButton("Sign up");
-    // CHANGED 
-    private JButton findRecommendedPath = new JButton("Find Recommended path");
+    private JButton findRecommendedPathButton = new JButton("Find Recommended Path");
     private JButton viewSurveyDataButton = new JButton("View Survey Data");
 
     private JTextField usernameField = new JTextField(15);
     private JPasswordField passwordField = new JPasswordField(15);
 
-    private JLabel titleLabel = new JLabel("<html>ISSPa:<br>Intramuros Safety Survey & Pathfinder</html>");
+    private JLabel titleLabel1 = new JLabel("ISSPa:");
+    private JLabel titleLabel2 = new JLabel("<html>Intramuros Safety Survey & Pathfinder</html>");
     private JLabel usernameLabel = new JLabel("Username: ");
     private JLabel passwordLabel = new JLabel("Password: ");
-    private JLable wrongCredentialsLabel = new JLabel("Wrong credentials");
+    private JLabel wrongCredentialsLabel = new JLabel("Wrong credentials");
     private JLabel invalidUsernamePasswordLabel = new JLabel("Invalid username or password");
     private JLabel signupLabel = new JLabel("No account yet?");
     private JLabel guestLabel = new JLabel("Continue as Guest?");
-    private JLabel descriptionLabel = new JLabel("<html>ISSPa empowers visually-impaired<br>individuals to safely navigate Intramuros<br>by providing survey data on the safest<br>paths and times for walking.<br><br>Log in or sign up to create an account<br>and participate in the survey.</html>")
+    private JLabel descriptionLabel = new JLabel("<html>ISSPa empowers visually-impaired<br>individuals to safely navigate Intramuros<br>by providing survey data on the safest<br>paths and times for walking.<br><br>Log in or sign up to create an account<br>and participate in the survey.</html>");
 
     private JPanel panel = new JPanel();
 
     public HomepageView() {
-        setTitle("ISSPa: Intramuros Safety Survey & Pathfinder");
         setSize(1200, 700);
-        setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setResizable(false);
+        add(panel);
 
-        forgotPasswordButton.setBounds(728.6,397.1,154.3,18.8);
+        panel.setLayout(null);
+
+        forgotPasswordButton.setBounds(718,385,154,18);
         panel.add(forgotPasswordButton);
-        loginButton.setBounds(685.7,351.5,240,41.5);
+        loginButton.setBounds(675,340,240,41);
         panel.add(loginButton);
-        signupButton.setBounds(768,444.4,109.8,41.5);
+        signupButton.setBounds(768,420,109,41);
         panel.add(signupButton);
-        findShortestPathButton.setBounds(389.4,533.9,421.3,41.5);
-        panel.add(findShortestPathButton);
-        viewSurveyDataButton.setBounds(389.4,583.4,421.3,41.5);
+        findRecommendedPathButton.setBounds(380,500,421,41);
+        panel.add(findRecommendedPathButton);
+        viewSurveyDataButton.setBounds(380,550,421,41);
         panel.add(viewSurveyDataButton);
 
         
-        usernameField.setBounds(685.7,278.3,240,29.3);
+        usernameField.setBounds(675,260,240,30);
         panel.add(usernameField);
-        passwordField.setbBunds(685.7,311.5,240,29.3);
+        passwordField.setBounds(675,300,240,30);
         panel.add(passwordField);
 
-        titleLabel.setBounds(130.5,71,939.1,134);
-        titleLabel.setFont(new Font("Garamond", Font.PLAIN, 42));
-        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        titleLabel.setVerticalAlignment(SwingConstants.TOP);
-        panel.add(titleLabel);
-        usernameLabel.setBounds(600.1,283.5,80,18.8);
+        titleLabel1.setBounds(520,64,140,67);
+        titleLabel1.setFont(new Font("Garamond", Font.BOLD, 50));
+        panel.add(titleLabel1);   
+        titleLabel2.setBounds(190,130,900,67);
+        titleLabel2.setFont(new Font("Garamond", Font.BOLD, 50));
+        panel.add(titleLabel2);
+        usernameLabel.setBounds(595,260,80,30);
         panel.add(usernameLabel);
-        passwordLabel.setBounds(600.1,316.8,76.6,18.8);
+        passwordLabel.setBounds(595,300,76,30);
         panel.add(passwordLabel);
-        guestLabel.setBounds(389.4,507.5,142.1,18.88);
+        guestLabel.setBounds(380,480,142,18);
         panel.add(guestLabel);
-        signupLabel.setBounds(642,455,118,18);
+        signupLabel.setBounds(653,420,118,41);
         panel.add(signupLabel);
-        descriptionLabel.setBounds(241.4,255.7,283.3,150.8);
+        descriptionLabel.setBounds(235,225,283,150);
         panel.add(descriptionLabel);
 
-        setVisible(true);
-
-        wrongCredentials.setBounds(728.6, 232.7, 142.3, 20.4);
-        wrongCredentials.setForeground(Color.RED);
-        wrongCredentials.setVisible(false);
-        panel.add(wrongCredentials);
+        wrongCredentialsLabel.setBounds(738, 220, 142, 20);
+        wrongCredentialsLabel.setForeground(Color.RED);
+        wrongCredentialsLabel.setVisible(false);
+        panel.add(wrongCredentialsLabel);
         
-        invalidUsernamePasswordLabel.setBounds(699.8,253.1,211.9,18.8);
+        invalidUsernamePasswordLabel.setBounds(711,236,211,18);
         invalidUsernamePasswordLabel.setForeground(Color.RED);
         invalidUsernamePasswordLabel.setVisible(false);
         panel.add(invalidUsernamePasswordLabel);
 
-        
+        setVisible(true);
     }
 
     public void setForgotPasswordButtonListener(ActionListener listener) {
@@ -91,9 +93,8 @@ public class HomepageView extends JFrame {
         signupButton.addActionListener(listener);
     }
 
-    // CHANGED
     public void setFindRecommendedPathButtonListener(ActionListener listener) {
-        findShortestPathButton.addActionListener(listener);
+        findRecommendedPathButton.addActionListener(listener);
     }
 
     public void setViewSurveyDataButtonListener(ActionListener listener) {
@@ -109,7 +110,8 @@ public class HomepageView extends JFrame {
     }
 
     public void failedLogin() {
-        wrongCredentials.setVisible(true);
+        wrongCredentialsLabel.setVisible(true);
+        invalidUsernamePasswordLabel.setVisible(true);
     }
 
 }
