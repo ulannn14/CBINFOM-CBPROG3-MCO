@@ -2,6 +2,8 @@ package Controller;
 
 import Model.*;
 import View.*;
+
+import java.security.Provider.Service;
 import java.util.ArrayList;
 
 // Importing all classes from the model package
@@ -36,6 +38,10 @@ Instance:
 
 
 public class Controller {
+
+    public class Controller {
+        Service service = new Service();
+    }
 
     public void Homepage() {
         HomepageView homepageView = new HomepageView();
@@ -72,7 +78,7 @@ public class Controller {
         homepageView.setSignupButtonListener(e -> { Signup(); homepageView.dispose(); } );
         homepageView.setForgotPasswordButtonListener(e -> { ForgotPassword(); homepageView.dispose(); } );
         homepageView.setFindRecommendedPathButtonListener(e -> { FindShortestPath(); homepageView.dispose(); });
-        homepageView.setViewSurveyDataButtonListener(e -> { ViewSurveyData(); homepageView.dispose(); } );
+        homepageView.setGeneralResultButtonListener(e -> { ViewSurveyData(); homepageView.dispose(); } );
     }
 
 
@@ -232,21 +238,17 @@ public class Controller {
     public void AdminWelcome(Admin admin) {
         AdminWelcomeView awv = new AdminWelcomeView();
 
-        awv.setViewRespondentsDataButtonListener (e -> { AdminViewRespondentData(admin); AdminWelcomeView.dispose(); } );
-        awv.setViewAnalystsDataButtonListener (e -> { AdminViewAnalystData(admin); AdminWelcomeView.dispose(); } );
-        awv.addNewAnalystButtonListener (e -> { AdminAddAnalystView(admin); AdminWelcomeView.dispose(); } );        
-        awv.viewComplaintReportsButtonListener(e -> { AdminViewComplaintReportsView(admin); AdminWelcomeView.dispose(); } );
-        awv.changeSecurityQuesAndPassButtonListener(e -> { ChangeSecurityView(admin); AdminWelcomeView.dispose(); } );
-        awv.changePasswordButtonListener(e -> { PasswordManager(admin); AdminWelcomeView.dispose(); } );
-        awv.generateIncidentReportsButtonListener(e -> { AdminGenerateIncidentReport(admin); AdminWelcomeView.dispose(); } );        
-        awv.setFindRecommendedPathButtonListener(e-> { GuestChooseLRecommendedPath(admin); AdminWelcomeView.dispose(); } );
-        awv.viewGeneralDataButtonListener(e-> {GuestSelectSurveyData(admin); AdminWelcomeView.dispose(); } );       
+        awv.setViewRespondentsDataButtonListener (e -> { AdminViewRespondentData(admin); awv.dispose(); } );
+        awv.setViewAnalystsDataButtonListener (e -> { AdminViewAnalystData(admin); awv.dispose(); } );
+        awv.setAddNewAnalystButtonListener (e -> { AdminAddAnalystView(admin); awv.dispose(); } );        
+        awv.setViewComplaintReportsButtonListener(e -> { AdminViewComplaintReportsView(admin); awv.dispose(); } );
+        awv.setChangeSecurityQuesAndPassButtonListener(e -> { ChangeSecurityView(admin); awv.dispose(); } );
+        awv.setChangePasswordButtonListener(e -> { PasswordManager(admin); awv.dispose(); } );
+        awv.setGenerateIncidentReportsButtonListener(e -> { AdminGenerateIncidentReport(admin); awv.dispose(); } );        
+        awv.setFindRecommendedPathButtonListener(e-> { GuestChooseLRecommendedPath(admin); awv.dispose(); } );
+        awv.setViewGeneralDataButtonListener(e-> {GuestSelectSurveyData(admin); awv.dispose(); } );       
 
-        awv.setBackButtonListener(e -> {
-            awv.dispose();
-            Homepage();
-        } );
-        
+        awv.setBackButtonListener(e -> {awv.dispose(); Homepage(); } );
     }
 
     public void AdminViewRespondentData(Admin admin) {
@@ -301,15 +303,66 @@ public class Controller {
         ArrayList<String> AllComplaintReport = Instance.fetchAllComplaintReports();
         adminViewIncidentReportsView avirv = new adminViewIncidentReportsView(AllComplaintReport);
 
-        avirv.setBackButtonListener(e -> {
-            avrdv.dispose();
-            AdminWelcome(admin);
+        avirv.setBackButtonListener(e -> {avrdv.dispose(); AdminWelcome(admin); } );
+    }
+
+    public void AdminGenerateIncidentReport(Admin admin) {
+        AdminGenerateIncidentReportView agirv = new AdminGenerateIncidentReportView();
+        agirv.setSubmitButtonListener(e -> {
+            agirv.setErrorMessages(false);
+            Recipient = agirv.getToField();
+            Sender = agirv.getFromField();
+            Body = agirv.getBodyField();
+
+            if (agirv.validateFields() == true) {
+                IncidentReport IncidentReport = new IncidentReport(Recipient, Sender, Body);
+                service.createIncidentReport(IncidentReport);
+                agirv.dispose(); 
+                AdminWelcome(admin);
+            }
+        } ); 
+
+        agirv.setBackButtonListener(e -> {agirv.dispose(); AdminWelcome(admin); } );
+    }
+
+    public void AnalystWelcome(Analyst analyst) {
+        AnalystWelcomeView anwv = new AnalystWelcomeView();
+
+        anwv.setViewSurveyDataButtonListener(e -> { AnalystViewSurveyData(analyst); anwv.dispose(); } );
+        anwv.setAnalystGenerateComplaintReportButtonListener(e -> { AnalystGenerateComplaintReport(analyst); anwv.dispose(); } );
+        anwv.setChangeSecurityQuesAndPassButtonListener(e -> { ChangeSecurityView(analyst); anwv.dispose(); } );
+        anwv.setChangePasswordButtonListener(e -> { PasswordManager(analyst); anwv.dispose(); } );
+        anwv.setFindRecommendedPathButtonListener(e-> { GuestChooseLRecommendedPath(analyst); anwv.dispose(); } );
+        anwv.setViewGeneralDataButtonListener(e-> {GuestSelectSurveyData(analyst); anwv.dispose(); } );       
+
+        anwv.setBackButtonListener(e -> {anwv.dispose(); Homepage(); } );
+    }
+
+    public void AnalystViewSurveyData() {
+        ArrayList<Instance> AnalystSurveyData = Instance.fetchAnalystSurveyData();
+        AnalystViewSurveyDataView avsdv = new AnalystViewSurveyDataView(AnalystSurveyData);
+        
+        avsdv.setModifyButtonListener(e -> {
+            if (avsdv.validateInstanceID() == true) {
+                int index = avsdv.getIndex();
+                index--;
+                Instance selectedInstance = AnalystSurveyData.get(index);
+                analystModifyTagsAndComments(selectedInstance);
+            }
         } );
 
+        avsdv.setBackButtonListener(e -> {avsdv.dispose(); AnalystWelcome(Analyst analyst); } );
+    }
+    
+    public void analystModifyTagsAndComments(Instance instance) {
+        AnalystModifyTagsAndCommentsView amtacv = new AnalystModifyTagsAndCommentsView(instance);
+
     }
 
-    AdminGenerateIncidentReport(Admin admin) {
+    public void AnalystGenerateComplaintReport() {
         
     }
+    
+
 
 }
