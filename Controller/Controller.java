@@ -347,19 +347,55 @@ public class Controller {
                 int index = avsdv.getIndex();
                 index--;
                 Instance selectedInstance = AnalystSurveyData.get(index);
-                analystModifyTagsAndComments(selectedInstance);
+                analystModifyTagsAndComments(admin, selectedInstance);
             }
         } );
 
         avsdv.setBackButtonListener(e -> {avsdv.dispose(); AnalystWelcome(Analyst analyst); } );
     }
     
-    public void analystModifyTagsAndComments(Instance instance) {
+    public void analystModifyTagsAndComments(Admin admin, Instance instance) {
         AnalystModifyTagsAndCommentsView amtacv = new AnalystModifyTagsAndCommentsView(instance);
 
+        amtacv.setDeleteButtonListener(e -> { 
+            amtacv.setErrorMessages(false);
+            if (validateDelete() == true) {
+                ArrayList<int> tagsToDelete = amtacv.getTagsIDs();
+                analyst.deleteTags(tagsToDelete);
+                ArrayList<int> commentSummariesToDelete = amtacv.getCommentSummariesIDs();
+                analyst.deleteCommentSummaries(commentSummariesToDelete); 
+                amtacv.dispose(); 
+                AnalystViewSurveyData(Analyst analyst);
+            }
+        } );
+
+        amtacv.setAddTagButtonListener(e -> {
+            amtacv.setErrorMessages(false); 
+            if (validateAddTag() == true) {
+                ArrayList<String> newTags = amtacv.getNewTags();
+                analyst.addNewTags(newTags);
+                amtacv.dispose(); 
+                AnalystViewSurveyData(Analyst analyst);
+            }
+        } );
+
+        amtacv.setAddCommentButtonListener(e -> { 
+            amtacv.setErrorMessages(false);
+            if (validateAddCS() == true) {
+                String newCS = amtacv.getNewCS();
+                analyst.addNewCS(newCS);
+                amtacv.dispose(); 
+                AnalystViewSurveyData(Analyst analyst);
+            }
+        } );        
+
+        amtacv.setBackButtonListener(e -> {amtacv.dispose(); AnalystViewSurveyData(Analyst analyst); } );
     }
 
     public void AnalystGenerateComplaintReport() {
+        AnalystGenerateComplaintReportView agcrv = new AnalystGenerateComplaintReportView();
+        
+        
         
     }
     
