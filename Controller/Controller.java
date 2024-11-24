@@ -19,19 +19,9 @@ public class Controller {
 
         // Login
         homepageView.setLoginButtonListener(e -> {
-            do {
-                String username = homepageView.getUsername();
-                String password = homepageView.getPassword();
-                userType = user1.login(username, password);
-                if (userType == 0)
-                    homepageView.failedLogin();
-            } while (userType == 0);
+            if 
 
-            switch(userType) {
-                case 1: AdminWelcome(username, password); homepageView.dispose(); break;
-                case 2: AnalystWelcome(username, password); homepageView.dispose(); break;
-                case 3: RespondentWelcome(username, password); homepageView.dispose(); break;
-            }
+
         } );
 
         // Listeners
@@ -74,6 +64,7 @@ public class Controller {
 
     }
 
+    public void setFindRecommendedPathButtonListener
 
 
 }

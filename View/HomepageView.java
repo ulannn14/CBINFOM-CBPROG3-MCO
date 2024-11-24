@@ -7,7 +7,8 @@ public class HomepageView extends JFrame {
     private JButton forgotPasswordButton = new JButton("Forgot password?");
     private JButton loginButton = new JButton("Login");
     private JButton signupButton = new JButton("Sign up");
-    private JButton findShortestPathButton = new JButton("Find short safe path");
+    // CHANGED 
+    private JButton findRecommendedPath = new JButton("Find Recommended path");
     private JButton viewSurveyDataButton = new JButton("View Survey Data");
 
     private JTextField usernameField = new JTextField(15);
@@ -90,7 +91,8 @@ public class HomepageView extends JFrame {
         signupButton.addActionListener(listener);
     }
 
-    public void setFindShortestPathButtonListener(ActionListener listener) {
+    // CHANGED
+    public void setFindRecommendedPathButtonListener(ActionListener listener) {
         findShortestPathButton.addActionListener(listener);
     }
 
