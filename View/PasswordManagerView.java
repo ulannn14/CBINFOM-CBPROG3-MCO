@@ -144,7 +144,7 @@ public class PasswordManagerView extends JFrame{
                     for (int x = 65; x <= 90; x++){
                         char ascii = (char)x;
                         String upper = Character.toString(ascii);
-                        if (password.contains(lower))
+                        if (password.contains(upper))
                             uppercaseCtr++;
                     }
                     if (uppercaseCtr == 0){

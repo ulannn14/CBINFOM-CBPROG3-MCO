@@ -5,6 +5,7 @@ import View.*;
 
 import java.security.Provider.Service;
 import java.util.ArrayList;
+import javax.management.InstanceAlreadyExistsException;
 
 // Importing all classes from the model package
 import view.*;   // Importing all classes from the view package
@@ -30,6 +31,8 @@ Program User: abstract method of static fetchUser to find user in the database, 
               static checkUsernameValid (boolean)
             --- false if already exist
               modify setters to also change it rin sa database
+              static ProgramUser.fetchGeneraldata (see controller method guestviewdata)
+            --- return set of filtered survey result asked by the user
 Analyst: In the constructor, automatically add the following: analyst<n analyst>, analyst12345, firts sec question, analyst54321, also add sa dataase           
 Instance: 
               Instance.fetchAllComplaintReports();       
@@ -49,6 +52,8 @@ public class Controller {
 
         // Login
         homepageView.setLoginButtonListener(e -> {
+            homepageView.setErrorMessages(false);
+            
             String username = homepageView.getUsername();
             String password = homepageView.getPassword();
 
@@ -315,8 +320,8 @@ public class Controller {
             Body = agirv.getBodyField();
 
             if (agirv.validateFields() == true) {
-                IncidentReport IncidentReport = new IncidentReport(Recipient, Sender, Body);
-                service.createIncidentReport(IncidentReport);
+                IncidentReport incidentReport = new IncidentReport(Recipient, Sender, Body);
+                service.createIncidentReport(incidentReport);
                 agirv.dispose(); 
                 AdminWelcome(admin);
             }
@@ -338,7 +343,7 @@ public class Controller {
         anwv.setBackButtonListener(e -> {anwv.dispose(); Homepage(); } );
     }
 
-    public void AnalystViewSurveyData() {
+    public void AnalystViewSurveyData(Analyst analyst) {
         ArrayList<Instance> AnalystSurveyData = Instance.fetchAnalystSurveyData();
         AnalystViewSurveyDataView avsdv = new AnalystViewSurveyDataView(AnalystSurveyData);
         
@@ -347,31 +352,32 @@ public class Controller {
                 int index = avsdv.getIndex();
                 index--;
                 Instance selectedInstance = AnalystSurveyData.get(index);
-                analystModifyTagsAndComments(admin, selectedInstance);
+                analystModifyTagsAndComments(analyst, selectedInstance);
             }
         } );
 
-        avsdv.setBackButtonListener(e -> {avsdv.dispose(); AnalystWelcome(Analyst analyst); } );
+        avsdv.setBackButtonListener(e -> {avsdv.dispose(); AnalystWelcome(analyst); } );
     }
     
-    public void analystModifyTagsAndComments(Admin admin, Instance instance) {
+    public void analystModifyTagsAndComments(Analyst analyst, Instance instance) {
+        // need to have parameter instance to know which tag to display
         AnalystModifyTagsAndCommentsView amtacv = new AnalystModifyTagsAndCommentsView(instance);
 
         amtacv.setDeleteButtonListener(e -> { 
             amtacv.setErrorMessages(false);
-            if (validateDelete() == true) {
+            if (amtacv.validateDelete() == true) {
                 ArrayList<int> tagsToDelete = amtacv.getTagsIDs();
                 analyst.deleteTags(tagsToDelete);
                 ArrayList<int> commentSummariesToDelete = amtacv.getCommentSummariesIDs();
                 analyst.deleteCommentSummaries(commentSummariesToDelete); 
                 amtacv.dispose(); 
-                AnalystViewSurveyData(Analyst analyst);
+                AnalystViewSurveyData(analyst);
             }
         } );
 
         amtacv.setAddTagButtonListener(e -> {
             amtacv.setErrorMessages(false); 
-            if (validateAddTag() == true) {
+            if (amtacv.validateAddTag() == true) {
                 ArrayList<String> newTags = amtacv.getNewTags();
                 analyst.addNewTags(newTags);
                 amtacv.dispose(); 
@@ -381,7 +387,7 @@ public class Controller {
 
         amtacv.setAddCommentButtonListener(e -> { 
             amtacv.setErrorMessages(false);
-            if (validateAddCS() == true) {
+            if (amtacv.validateAddCS() == true) {
                 String newCS = amtacv.getNewCS();
                 analyst.addNewCS(newCS);
                 amtacv.dispose(); 
@@ -389,16 +395,118 @@ public class Controller {
             }
         } );        
 
-        amtacv.setBackButtonListener(e -> {amtacv.dispose(); AnalystViewSurveyData(Analyst analyst); } );
+        amtacv.setBackButtonListener(e -> {amtacv.dispose(); AnalystViewSurveyData(analyst); } );
     }
 
-    public void AnalystGenerateComplaintReport() {
+    public void AnalystGenerateComplaintReport(Analyst analyst) {
         AnalystGenerateComplaintReportView agcrv = new AnalystGenerateComplaintReportView();
         
+        agcrv.setSubmitButtonListener(e -> { 
+            agcrv.setErrorMessages(false);
+
+            if (agcrv.validateFields() == true) {
+                Instance instance = new Instance();
+                instance.addNewComplaintReport(
+                    agcrv.getLocation(), agcrv.getDay(), agcrv.getTime(), agcrv.getBody()
+                );
+                agcrv.dispose(); 
+                AnalystWelcome(analyst);
+            }
+
+        } );
         
-        
+        agcrv.setBackButtonListener(e -> {agcrv.dispose(); AnalystWelcome(analyst); } );
+    }
+
+    
+    public void RespondentWelcome(Respondent respondent) {
+        RespondentWelcomeView rwv = new RespondentWelcomeView();
+
+        rwv.setTakeSurveyButtonListener(e -> { rwv.dispose(); RespondentTakeSurvey(respondent); } );
+        rwv.setViewSurveyHistoryButtonListener(e -> { rwv.dispose(); RespondentViewHistory(respondent); } );
+        rwv.setViewOrUpdateProfileButtonListener(e -> { rwv.dispose(); RespondentProfile(respondent); } );
+        rwv.setChangeSecurityQuesAndPassButtonListener(e -> { rwv.dispose(); ChangeSecurityView(respondent); } );
+        rwv.setChangePasswordButtonListener(e -> { rwv.dispose(); PasswordManager(respondent); } );
+        rwv.setFindRecommendedPathButtonListener(e-> { rwv.dispose(); GuestChooseLRecommendedPath(respondent); } );
+        rwv.setViewGeneralDataButtonListener(e-> { rwv.dispose(); GuestSelectSurveyData(respondent); } );       
+
+        rwv.setBackButtonListener(e -> {rwv.dispose(); Homepage(); } );
+    }
+
+    // mali pa to !!!
+    public void RespondentTakeSurvey(Respondent respondent) {
+        RespondentTakeSurveyView rtsv = new RespondentTakeSurveyView();
+        Instance instance = new Instance();
+
+        rtsv.setSubmitButtonListener(e -> { 
+            rtsv.setErrorMessages(false);
+            if (validateForm() == true) {
+                Survey survey() = new Survey(rtsv.getLocation(), rtsv.getDay(), rtsv.getTime(), rtsv.getRatings(), rtsv.getComment(););
+                instance.addSurvey(survey);
+                rtsv.dispose();
+                RespondentWelcome(respondent);
+            }
+        } );
+
+        rtsv.setBackButtonListener(e -> {rtsv.dispose(); RespondentWelcome(respondent); } );
+    }
+
+    public void RespondentViewHistory(Respondent respondent) {
+        ArrayList<Survey> surveys = service.fetchSurveysForRespondent(respondent.getID());
+        RespondentViewHistoryView rvhv = new RespondentViewHistoryView(surveys);
+       
+        rvhv.setBackButtonListener(e -> {rvhv.dispose(); RespondentWelcome(respondent); } );
     }
     
+    public void RespondentProfile(Respondent respondent) {
+        RespondentProfileView rpv = new RespondentProfileView(respondent);
+        
+        rpv.setUpdateDetailsButtonListener(e -> {
+            rpv.setErrorMessages(false);
 
+            if (validateFields() == true) {
+                if (checkUsernameValid() == true) {
+                    rpv.dispose();
+                    RespondentWelcome(respondent);
+                }
+                else
+                    notUniqueUsername();
+            }
+
+        } );
+        
+        rpv.setBackButtonListener(e -> {rpv.dispose(); RespondentWelcome(respondent); } );
+    }
+    
+    // as guest
+    public void guestChooseLRecommendedPath() {
+        guestChooseLRecommendedPathView gclrpv = new guestChooseLRecommendedPathView();
+         
+    }
+
+    public void guestRecommendedPath() {
+
+    }
+
+    public void guestSelectSurveyData() {
+        GuestSelectSurveyDataView gssdv = new GuestSelectSurveyDataView();
+        
+        gssdv.setSubmitButtonListener(e -> {
+            ProgramUser user = new ProgramUser();
+            gssdv.setErrorMessages(false);
+            if (validateForm() == true) {
+                gssdv.dispose();
+                ArrayList<Survey> surveys = user.fetchGeneraldata(gssdv.getPlaces(), gssdv.getDays(), gssdv.getTimes(), gssdv.getRankingType(), gssdv.getNumRec());
+                guestSurveyData(); 
+            }
+        } );
+
+        gssdv.setBackButtonListener(e -> {gssdv.dispose(); Homepage() } );        
+    }
+
+    public void guestSurveyData(ArrayList<Survey> surveys) {
+        GuestSurveyDataView gsdv = new GuestSurveyDataView(surveys);
+        gsdv.setBackButtonListener(e -> {gsdv.dispose(); Homepage() } );        
+    }
 
 }
