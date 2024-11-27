@@ -14,9 +14,10 @@ package View;
 
 
 
-import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.ActionListener;
+import javax.swing.*;
 
 // MISSING SECURITY PASSWORD AND RELATED METHODS OF IT
 
@@ -168,12 +169,14 @@ public class SignupView extends JFrame {
         return valid;
     }
 
+
+
     // Action listener methods
-    public void setSubmitButtonListener(ActionListener listener) {
+    public void setSignupButtonListener(ActionListener listener) {
         submitButton.addActionListener(listener);
     }
 
-    public void setCancelButtonListener(ActionListener listener) {
+    public void setBackButtonListener(ActionListener listener) {
         cancelButton.addActionListener(listener);
     }
 
@@ -201,4 +204,19 @@ public class SignupView extends JFrame {
     public String getBirthday() {
         return dayDropdown.getSelectedItem() + " " + monthDropdown.getSelectedItem() + " " + yearDropdown.getSelectedItem();
     }
+
+    public String getSecurityPassword() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getSecurityPassword'");
+    }
+
+    public void notUniqueUsername() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'notUniqueUsername'");
+    }
+
+    public void setErrorMessages(boolean setVisible) {
+        // define
+    }
+    
 }

@@ -5,8 +5,8 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 
 public class PasswordManagerView extends JFrame{
-    private JButton changePasswordButton = new JButton("Change Password");
-    private JButton backButton = new JButton("Back");
+    final private JButton changePasswordButton = new JButton("Change Password");
+    final private JButton backButton = new JButton("Back");
 
     private String[] securityQuestions = {
         "Select security question...",
@@ -27,16 +27,16 @@ public class PasswordManagerView extends JFrame{
     private JTextField securityPasswordField = new JTextField(15);
     private JTextField newPasswordField = new JTextField(15);
 
-    private JLabel header = new JLabel("Password Manager");
-    private JLabel usernameLabel = new JLabel("Username");
-    private JLabel securityQuestionLabel = new JLabel("Security Question");
-    private JLabel securityPasswordLabel = new JLabel("Security Password");
-    private JLabel newPasswordLabel = new JLabel("New Password");
+    final private JLabel header = new JLabel("Password Manager");
+    final private JLabel usernameLabel = new JLabel("Username");
+    final private JLabel securityQuestionLabel = new JLabel("Security Question");
+    final private JLabel securityPasswordLabel = new JLabel("Security Password");
+    final private JLabel newPasswordLabel = new JLabel("New Password");
 
-    private JLabel usernameExistsLabel = new JLabel("Username doesn't exist.");
-    private JLabel mismatchedSecurityQuestionLabel = new JLabel("Mismatched security question.");
-    private JLabel incorrectSecurityPasswordLabel = new JLabel("Incorrect security password.");
-    private JLabel passwordErrorLabel = new JLabel("");
+    final private JLabel usernameExistsLabel = new JLabel("Username doesn't exist.");
+    final private JLabel mismatchedSecurityQuestionLabel = new JLabel("Mismatched security question.");
+    final private JLabel incorrectSecurityPasswordLabel = new JLabel("Incorrect security password.");
+    final private JLabel passwordErrorLabel = new JLabel("");
         // "Does not meet password requirements"
         // "Password must be 8 to 25 charactes long"
     
@@ -172,6 +172,41 @@ public class PasswordManagerView extends JFrame{
         }
         return valid;
     }
+
+    public void setChangePasswordButtonListener(ActionListener listener) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setChangePasswordButtonListener'");
+    }
+
+    public void setErrorMessages(boolean setVisible) {
+        // define
+    }
+
+    public String getUsername() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getUsername'");
+    }
+
+    public String getPassword() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+
+    public String getSecurityQuestion() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getSecurityQuestion'");
+    }
+
+    public String getSecurityPassword() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getSecurityPassword'");
+    }
+
+	public void setBackButtonListener(ActionListener listener) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'setBackButtonListener'");
+	}
+
 }
 
 

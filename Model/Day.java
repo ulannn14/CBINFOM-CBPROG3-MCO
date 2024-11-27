@@ -1,7 +1,7 @@
 package Model;
 
 //represent specific days associated with a place.
-public class Day extends Instance {
+public class Day extends Place {
     private int dayIdx; // Numeric index for the day (0 = Monday, 1 = Tuesday, ..., 6 = Sunday)
     private String dayName; // The name of the day (e.g., "Monday", "Tuesday")
 

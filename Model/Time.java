@@ -2,14 +2,14 @@ package Model;
 
 
 // edit time categories
-public class Time extends Instance {
+public class Time extends Day {
 
     // Attributes
     private int timeIdx; // Unique identifier for the time
     private String timeName; // Name or description of the time (e.g., "Morning Rush Hour", etc.)
 
     // Constructor
-    public Time(int timeIdx) {
+    public Time (int timeIdx, String timeName) {
         this.timeIdx = timeIdx;
         this.timeName = getTimeNameFromIdx(timeIdx); // Convert the timeIdx to a human-readable time category
     }

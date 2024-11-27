@@ -1,17 +1,26 @@
 package Model;
 
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
-public class Respondent extends ProgramUser{
+public class Respondent extends ProgramUser {
     private String name;
-    private Date birthdate = new Date();
-    private String phoneNumber;
+    private DateClass birthdate = new DateClass(0,1,1);
+    private String emailAddress;
     private Survey[] surveyHistory = new Survey[100];
     private int numSurveyHistory = 0;
+    private int userType;
 
-    public Respondent(String username, String accountPassword, String securityQuestion, String securityPassword, int userType, String name, Date birthdate, String emailAddress){
+    public Respondent() {
+
+    }
+
+    
+    public Respondent(String username, String accountPassword, String securityQuestion, String securityPassword, 
+                      int userType, String name, DateClass birthdate, String emailAddress) {
         this.username = username;
         this.accountPassword = accountPassword;
         this.securityQuestion = securityQuestion;
@@ -21,7 +30,7 @@ public class Respondent extends ProgramUser{
         this.birthdate = birthdate;
         this.emailAddress = emailAddress;
         
-        void createQuery(){
+        public void createQuery(){
                 // SQL queries for both tables
             String insertRespondentQuery = "INSERT INTO `Respondent` (`name`, `emailAddress`, `birthDate`, `dateJoined`, `surveyHistoryCtr`) "
                     + "VALUES (?, ?, ?, ?, ?)";
@@ -36,7 +45,7 @@ public class Respondent extends ProgramUser{
                 respondentStatement.setString(1, name);
                 respondentStatement.setString(2, emailAddress);
                 respondentStatement.setDate(3, birthdate);
-                respondentStatement.setDate(4, new Date(System.currentTimeMillis()));  // Set current date for 'dateJoined'
+                respondentStatement.setDate(4, new DateClass(System.currentTimeMillis()));  // Set current date for 'dateJoined'
                 respondentStatement.setInt(5, 0);  // Assuming default surveyHistoryCtr is 0
 
                 // Set values for ProgramUser table
@@ -63,7 +72,17 @@ public class Respondent extends ProgramUser{
                 System.err.println("Error inserting data: " + e.getMessage());
             }
         } 
-        }
+    }
+
+    @Override
+    public Respondent fetchUser(String username, String password) {
+        // find the matched username and password of userType = 3 in the database
+            // return null if wala,
+            // return the whole user if meron (populate an instance of the user then return it)
+    }
+
+    public ArrayList<Respondent> fetchAllRespondents() {
+        // database, return all analyst
     }
 
     // SETTERS
@@ -71,12 +90,12 @@ public class Respondent extends ProgramUser{
         this.name = name;
     }
 
-    public void setBirthdate(Date birthdate){
+    public void setBirthdate(DateClass birthdate){
         this.birthdate = birthdate;
     }
 
-    public void setPhoneNumber(String phoneNumber){
-        this.phoneNumber = phoneNumber;
+    public void setEmailAddress(String emailAddress){
+        this.emailAddress = emailAddress;
     }
 
     public void addSurvey(Survey survey){
@@ -90,15 +109,15 @@ public class Respondent extends ProgramUser{
         return name;
     }
 
-    public Date getBirthdate(){
+    public DateClass getBirthdate(){
         return birthdate;
     }
 
-    public String getPhoneNumber(){
-        return phoneNumber;
+    public String getEmailAddress(){
+        return emailAddress;
     }
 
-    public Date getAge(){
+    public int getAge(){
         LocalDate today = LocalDate.now();
         int year = today.getYear();
         int month = today.getMonthValue();
@@ -114,7 +133,7 @@ public class Respondent extends ProgramUser{
                         else flag = false;
                     } else flag = true;
                 } else flag = false;
-            } else flag = true
+            } else flag = true;
         } else flag = false;
         
         if (!flag) age -= 1;
@@ -127,5 +146,19 @@ public class Respondent extends ProgramUser{
 
     public void takeSurvey(){
         
+    }
+
+    public int getUserType() {
+        return userType;
+    }
+
+    public void setUserType(int userType) {
+        this.userType = userType;
+    }
+
+    @Override
+    public void createQuery() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'createQuery'");
     }
 }

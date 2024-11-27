@@ -1,3 +1,5 @@
+package DatabaseConnection;
+
 import java.sql.DriverManager;
 import java.sql.Statement;
 

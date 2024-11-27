@@ -14,15 +14,15 @@ public class HomepageView extends JFrame {
     private JTextField usernameField = new JTextField(15);
     private JPasswordField passwordField = new JPasswordField(15);
 
-    private JLabel titleLabel1 = new JLabel("ISSPa:");
-    private JLabel titleLabel2 = new JLabel("<html>Intramuros Safety Survey & Pathfinder</html>");
-    private JLabel usernameLabel = new JLabel("Username: ");
-    private JLabel passwordLabel = new JLabel("Password: ");
-    private JLabel wrongCredentialsLabel = new JLabel("Wrong credentials");
-    private JLabel invalidUsernamePasswordLabel = new JLabel("Invalid username or password");
-    private JLabel signupLabel = new JLabel("No account yet?");
-    private JLabel guestLabel = new JLabel("Continue as Guest?");
-    private JLabel descriptionLabel = new JLabel("<html>ISSPa empowers visually-impaired<br>individuals to safely navigate Intramuros<br>by providing survey data on the safest<br>paths and times for walking.<br><br>Log in or sign up to create an account<br>and participate in the survey.</html>");
+    final private JLabel titleLabel1 = new JLabel("ISSPa:");
+    final private JLabel titleLabel2 = new JLabel("<html>Intramuros Safety Survey & Pathfinder</html>");
+    final private JLabel usernameLabel = new JLabel("Username: ");
+    final private JLabel passwordLabel = new JLabel("Password: ");
+    final private JLabel wrongCredentialsLabel = new JLabel("Wrong credentials");
+    final private JLabel invalidUsernamePasswordLabel = new JLabel("Invalid username or password");
+    final private JLabel signupLabel = new JLabel("No account yet?");
+    final private JLabel guestLabel = new JLabel("Continue as Guest?");
+    final private JLabel descriptionLabel = new JLabel("<html>ISSPa empowers visually-impaired<br>individuals to safely navigate Intramuros<br>by providing survey data on the safest<br>paths and times for walking.<br><br>Log in or sign up to create an account<br>and participate in the survey.</html>");
 
     private JPanel panel = new JPanel();
 
@@ -81,6 +81,10 @@ public class HomepageView extends JFrame {
         setVisible(true);
     }
 
+    public void setErrorMessages(boolean setVisible) {
+        // define
+    }
+
     public void setForgotPasswordButtonListener(ActionListener listener) {
         forgotPasswordButton.addActionListener(listener);
     }
@@ -97,7 +101,7 @@ public class HomepageView extends JFrame {
         findRecommendedPathButton.addActionListener(listener);
     }
 
-    public void setViewSurveyDataButtonListener(ActionListener listener) {
+    public void setGeneralResultButtonListener(ActionListener listener) {
         viewSurveyDataButton.addActionListener(listener);
     }
 

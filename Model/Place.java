@@ -2,7 +2,7 @@ package Model;
 
 
 //contain attributes and methods related to places.
-public class Place extends Instance {
+public class Place {
 
     // Attributes
     private int placeIdx; // Unique identifier for the place

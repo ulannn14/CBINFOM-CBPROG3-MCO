@@ -6,21 +6,19 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
-public class RespondentWelcomeView extends JFrame{
-	final private JButton takeSurveyButton = new JButton("Take Survey");
-	final private JButton viewSurveyHistoryButton = new JButton("View Survey History");
-	final private JButton viewOrUpdateProfileButton = new JButton("View or Update Profile");
-	final private JButton changePasswordButton = new JButton("Change Password");
-	final private JButton changeSecurityQuesAndPassButton = new JButton("Change Security Ques. and Pass.");
-	final private JButton findRecommendedPathButton = new JButton("Find Recommended Path");
-	final private JButton viewGeneralDataButton = new JButton("View General Data");
-    final private JButton backButton = new JButton("Logout");
+public class AnalystWelcomeView extends JFrame{
+	private JButton viewSurveyDataButton = new JButton("View Survey Data");
+	private JButton generateComplaintReportButton = new JButton("Generate Complaint Report");
+	private JButton changePasswordButton = new JButton("Change Password");
+	private JButton changeSecurityQuesAndPassButton = new JButton("Change Security Ques. and Pass.");
+	private JButton findRecommendedPathButton = new JButton("Find Recommended Path");
+	private JButton viewGeneralDataButton = new JButton("View General Data");
+    private JButton backButton = new JButton("Logout");
 
-    final private JLabel header = new JLabel("Welcome, <respondent_username>.");
+    final private JLabel header = new JLabel("Welcome, <analyst_username>.");
 	final private JLabel subheader = new JLabel("What would you like to do today?");
-    final private JLabel takeSurveyLabel = new JLabel("<html>Participate in the survey and provide your<br>answers based on your experiences with<br>various places.</html>");
-	final private JLabel viewSurveyHistoryLabel = new JLabel("<html>Access your past survey responses and view<br>details about the surveys you've completed.</html>");
-	final private JLabel viewOrUpdateProfileLabel = new JLabel("<html>Edit your personal details such as name,<br>birthdate, and email.</html>");
+    final private JLabel viewSurveyDataLabel = new JLabel("<html>Access detailed survey data to analyze safety<br>scores, times, and other relevant factors<br>for specific instances.</html>");
+	final private JLabel generateComplaintReportLabel = new JLabel("<html>Generate a complaint report that summarizes<br>respondent comments and feedback.</html>");
 	final private JLabel changePasswordLabel = new JLabel("<html>Update your account password for enhanced<br>security and access control.</html>");
 	final private JLabel changeSecurityQuesAndPassLabel = new JLabel("<html>Update your account security question and<br>password for enhanced security and<br>access control.</html>");
 	final private JLabel findRecommendedPathLabel = new JLabel("<html>Discover the shortest and safest path to<br>your destination.</html>");
@@ -28,10 +26,10 @@ public class RespondentWelcomeView extends JFrame{
 	
 	private Image backgroundImage;
     
-    public RespondentWelcomeView(){
-		JFrame frame = new JFrame("Welcome, Respondent");
+    public AnalystWelcomeView(){
+		JFrame frame = new JFrame("Welcome, Analyst");
 		
-		backgroundImage = new ImageIcon("frespondentWelcomeView.png").getImage();
+		backgroundImage = new ImageIcon("fanalystWelcomeView.png").getImage();
         
 		JPanel panel = new JPanel() {
             @Override
@@ -45,19 +43,16 @@ public class RespondentWelcomeView extends JFrame{
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
         frame.add(panel);
-	
+
         panel.setLayout(null); 
 
-        takeSurveyButton.setBounds(70, 176, 280, 41);
-        panel.add(takeSurveyButton);
+        viewSurveyDataButton.setBounds(70, 176, 280, 41);
+        panel.add(viewSurveyDataButton);
 
-        viewSurveyHistoryButton.setBounds(70, 290, 280, 41);
-        panel.add(viewSurveyHistoryButton);
+        generateComplaintReportButton.setBounds(459, 176, 280, 41);
+        panel.add(generateComplaintReportButton);
 		
-		viewOrUpdateProfileButton.setBounds(70, 404, 280, 41);
-        panel.add(viewOrUpdateProfileButton);
-		
-		changePasswordButton.setBounds(459, 176, 280, 41);
+		changePasswordButton.setBounds(70, 290, 280, 41);
         panel.add(changePasswordButton);
 		
 		changeSecurityQuesAndPassButton.setBounds(459, 290, 280, 41);
@@ -79,16 +74,13 @@ public class RespondentWelcomeView extends JFrame{
 		subheader.setBounds(70, 115, 272, 18);
 		panel.add(subheader);
 		
-		takeSurveyLabel.setBounds(70, 216, 280, 62);
-		panel.add(takeSurveyLabel);
+		viewSurveyDataLabel.setBounds(70, 216, 280, 62);
+		panel.add(viewSurveyDataLabel);
 		
-		viewSurveyHistoryLabel.setBounds(70, 330, 280, 40);
-		panel.add(viewSurveyHistoryLabel);
+		generateComplaintReportLabel.setBounds(459, 216, 280, 40);
+		panel.add(generateComplaintReportLabel);
 		
-		viewOrUpdateProfileLabel.setBounds(70, 444, 280, 40);
-		panel.add(viewOrUpdateProfileLabel);
-		
-		changePasswordLabel.setBounds(459, 216, 280, 40);
+		changePasswordLabel.setBounds(70, 330, 280, 40);
 		panel.add(changePasswordLabel);
 		
 		changeSecurityQuesAndPassLabel.setBounds(459, 330, 280, 62);
@@ -103,16 +95,12 @@ public class RespondentWelcomeView extends JFrame{
         frame.setVisible(true);
     }
 	
-	public void setTakeSurveyButtonListener(ActionListener listener){
-		takeSurveyButton.addActionListener(listener);
+	public void setViewSurveyDataButtonListener(ActionListener listener){
+		viewSurveyDataButton.addActionListener(listener);
 	}
 	
-	public void setViewSurveyHistoryButtonListener(ActionListener listener){
-		viewSurveyHistoryButton.addActionListener(listener);
-	}
-	
-	public void setViewOrUpdateProfileButtonListener(ActionListener listener){
-		viewOrUpdateProfileButton.addActionListener(listener);
+	public void setGenerateComplaintReportButtonListener(ActionListener listener){
+		generateComplaintReportButton.addActionListener(listener);
 	}
 	
 	public void setChangePasswordButtonListener(ActionListener listener){
