@@ -1,30 +1,23 @@
 package DatabaseConnection;
 
+import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.Statement;
+import java.sql.SQLException;
 
 abstract class DatabaseConnection {
-    public abstract void createQuery();
+    private static final String url = "jdbc:mysql://localhost:3306/ISSPa"; // Link to database.
+    private static final String username = "root"; // Replace with your MySQL username.
+    private static final String password = "12345"; // Replace with your MySQL password.
 
-    public static void CreateConnection() {
-        // Database URL, Username, and Password
-        String url = "jdbc:mysql://localhost:3306/ISSPa"; // Replace `example_db` with your DB name
-        String username = "root"; // Replace with your MySQL username
-        String password = "12345";    // Replace with your MySQL password
+    public static String getUrl() { return url; }
+    public static String getUsername() { return username; }
+    public static String getPassword() { return password; }
 
-        try {
-            // Establish Connection
-            Connection connection = DriverManager.getConnection(url, username, password);
-            
-            System.out.println("Connected to the database!");
-
-            // Execute a Query
-            createQuery();
-
-            // Close the connection
-            // connection.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    // Establish a database connection.
+    protected Connection createConnection() throws SQLException {
+        return DriverManager.getConnection(url, username, password);
     }
+
+    // Define in subclasses to execute queries.
+    public abstract void createQuery();
 }

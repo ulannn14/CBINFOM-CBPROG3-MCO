@@ -11,6 +11,10 @@ public class Place {
     private Place[] connectedPlaces; // Array of connected places
     private int numConnectedPlaces; // Number of connected places
 
+    public Place() {
+        
+    }
+
     // Constructor
     public Place(int placeIdx, String placeName, int placeType) {
         this.placeIdx = placeIdx;

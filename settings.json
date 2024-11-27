@@ -1,0 +1,8 @@
+{
+    "java.project.sourcePaths": ["."],  // The main folder where your .java files are
+    "java.project.outputPath": "output",  // The folder where compiled .class files will go
+    "java.project.referencedLibraries": [
+      "jar/mysql-connector-java-8.0.33.jar"  // Adjust this path if necessary
+    ]
+}
+  

@@ -5,6 +5,7 @@ import javax.swing.table.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.awt.event.ActionListener;
+import Model.*;
 
 public class AdminViewAnalystDataView extends JFrame {
     private JButton backButton = new JButton("Back");

@@ -1,17 +1,14 @@
 package Controller;
 
-import Model.Respondent;
 import Model.*;
 import View.*;
 import ServiceClassPackage.*;
 
-import java.security.Provider.Service;
 import java.util.ArrayList;
-import javax.management.InstanceAlreadyExistsException;
 
 public class Controller {
 
-    private Instance model = new Instance();
+    private final Instance model = new Instance();
     ServiceClass service = new ServiceClass();
 
     public void initializeInstancesController(Instance[] instances) {
@@ -124,7 +121,7 @@ public class Controller {
     public void PasswordManager(ProgramUser user, Instance[] instances) {
         PasswordManagerView pmv = new PasswordManagerView();
 
-        pmv.setChangePasswordButtonListener(e -> { 
+        pmv.setChangePasswordButtonListener((var e) -> { 
             pmv.setErrorMessages(false);
             String username = pmv.getUsername();
             String newPassword = pmv.getPassword();
@@ -137,12 +134,12 @@ public class Controller {
                         if (pmv.validatePassword(newPassword) == true) {
                             user.setAccountPassword(newPassword);
                             pmv.dispose();
-                            if (user instanceof Admin)
-                                AdminWelcome((Admin) user, instances);
-                            else if (user instanceof Analyst)
-                                AnalystWelcome((Analyst) user, instances);
-                            else if (user instanceof Respondent)
-                                RespondentWelcome((Respondent) user, instances);
+                            if (user instanceof Admin admin)
+                                AdminWelcome(admin, instances);
+                            else if (user instanceof Analyst analyst)
+                                AnalystWelcome(analyst, instances);
+                            else if (user instanceof Respondent respondent)
+                                RespondentWelcome(respondent, instances);
                         }
                     } else
                         pmv.wrongSecurityPassword();
@@ -154,20 +151,18 @@ public class Controller {
         } );
 
         pmv.setBackButtonListener(e -> {
-            if (user instanceof Admin)
-                AdminWelcome((Admin) user, instances);
-            else if (user instanceof Analyst)
-                AnalystWelcome((Analyst) user, instances);
-            else if (user instanceof Respondent)
-                RespondentWelcome((Respondent) user, instances);
+            if (user instanceof Admin admin)
+                AdminWelcome(admin, instances);
+            else if (user instanceof Analyst analyst)
+                AnalystWelcome(analyst, instances);
+            else if (user instanceof Respondent respondent)
+                RespondentWelcome(respondent, instances);
         } );
 
     }
     
     public void ChangeSecurityView(ProgramUser user, Instance[] instances) {
         ChangeSecurityView csv = new ChangeSecurityView();
-        boolean nextView = true;
-        nextView = csv.validateSecurityQuestion() && csv.validateSecurityPassword(); // boolean
 
         csv.setChangeSecurityDetailsButtonListener(e -> {
             csv.setErrorMessages(false);
@@ -175,32 +170,33 @@ public class Controller {
             String newSecurityPassword = csv.getSecurityPassword(); // get input
             String password = csv.getPassword(); // get input
 
- 
-            if (password.equals(user.getAccountPassword()) == false) { // no return value
-                csv.wrongPassword();
-            }
+            if (csv.validateSecurityQuestion() && csv.validateSecurityPassword()) {
+                if (password.equals(user.getAccountPassword()) == false) { // no return value
+                    csv.wrongPassword();
+                }
 
-            if (password.equals(user.getAccountPassword()) == false) {
-                // should be updated sa databse
-                user.setSecurityQuestion(newSecurityQuestion);
-                user.setSecurityPassword(newSecurityPassword);
-                csv.dispose();
-                if (user instanceof Admin)
-                    AdminWelcome((Admin) user, instances);
-                else if (user instanceof Analyst)
-                    AnalystWelcome((Analyst) user, instances);
-                else if (user instanceof Respondent)
-                    RespondentWelcome((Respondent) user, instances);
+                if (password.equals(user.getAccountPassword()) == false) {
+                    // should be updated sa databse
+                    user.setSecurityQuestion(newSecurityQuestion);
+                    user.setSecurityPassword(newSecurityPassword);
+                    csv.dispose();
+                    if (user instanceof Admin admin)
+                        AdminWelcome(admin, instances);
+                    else if (user instanceof Analyst analyst)
+                        AnalystWelcome(analyst, instances);
+                    else if (user instanceof Respondent respondent)
+                        RespondentWelcome(respondent, instances);
+                }
             }
         } );
  
         csv.setBackButtonListener(e -> {
-            if (user instanceof Admin)
-                AdminWelcome((Admin) user, instances);
-            else if (user instanceof Analyst)
-                AnalystWelcome((Analyst) user, instances);
-            else if (user instanceof Respondent)
-                RespondentWelcome((Respondent) user, instances);
+            if (user instanceof Admin admin)
+                AdminWelcome(admin, instances);
+            else if (user instanceof Analyst analyst)
+                AnalystWelcome(analyst, instances);
+            else if (user instanceof Respondent respondent)
+                RespondentWelcome(respondent, instances);
         } );
     }  
 
@@ -237,16 +233,11 @@ public class Controller {
 
     public void AdminAddAnalyst(Admin admin, Instance[] instances) {
         AdminAddAnalystView aaav = new AdminAddAnalystView();
-        boolean validUsername, validPassword;
+
         aaav.setChangePasswordButtonListener(e -> {
             aaav.setErrorMessages(false);        
-            String aaav.getUsername();
-            String aaav.getPassword();
 
-            validUsername = ProgramUser.checkUsernameValid(username);
-            validPassword = aaav.validatePassword(password);
-
-            if (validUsername && validPassword) {
+            if (ProgramUser.checkUsernameValid(aaav.getUsername()) && aaav.validatePassword(aaav.getPassword()) ) {
                 Analyst analyst = new Analyst(); 
                 aaav.dispose();
                 AdminWelcome(admin,instances);
@@ -291,14 +282,14 @@ public class Controller {
     public void AnalystWelcome(Analyst analyst, Instance[] instances) {
         AnalystWelcomeView anwv = new AnalystWelcomeView();
 
-        anwv.setViewSurveyDataButtonListener(e -> { AnalystViewSurveyData(analyst); anwv.dispose(); } );
+        anwv.setViewSurveyDataButtonListener(e -> { AnalystViewSurveyData(analyst,instances); anwv.dispose(); } );
         anwv.setAnalystGenerateComplaintReportButtonListener(e -> { AnalystGenerateComplaintReport(analyst); anwv.dispose(); } );
         anwv.setChangeSecurityQuesAndPassButtonListener(e -> { ChangeSecurityView(analyst); anwv.dispose(); } );
         anwv.setChangePasswordButtonListener(e -> { PasswordManager(analyst); anwv.dispose(); } );
         anwv.setFindRecommendedPathButtonListener(e-> { GuestChooseLRecommendedPath(analyst); anwv.dispose(); } );
         anwv.setViewGeneralDataButtonListener(e-> {GuestSelectSurveyData(analyst); anwv.dispose(); } );       
 
-        anwv.setBackButtonListener(e -> {anwv.dispose(); Homepage(); } );
+        anwv.setBackButtonListener(e -> {anwv.dispose(); Homepage(instances); } );
     }
 
     public void AnalystViewSurveyData(Analyst analyst, Instance[] instances) {
@@ -311,7 +302,7 @@ public class Controller {
             }
         } );
 
-        avsdv.setBackButtonListener(e -> {avsdv.dispose(); AnalystWelcome(analyst); } );
+        avsdv.setBackButtonListener(e -> {avsdv.dispose(); AnalystWelcome(analyst,instances); } );
     }
     
     public void analystModifyTagsAndComments(Analyst analyst, Instance instance) {
@@ -321,12 +312,12 @@ public class Controller {
         amtacv.setDeleteButtonListener(e -> { 
             amtacv.setErrorMessages(false);
             if (amtacv.validateDelete() == true) {
-                ArrayList<int> tagsToDelete = amtacv.getTagsIDs(); // return int tagID to delete
+                ArrayList<Integer> tagsToDelete = amtacv.getTagsIDs(); // return int tagID to delete
                 instance.deleteTags(tagsToDelete);
-                ArrayList<int> commentSummariesToDelete = amtacv.getCommentSummariesIDs(); // return int csID to delete
+                ArrayList<Integer> commentSummariesToDelete = amtacv.getCommentSummariesIDs(); // return int csID to delete
                 instance.deleteCS(commentSummariesToDelete); 
                 amtacv.dispose(); 
-                AnalystViewSurveyData(analyst);
+                AnalystViewSurveyData(analyst,instance);
             }
         } );
 
@@ -336,7 +327,7 @@ public class Controller {
                 ArrayList<String> newTags = amtacv.getNewTags();
                 instance.addTags(newTags);
                 amtacv.dispose(); 
-                AnalystViewSurveyData(Analyst analyst);
+                AnalystViewSurveyData(analyst,instance);
             }
         } );
 
@@ -346,7 +337,7 @@ public class Controller {
                 CommentSummary newCS = amtacv.getNewCS();   // MUST RETURN CS!!!
                 instance.addCommentSummary(newCS);
                 amtacv.dispose(); 
-                AnalystViewSurveyData(Analyst analyst);
+                AnalystViewSurveyData(analyst,instance);
             }
         } );        
 
@@ -362,27 +353,27 @@ public class Controller {
             if (agcrv.validateFields() == true) {
                 instances[agcrv.getInstanceID()].addNewComplaintReport(agcrv.getReport());
                 agcrv.dispose(); 
-                AnalystWelcome(analyst);
+                AnalystWelcome(analyst,instances);
             }
 
         } );
         
-        agcrv.setBackButtonListener(e -> {agcrv.dispose(); AnalystWelcome(analyst); } );
+        agcrv.setBackButtonListener(e -> {agcrv.dispose(); AnalystWelcome(analyst,instances); } );
     }
 
     
-    public void RespondentWelcome(Respondent respondent) {
+    public void RespondentWelcome(Respondent respondent, Instance[] instances) {
         RespondentWelcomeView rwv = new RespondentWelcomeView();
 
-        rwv.setTakeSurveyButtonListener(e -> { rwv.dispose(); RespondentTakeSurvey(respondent); } );
-        rwv.setViewSurveyHistoryButtonListener(e -> { rwv.dispose(); RespondentViewHistory(respondent); } );
-        rwv.setViewOrUpdateProfileButtonListener(e -> { rwv.dispose(); RespondentProfile(respondent); } );
-        rwv.setChangeSecurityQuesAndPassButtonListener(e -> { rwv.dispose(); ChangeSecurityView(respondent); } );
-        rwv.setChangePasswordButtonListener(e -> { rwv.dispose(); PasswordManager(respondent); } );
-        rwv.setFindRecommendedPathButtonListener(e-> { rwv.dispose(); GuestChooseLRecommendedPath(respondent); } );
-        rwv.setViewGeneralDataButtonListener(e-> { rwv.dispose(); GuestSelectSurveyData(respondent); } );       
+        rwv.setTakeSurveyButtonListener(e -> { rwv.dispose(); RespondentTakeSurvey(respondent,instances); } );
+        rwv.setViewSurveyHistoryButtonListener(e -> { rwv.dispose(); RespondentViewHistory(respondent,instances); } );
+        rwv.setViewOrUpdateProfileButtonListener(e -> { rwv.dispose(); RespondentProfile(respondent,instances); } );
+        rwv.setChangeSecurityQuesAndPassButtonListener(e -> { rwv.dispose(); ChangeSecurityView(respondent,instances); } );
+        rwv.setChangePasswordButtonListener(e -> { rwv.dispose(); PasswordManager(respondent,instances); } );
+        rwv.setFindRecommendedPathButtonListener(e-> { rwv.dispose(); GuestChooseLRecommendedPath(respondent,instances); } );
+        rwv.setViewGeneralDataButtonListener(e-> { rwv.dispose(); GuestSelectSurveyData(respondent,instances); } );       
 
-        rwv.setBackButtonListener(e -> {rwv.dispose(); Homepage(); } );
+        rwv.setBackButtonListener(e -> {rwv.dispose(); Homepage(instances); } );
     }
 
     // mali pa to !!!
@@ -408,7 +399,7 @@ public class Controller {
         rvhv.setBackButtonListener(e -> {rvhv.dispose(); RespondentWelcome(respondent); } );
     }
     
-    public void RespondentProfile(Respondent respondent) {
+    public void RespondentProfile(Respondent respondent, Instance[] instances) {
         RespondentProfileView rpv = new RespondentProfileView(respondent);
         
         rpv.setUpdateDetailsButtonListener(e -> {
@@ -432,7 +423,15 @@ public class Controller {
     public void GuestChooseLRecommendedPath(Instance[] instances) {
         service.zTestComputation(instances);
         guestChooseLRecommendedPathView gclrpv = new guestChooseLRecommendedPathView();
-         
+        
+        gclrpv.setSubmitButtonListener( e -> {
+            gclrpv.setErrorMessages(false);
+
+            if (validateField() == true)
+                
+                GuestRecommendedPath();
+
+        } );
     }
 
     public void GuestRecommendedPath() {
@@ -450,8 +449,8 @@ public class Controller {
                 // 0 - no ranking
                 // 1 - best to worst
                 // 2 - worst to best
-                ArrayList<Survey> surveys = user.fetchGeneraldata(gssdv.getPlaces(), gssdv.getDays(), gssdv.getTimes(), gssdv.getRankingType(), gssdv.getNumRec());
-                guestSurveyData(); 
+                ArrayList<Survey> surveys = ProgramUser.fetchGeneraldata(gssdv.getPlaces(), gssdv.getDays(), gssdv.getTimes(), gssdv.getRankingType(), gssdv.getNumRec());
+                GuestSurveyData(); 
             }
         } );
 

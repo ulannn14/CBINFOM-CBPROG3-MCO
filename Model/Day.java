@@ -12,14 +12,10 @@ public class Day extends Place {
     }
 
     // Getter for dayIdx
-    public int getDayIdx() {
-        return dayIdx;
-    }
-
-    // Getter for dayName
-    public String getDayName() {
-        return dayName;
-    }
+    public int getDayIdx() { return dayIdx; }
+    public String getDayName() { return dayName; }
+    public void setDayIdx(int x) { dayIdx = x; }
+    public void setDayName(String x ) { dayName = x; }
 
     // Convert dayIdx to dayName
     public static String getDayNameFromIdx(int dayIdx) {
@@ -45,7 +41,7 @@ public class Day extends Place {
             case "friday": return 4;
             case "saturday": return 5;
             case "sunday": return 6;
-            default: System.out.println("Invalid day name.");
+            default: return -1; // Return a default value indicating an error
         }
-    }
+    }    
 }

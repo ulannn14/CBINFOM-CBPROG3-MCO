@@ -1,12 +1,13 @@
 package ServiceClassPackage;
 
 import Model.*;
-
 import java.util.ArrayList;
 
 public class ServiceClass {
     public void zTestComputation(Instance[] instances) {
         // Step 2: Flatten all survey means into a single list for population calculations
+
+        
         ArrayList<Double> allSurveyMeans = new ArrayList<>();
         for (Instance instance : instances) {
             allSurveyMeans.addAll(instance.getSurveyMeans());
@@ -19,9 +20,11 @@ public class ServiceClass {
         double populationStdDev = calculateStandardDeviation(allSurveyMeans, populationMean);
 
         for (int i = 0; i < Constants.MAX_INSTANCE; i++) {
-            double instanceMean = instances[i].calculateInstanceMean();
-            instances[i].setZScore((instanceMean - populationMean) / populationStdDev);
-            instances[i].setSampleSize(instances[i].getSurveys().size());
+            if (instances[i].getSurveys().size() > 0) {
+                double instanceMean = instances[i].calculateInstanceMean();
+                instances[i].setZScore((instanceMean - populationMean) / populationStdDev);
+                instances[i].setSampleSize(instances[i].getSurveys().size());
+            }
         }
     }
 

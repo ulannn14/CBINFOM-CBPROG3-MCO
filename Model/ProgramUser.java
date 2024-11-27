@@ -1,14 +1,5 @@
 package Model;
 
-import java.util.ArrayList;
-import DatabaseConnection.*;
-/*
-Program User: abstract class of static fetchUser to find user in the database, then adapt to the three subclasses
-            --- return respective objects, null if not found
-*/ 
-
-import java.util.Scanner;
-
 abstract public class ProgramUser extends DatabaseConnection {
     protected String username;
     protected String accountPassword;

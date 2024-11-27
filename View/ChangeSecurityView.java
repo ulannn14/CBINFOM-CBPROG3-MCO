@@ -1,16 +1,16 @@
 package View;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import javax.swing.*;
 
 public class ChangeSecurityView extends JFrame{
-	private JButton changeSecurityDetailsButton = new JButton("Change Security Details");
-    private JButton backButton = new JButton("Back");
+	final private JButton changeSecurityDetailsButton = new JButton("Change Security Details");
+    final private JButton backButton = new JButton("Back");
 
-    private String[] securityQuestions = {
+    private final String[] securityQuestions = {
         "Select security question...",
         "What is your mother's maiden name?",
         "What is the name of your first pet?",
@@ -23,10 +23,10 @@ public class ChangeSecurityView extends JFrame{
         "What is the name of the street you grew up on?",
         "What is your favorite food?"
     };
-    private JComboBox securityQuestionsDropdown = new JComboBox<String>(securityQuestions);
+    final private JComboBox<String> securityQuestionsDropdown = new JComboBox<>(securityQuestions);
 
-    private JPasswordField newSecurityPasswordField = new JPasswordField(15);
-    private JPasswordField accountPasswordField = new JPasswordField(15);
+    final private JPasswordField newSecurityPasswordField = new JPasswordField(15);
+    final private JPasswordField accountPasswordField = new JPasswordField(15);
 
     final private JLabel header = new JLabel("Security Question and Password Manager");
     final private JLabel usernameLabel = new JLabel("Username: ");
@@ -225,11 +225,11 @@ public class ChangeSecurityView extends JFrame{
 	}
 	
 	public String getNewSecurityPasswordField(){
-		return new String (newSecurityPasswordField.getText());
+		return new String (newSecurityPasswordField.getPassword());
 	}
 	
 	public String getAccountPasswordField(){
-		return new String (accountPasswordField.getText());
+		return new String (accountPasswordField.getPassword());
 	}
 
     public void setErrorMessages(boolean visible) {
@@ -238,4 +238,28 @@ public class ChangeSecurityView extends JFrame{
         newSecPassErrorLabel.setVisible(visible);
     }	
 
+    public boolean validateSecurityQuestion() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public boolean validateSecurityPassword() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public String getSecurityQuestion() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public String getSecurityPassword() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public String getPassword() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void wrongPassword() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
 }

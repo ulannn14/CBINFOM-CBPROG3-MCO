@@ -1,31 +1,21 @@
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 
-class Path {
-    static class Node {
-        int id;        // Node identifier
-        String name;   // Node name
-        double zscore;    // Node zscore
-        ArrayList<Edge> neighbors = new ArrayList<>();
+class Paths {
+    private int start, goal;
 
-        Node(int id, String name, int zscore) {
-            this.id = id;
-            this.name = name;
-            this.zscore = zscore;
-        }
+    public Paths() {
+        // Default constructor
+    }
 
-        void addNeighbor(int neighborId, int weight) {
-            neighbors.add(new Edge(neighborId, weight));
-        }
-
-        String getName(){
-            return this.name;
-        }
+    public Paths(int start, int goal) {
+        this.start = start;
+        this.goal = goal;
     }
 
     static class Edge {
         int targetNode;
-        double weight;
+        double weight; // in meters
 
         Edge(int targetNode, int weight) {
             this.targetNode = targetNode;
@@ -69,11 +59,12 @@ class Path {
             if (!visited[currentNode]) {
                 visited[currentNode] = true;
 
-                for (Edge edge : graph[currentNode].neighbors) {
+                for (Edge edge : graph[currentNode].connectedPlace) {
                     int neighbor = edge.targetNode;
 
-                    if (!visited[neighbor] && (!ZScoreFilter || graph[neighbor].rating < criticalValue)) {
+                    if (!visited[neighbor] && (!ZScoreFilter || graph[neighbor].zscore < criticalValue)) {
                         int newCost = distances[currentNode] + edge.weight;
+
                         if (newCost < distances[neighbor]) {
                             distances[neighbor] = newCost;
                             previous[neighbor] = currentNode;
@@ -89,27 +80,32 @@ class Path {
 
     private static ArrayList<Integer> constructPath(int[] previous, int start, int goal) {
         ArrayList<Integer> path = new ArrayList<>();
-        for (int at = goal; at != -1; at = previous[at]) {
-            path.add(0, at);
+
+        for (int i = goal; i != -1; i = previous[i]) {
+            path.add(0, i);
         }
+
         if (path.get(0) != start) {
             path.clear(); // No path found
         }
+
         return path;
     }
 
     private static String getPathDetails(ArrayList<Integer> path, Node[] graph) {
-        StringBuilder details = new StringBuilder();
+        String details = "";
+
         for (int i = 0; i < path.size(); i++) {
-            if (i > 0) details.append(" -> ");
-            details.append(graph[path.get(i)].name);
+            if (i > 0) details.concat(" -> ");
+                details.concat(graph[path.get(i)].name);
         }
-        return details.toString();
+
+        return details;
     }
 
-    public static void main(String[] args) {
+    public static findPath(int start, ){
         // Create graph
-        Node[] graph = new Node[totalNodes];
+        Node[] graph = new Node[71];
         int start, end;
 
         for(int i = 0; i < totalNodes; i++){

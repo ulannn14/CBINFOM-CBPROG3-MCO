@@ -4,7 +4,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
-public class Instance extends Time {
+public class Instance extends TimeCategory {
     private int instanceID;
     
     private double zScore;
@@ -13,7 +13,7 @@ public class Instance extends Time {
 
     private Place place;
     private Day day;
-    private Time time;
+    private TimeCategory time;
 
     private ArrayList<Survey> surveys;
     private ArrayList<String> tags;
@@ -22,7 +22,7 @@ public class Instance extends Time {
     private ArrayList<IncidentReport> incidentReports;
 
 
-    public Instance(Place place, Day day, Time time) {
+    public Instance(Place place, Day day, TimeCategory time) {
         this.place = place;
         this.day = day;
         this.time = time;
@@ -53,8 +53,8 @@ public class Instance extends Time {
     public Day getDay() { return day; }
     public void setDay(Day day) { this.day = day; }
 
-    public Time getTime() { return time; }
-    public void setTime(Time time) { this.time = time; }
+    public TimeCategory getTime() { return time; }
+    public void setTime(TimeCategory time) { this.time = time; }
 
     public ArrayList<Survey> getSurveys() { return surveys; }
     public void setSurveys(ArrayList<Survey> surveys) { this.surveys = surveys; }
@@ -91,12 +91,12 @@ public class Instance extends Time {
         // parse then add to database
     }
 
-    public void deleteTags(ArrayList<int> tagIDsToDelete) {
+    public void deleteTags(ArrayList<Integer> tagIDsToDelete) {
         // parse then delete local
         // parse then delete in database
     }
 
-    public void deleteSummaries(ArrayList<int> summaryIDsToDelete) {
+    public void deleteSummaries(ArrayList<Integer> summaryIDsToDelete) {
         // parse then delete local
         // parse then delete in database
     }

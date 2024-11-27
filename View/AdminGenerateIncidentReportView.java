@@ -1,10 +1,10 @@
 package View;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import javax.swing.*;
 
 public class AdminGenerateIncidentReportView extends JFrame {
     final private JLabel instanceLabel = new JLabel("Choose the instance you would like to make a report about.");
@@ -19,9 +19,9 @@ public class AdminGenerateIncidentReportView extends JFrame {
     final private JLabel dayErrorLabel = new JLabel("Please select a valid day.");
     final private JLabel timeErrorLabel = new JLabel("Please select a valid time.");
 
-    private JTextField toField = new JTextField(25);
-    private JTextField fromField = new JTextField(25);
-    private JTextArea reportField = new JTextArea(10, 50);
+    final private JTextField toField = new JTextField(25);
+    final private JTextField fromField = new JTextField(25);
+    final private JTextArea reportField = new JTextArea(10, 50);
 
     private String[] locations = {
         "Location", "LOCATION 1", "LOCATION 2", "LOCATION 3", "LOCATION 4", "LOCATION 5"
@@ -45,8 +45,8 @@ public class AdminGenerateIncidentReportView extends JFrame {
     private JComboBox<String> dayOfTheWeekDropdown = new JComboBox<>(days);
     private JComboBox<String> timeOfDayDropdown = new JComboBox<>(times);
 
-    private JButton submitButton = new JButton("Submit");
-    private JButton backButton = new JButton("Back");
+    final private JButton submitButton = new JButton("Submit");
+    final private JButton backButton = new JButton("Back");
 
     private Image backgroundImage;
 

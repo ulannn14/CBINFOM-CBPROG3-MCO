@@ -5,6 +5,10 @@ import java.sql.SQLException;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.sql.DriverManager;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 public class Respondent extends ProgramUser {
     private String name;
@@ -15,10 +19,9 @@ public class Respondent extends ProgramUser {
     private int userType;
 
     public Respondent() {
-
+        // Default constructor
     }
 
-    
     public Respondent(String username, String accountPassword, String securityQuestion, String securityPassword, 
                       int userType, String name, DateClass birthdate, String emailAddress) {
         this.username = username;
@@ -29,123 +32,171 @@ public class Respondent extends ProgramUser {
         this.name = name;
         this.birthdate = birthdate;
         this.emailAddress = emailAddress;
+    }
+
+    @Override
+    public void createQuery() {
+        String insertRespondentQuery = "INSERT INTO `Respondent` (`name`, `emailAddress`, `birthDateID`, `dateJoinedID`, `surveyHistoryCtr`) "
+                + "VALUES (?, ?, ?, ?, ?)";
         
-        public void createQuery(){
-                // SQL queries for both tables
-            String insertRespondentQuery = "INSERT INTO `Respondent` (`name`, `emailAddress`, `birthDate`, `dateJoined`, `surveyHistoryCtr`) "
-                    + "VALUES (?, ?, ?, ?, ?)";
-            
-            String insertProgramUserQuery = "`ProgramUser` (`username`, `accountPassword`, `securityQuestion`, `securityPassword`, `userType`) "
-                    + "VALUES (?, ?, ?, ?, ?)";
+        String insertProgramUserQuery = "`ProgramUser` (`username`, `accountPassword`, `securityQuestion`, `securityPassword`, `userType`) "
+                + "VALUES (?, ?, ?, ?, ?)";
 
-            try (PreparedStatement respondentStatement = connection.prepareStatement(insertRespondentQuery);
-                 PreparedStatement programUserStatement = connection.prepareStatement(insertProgramUserQuery)) {
+        String insertDateQuery = "INSERT INTO `Date` (`Year`, `Month`, `Day`) " + "VALUES (?, ?, ?);";
 
-                // Set values for Respondent table
-                respondentStatement.setString(1, name);
-                respondentStatement.setString(2, emailAddress);
-                respondentStatement.setDate(3, birthdate);
-                respondentStatement.setDate(4, new DateClass(System.currentTimeMillis()));  // Set current date for 'dateJoined'
-                respondentStatement.setInt(5, 0);  // Assuming default surveyHistoryCtr is 0
+        try (Connection connection = createConnection();
+             PreparedStatement respondentStatement = connection.prepareStatement(insertRespondentQuery);
+             PreparedStatement programUserStatement = connection.prepareStatement(insertProgramUserQuery);
+             PreparedStatement dateStatement = connection.prepareStatement(insertDateQuery);
+             Statement statement = connection.createStatement();) {
 
-                // Set values for ProgramUser table
-                programUserStatement.setString(1, username);
-                programUserStatement.setString(2, accountPassword);
-                programUserStatement.setString(3, securityQuestion);
-                programUserStatement.setString(4, securityPassword);
-                programUserStatement.setInt(5, userType);
+            // Execute a Query
+            String query = "SELECT * FROM Date";
+            ResultSet resultSet = statement.executeQuery(query);
 
-                // Execute both queries
-                int respondentRowsInserted = respondentStatement.executeUpdate();
-                int programUserRowsInserted = programUserStatement.executeUpdate();
+            boolean cFlag = false, bFlag = false;
+            // 0 - birthdate, 1 - current date
+            int[] dateID = new int[2], day = new int[2], month = new int[2], year = new int[2], dateCtr = new int[2];
+            LocalDate date = LocalDate.now();
 
-                // If both insertions are successful, commit the transaction
-                if (respondentRowsInserted > 0 && programUserRowsInserted > 0) {
-                    connection.commit();  // Commit transaction
-                    System.out.println("A new respondent and program user were inserted successfully!");
-                } else {
-                    connection.rollback();  // Rollback transaction if anything fails
-                    System.out.println("Error: Transaction rolled back.");
+            while (resultSet.next() && !bFlag && !cFlag) {
+                if(!bFlag) {
+                    dateCtr[0] = resultSet.getInt("dateID");
+                    day[0] = resultSet.getInt("Day");
+                    month[0] = resultSet.getInt("Month");
+                    year[0] = resultSet.getInt("Year");
                 }
-            } catch (SQLException e) {
-                connection.rollback();  // Rollback in case of error
-                System.err.println("Error inserting data: " + e.getMessage());
+
+                if(!cFlag) {
+                    dateCtr[1] = resultSet.getInt("dateID");
+                    day[1] = resultSet.getInt("Day");
+                    month[1] = resultSet.getInt("Month");
+                    year[1] = resultSet.getInt("Year");
+                }
+
+                if(birthdate.getDay() == day[0] && birthdate.getMonth() == month[0] && birthdate.getYear() == year[0]){
+                    dateID[0] = resultSet.getInt("dateID");
+                    bFlag = true;
+                }
+
+                if(date.getDayOfMonth() == day[1] && date.getMonthValue() == month[1] && date.getYear() == year[1]){
+                    dateID[1] = resultSet.getInt("dateID");
+                    cFlag = true;
+                }
             }
-        } 
+
+            if(bFlag == false){
+                dateStatement.setInt(1, year[0]);
+                dateStatement.setInt(2, month[0]);
+                dateStatement.setInt(3, day[0]);
+                dateStatement.executeUpdate();
+                dateID[0] = dateCtr[0];
+            }
+
+            if(cFlag == false){
+                dateStatement.setInt(1, year[1]);
+                dateStatement.setInt(2, month[1]);
+                dateStatement.setInt(3, day[1]);
+                dateStatement.executeUpdate();
+                dateID[1] = dateCtr[1];
+            }
+
+            // Set values for Respondent table
+            respondentStatement.setString(1, name);
+            respondentStatement.setString(2, emailAddress);
+            respondentStatement.setInt(3, dateID[0]);
+            respondentStatement.setInt(4, dateID[1]); 
+            respondentStatement.setInt(5, 0);
+
+            // Set values for ProgramUser table
+            programUserStatement.setString(1, username);
+            programUserStatement.setString(2, accountPassword);
+            programUserStatement.setString(3, securityQuestion);
+            programUserStatement.setString(4, securityPassword);
+            programUserStatement.setInt(5, userType);
+
+            respondentStatement.executeUpdate();
+            programUserStatement.executeUpdate();
+        } catch (SQLException e) {
+            connection.rollback();  // Rollback in case of error
+            System.err.println("Error inserting data: " + e.getMessage());
+        }
     }
 
     @Override
     public Respondent fetchUser(String username, String password) {
         // find the matched username and password of userType = 3 in the database
-            // return null if wala,
-            // return the whole user if meron (populate an instance of the user then return it)
+        // return null if no match,
+        // return the whole user if a match is found (populate an instance of the user then return it)
+        return null;
     }
 
     public ArrayList<Respondent> fetchAllRespondents() {
-        // database, return all analyst
+        // database, return all respondents
+        return new ArrayList<>();
     }
 
     // SETTERS
-    public void setName(String name){
+    public void setName(String name) {
         this.name = name;
     }
 
-    public void setBirthdate(DateClass birthdate){
+    public void setBirthdate(DateClass birthdate) {
         this.birthdate = birthdate;
     }
 
-    public void setEmailAddress(String emailAddress){
+    public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
     }
 
-    public void addSurvey(Survey survey){
-        surveyHistory[numSurveyHistory] = new Survey();
+    public void addSurvey(Survey survey) {
         surveyHistory[numSurveyHistory] = survey;
         numSurveyHistory++;
     }
 
     // GETTERS
-    public String getName(){
+    public String getName() {
         return name;
     }
 
-    public DateClass getBirthdate(){
+    public DateClass getBirthdate() {
         return birthdate;
     }
 
-    public String getEmailAddress(){
+    public String getEmailAddress() {
         return emailAddress;
     }
 
-    public int getAge(){
+    public int getAge() {
         LocalDate today = LocalDate.now();
         int year = today.getYear();
         int month = today.getMonthValue();
         int day = today.getDayOfMonth();
         int age = year - birthdate.getYear();
+
         boolean flag;
 
-        if (year >= birthdate.getYear()){
-            if (year == birthdate.getYear()){
-                if (month >= birthdate.getMonth()){
-                    if (month == birthdate.getMonth()){
+        if (year >= birthdate.getYear()) {
+            if (year == birthdate.getYear()) {
+                if (month >= birthdate.getMonth()) {
+                    if (month == birthdate.getMonth()) {
                         if (day >= birthdate.getDay()) flag = true;
                         else flag = false;
                     } else flag = true;
                 } else flag = false;
             } else flag = true;
         } else flag = false;
-        
+
         if (!flag) age -= 1;
         return age;
     }
 
-    public Survey getHistory(int historyIdx){
+    public Survey getHistory(int historyIdx) {
         return surveyHistory[historyIdx];
     }
 
-    public void takeSurvey(){
-        
+    public void takeSurvey() {
+        // Implement take survey logic here
     }
 
     public int getUserType() {
@@ -154,11 +205,5 @@ public class Respondent extends ProgramUser {
 
     public void setUserType(int userType) {
         this.userType = userType;
-    }
-
-    @Override
-    public void createQuery() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'createQuery'");
     }
 }
