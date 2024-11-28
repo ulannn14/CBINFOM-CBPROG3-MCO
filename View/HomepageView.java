@@ -4,15 +4,15 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 
-public class HomepageView extends JFrame {
-    private JButton forgotPasswordButton = new JButton("Forgot password?");
-    private JButton loginButton = new JButton("Login");
-    private JButton signupButton = new JButton("Sign up");
-    private JButton findRecommendedPathButton = new JButton("Find Recommended Path");
-    private JButton viewSurveyDataButton = new JButton("View Survey Data");
+public class HomepageView extends ViewAbstract {
+    final private JButton forgotPasswordButton = new JButton("Forgot password?");
+    final private JButton loginButton = new JButton("Login");
+    final private JButton signupButton = new JButton("Sign up");
+    final private JButton findRecommendedPathButton = new JButton("Find Recommended Path");
+    final private JButton viewSurveyDataButton = new JButton("View Survey Data");
 
-    private JTextField usernameField = new JTextField(15);
-    private JPasswordField passwordField = new JPasswordField(15);
+    final private JTextField usernameField = new JTextField(15);
+    final private JPasswordField passwordField = new JPasswordField(15);
 
     final private JLabel titleLabel1 = new JLabel("ISSPa:");
     final private JLabel titleLabel2 = new JLabel("<html>Intramuros Safety Survey & Pathfinder</html>");
@@ -24,7 +24,7 @@ public class HomepageView extends JFrame {
     final private JLabel guestLabel = new JLabel("Continue as Guest?");
     final private JLabel descriptionLabel = new JLabel("<html>ISSPa empowers visually-impaired<br>individuals to safely navigate Intramuros<br>by providing survey data on the safest<br>paths and times for walking.<br><br>Log in or sign up to create an account<br>and participate in the survey.</html>");
 
-    private JPanel panel = new JPanel();
+    final private JPanel panel = new JPanel();
 
     public HomepageView() {
         setSize(1200, 700);
@@ -47,8 +47,10 @@ public class HomepageView extends JFrame {
 
         
         usernameField.setBounds(675,260,240,30);
+        addPlaceholder(usernameField, " Enter username");
         panel.add(usernameField);
         passwordField.setBounds(675,300,240,30);
+        addPasswordPlaceholder(passwordField, " Enter password")
         panel.add(passwordField);
 
         titleLabel1.setBounds(520,64,140,67);
@@ -82,7 +84,8 @@ public class HomepageView extends JFrame {
     }
 
     public void setErrorMessages(boolean setVisible) {
-        // define
+        wrongCredentialsLabel.setVisible(setVisible);
+        invalidUsernamePasswordLabel.setVisible(setVisible);
     }
 
     public void setForgotPasswordButtonListener(ActionListener listener) {

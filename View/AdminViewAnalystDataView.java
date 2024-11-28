@@ -8,11 +8,9 @@ import java.awt.event.ActionListener;
 import Model.*;
 
 public class AdminViewAnalystDataView extends JFrame {
-    private JButton backButton = new JButton("Back");
-    private Image backgroundImage;
+    final private JButton backButton = new JButton("Back");
 
-    public AdminViewAnalystDataView(ArrayList<Analyst> allAnalysts) {
-        backgroundImage = new ImageIcon("fadminViewAnalystDataView.png").getImage();
+    public AdminViewAnalystDataView(ArrayList<String> allUsernames, ArrayList<String> allSQs, ArrayList<DateClass> allDateJoineds) {
         
         setTitle("Analysts Data");
         setSize(1200, 700);
@@ -25,18 +23,18 @@ public class AdminViewAnalystDataView extends JFrame {
         add(titleLabel, BorderLayout.NORTH);
 
         String[] columnHeaders = {
-            "User ID", "Username", "S.Q. ID", "Date Joined"
+            "Username", "Security Question", "Date Joined"
         };
 
         DefaultTableModel tableModel = new DefaultTableModel(columnHeaders, 0);
 
-        for (Analyst analyst : allAnalysts) {
+        for (int i = 0; i < allUsernames.size(); i++) {
             Object[] row = {
-                analyst.getUserID(),
-                analyst.getUsername(),
-                analyst.getSecurityQuestionID(),
-                analyst.getDateJoined()
+                allUsernames.get(i),
+                allSQs.get(i),
+                allDateJoineds.get(i) 
             };
+            
             tableModel.addRow(row);
         }
 
@@ -46,26 +44,21 @@ public class AdminViewAnalystDataView extends JFrame {
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
-        table.getColumnModel().getColumn(0).setCellRenderer(centerRenderer); // User ID
-        table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer); // Username
-        table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer); // S.Q. ID
-        table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer); // Date Joined
+        for (int col = 0; col < columnHeaders.length; col++) {
+            table.getColumnModel().getColumn(col).setCellRenderer(centerRenderer);
+        }
 
-        TableColumn userIdColumn = table.getColumnModel().getColumn(0); // User ID
-        userIdColumn.setPreferredWidth(50);
-        userIdColumn.setMaxWidth(50);
+        TableColumn sqIdColumn = table.getColumnModel().getColumn(6); // Security Question
+        sqIdColumn.setPreferredWidth(150);
+        sqIdColumn.setMaxWidth(200);
 
-        TableColumn sqIdColumn = table.getColumnModel().getColumn(2); // S.Q. ID
-        sqIdColumn.setPreferredWidth(50);
-        sqIdColumn.setMaxWidth(50);
-
-        TableColumn dateJoinedColumn = table.getColumnModel().getColumn(3); // Date Joined
+        TableColumn dateJoinedColumn = table.getColumnModel().getColumn(7); // Date Joined
         dateJoinedColumn.setPreferredWidth(100);
         dateJoinedColumn.setMaxWidth(100);
 
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         panel.add(backButton);
-        add(panel, BorderLayout.SOUTH); 
+        add(panel, BorderLayout.SOUTH);
 
         JPanel tablePanel = new JPanel(new BorderLayout());
         tablePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -74,7 +67,7 @@ public class AdminViewAnalystDataView extends JFrame {
         add(tablePanel, BorderLayout.CENTER);
 
         setVisible(true);
-    }
+    }   
 
     public void setBackButtonListener(ActionListener listener) {
         backButton.addActionListener(listener);

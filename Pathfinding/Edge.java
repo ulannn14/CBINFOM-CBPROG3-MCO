@@ -1,8 +1,14 @@
-public class Edge {
-    public static int targetNode;
-    public static weight; // in meters
+package Pathfinding;
 
-    Edge(int targetNode, int weight) {
+public class Edge {
+    public int targetNode;
+    public double weight; // in meters
+
+    public Edge() {
+        // default constructor
+    }
+
+    public Edge(int targetNode, double weight) {
         this.targetNode = targetNode;
         this.weight = weight;
     }

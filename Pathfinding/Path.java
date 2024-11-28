@@ -1,60 +1,100 @@
+package Pathfinding;
+
+import DatabaseConnection.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 
-class Paths {
-    static class Node {
-        int id;        // Node identifier
-        String name;   // Node name
-        double zscore;    // Node zscore
-        ArrayList<Edge> connectedPlace = new ArrayList<>();
+/* In controller: 
+            Path shortestPath = new Path(start, goal);
+            Path zScorePath = new Path(start, goal);
+            String shortestPathString;
+            String zScorePathString;
 
-        Node(int id, String name, int zscore) {
-            this.id = id;
-            this.name = name;
-            this.zscore = zscore;
-        }
+            shortestPath.modifiedAStar(false, 0);
+            zScorePath.modifiedAStar(true, 3);
+            shortestPathString = shortestPath.getPathDetails(shortestPath.getPath);
+            zScorePathString = zScorePath.getPathDetails(zScorePath.getPath);
 
-        void addNeighbor(int neighborID, int weight) {
-            neighbors.add(new Edge(neighborId, weight));
-        }
+            In view:
 
-        String getName(){
-            return this.name;
-        }
+            System.out.println("Shortest Path: " + shortestPathString);
+            
+            if (zScorePath.getPath().isEmpty()) {
+                System.out.println("No path exists where all nodes have a rating of at least 3.");
+            } else {
+                System.out.println("Path with minimum rating 3: " + zScorePathString);
+            }
+*/
+
+
+// In model:
+public class Path extends DatabaseConnection {
+    private static final int maxPlaces = 71;
+    private static int start, goal, day, time;
+    private static Node[] graph = new Node[maxPlaces];
+    private static ArrayList<Integer> path = new ArrayList<>();
+
+    public Path() {
+        // default constructor
     }
 
-    static class Edge {
-        int targetNode;
-        double weight; // in meters
+    // instantiate with places to start and end as well as the selected day and time
+    public Path(int start, int goal, int day, int time) {
+        this.start = start;
+        this.goal = goal;
+        this.day = day;
+        this.time = time;
 
-        Edge(int targetNode, int weight) {
-            this.targetNode = targetNode;
-            this.weight = weight;
-        }
+        createQuery();
     }
 
-    static class State implements Comparable<State> {
-        int node;
-        int cost;
+    @Override
+    public void createQuery() {
+        try (Connection connection = createConnection();
+             Statement statement = connection.createStatement();) {
 
-        State(int node, int cost) {
-            this.node = node;
-            this.cost = cost;
-        }
+            // Execute a Query
+            String query = "SELECT P.placeID, S1.streetName AS streetName1, S2.streetName AS streetName2, E.connectedPlaceID, E.weight " +
+                            "FROM  Instance I " +
+                            "JOIN Place P ON I.placeID = P.placeID " +
+                            "JOIN Streets S1 ON P.streetID1 = S1.streetID " +
+                            "JOIN  Streets S2 ON P.streetID2 = S2.streetID " +
+                            "LEFT JOIN Edge E ON P.placeID = E.placeID" + 
+                            "WHERE I.dayID = 1 AND I.timeID = 1";
+            ResultSet resultSet = statement.executeQuery(query);
 
-        @Override
-        public int compareTo(State other) {
-            return Integer.compare(this.cost, other.cost);
+            int nodeID, connectedPlaceID;
+            String nodeName = "", str1, str2;
+            double nodeZscore, weight;
+           
+            while (resultSet.next()) {
+                nodeID = resultSet.getInt("placeID");
+                nodeID -= 1; // indexing in sql always starts at 1
+                str1 = resultSet.getString("streetName1");
+                str2 = resultSet.getString("streetName2");
+                connectedPlaceID = resultSet.getInt("connectedPlaceID");
+                weight = resultSet.getDouble("weight");
+                nodeName = str1.concat(" - ").concat(str2).concat(" Intersection");
+                nodeZscore = resultSet.getDouble("zScore");
+                graph[nodeID] = new Node(nodeID, nodeName, nodeZscore);
+                graph[nodeID].addNeighbor(connectedPlaceID, weight);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error inserting data: " + e.getMessage());
         }
     }
-
-    public static ArrayList<Integer> aStar(Node[] graph, int start, int goal, boolean ZScoreFilter, int criticalValue) {
-        int[] distances = new int[graph.length];
+    
+    public static void modifiedAStar(boolean ZScoreFilter, int criticalValue) {
+        double[] distances = new double[graph.length];
         int[] previous = new int[graph.length];
         boolean[] visited = new boolean[graph.length];
 
         for (int i = 0; i < distances.length; i++) {
-            distances[i] = Integer.MAX_VALUE;
+            distances[i] = Double.MAX_VALUE;
             previous[i] = -1;
         }
 
@@ -73,7 +113,7 @@ class Paths {
                     int neighbor = edge.targetNode;
 
                     if (!visited[neighbor] && (!ZScoreFilter || graph[neighbor].zscore < criticalValue)) {
-                        int newCost = distances[currentNode] + edge.weight;
+                        double newCost = distances[currentNode] + edge.weight;
 
                         if (newCost < distances[neighbor]) {
                             distances[neighbor] = newCost;
@@ -85,24 +125,21 @@ class Paths {
             }
         }
 
-        return constructPath(previous, start, goal);
-    }
-
-    private static ArrayList<Integer> constructPath(int[] previous, int start, int goal) {
-        ArrayList<Integer> path = new ArrayList<>();
-
         for (int i = goal; i != -1; i = previous[i]) {
             path.add(0, i);
         }
 
         if (path.get(0) != start) {
-            path.clear(); // No path found
+            path.clear();
         }
+    }
 
+    public ArrayList<Integer> getPath() {
         return path;
     }
 
-    private static String getPathDetails(ArrayList<Integer> path, Node[] graph) {
+    /*
+    private static String getPathDetails(ArrayList<Integer> path) {
         String details = "";
 
         for (int i = 0; i < path.size(); i++) {
@@ -111,40 +148,5 @@ class Paths {
         }
 
         return details;
-    }
-
-    public static findPath(int start, ){
-        // Create graph
-        Node[] graph = new Node[71];
-        int start, end;
-
-        for(int i = 0; i < totalNodes; i++){
-            //get in database
-            graph[i] = new Node(i, nodeName, nodezscore);
-            
-            while(!all nodes connected are listed){
-                //get in database
-                graph[i].addNeighbor(i, node connected);       
-            }
-        }
-
-        for(int i = 0; i < totalNodes; i++){
-            if(startString.equalsIgnorecase(Node[i].getName))
-                start = i;
-            if(endString.equalsIgnorecase(Node[i].getName))
-                end = i;
-        }
-
-        // Shortest path
-        ArrayList<Integer> shortestPath = aStar(graph, start, goal, false, 0);
-        System.out.println("Shortest Path: " + getPathDetails(shortestPath, graph));
-
-        // Path with zScore 
-        ArrayList<Integer> zScorePath = aStar(graph, start, goal, true, 3);
-        if (zScorePath.isEmpty()) {
-            System.out.println("No path exists where all nodes have a rating of at least 3.");
-        } else {
-            System.out.println("Path with minimum rating 3: " + getPathDetails(minRatingPath, graph));
-        }
-    }
+    } */
 }

@@ -1,5 +1,6 @@
 package View;
 
+import Model.*;
 import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
@@ -7,10 +8,11 @@ import java.util.ArrayList;
 import java.awt.event.ActionListener;
 
 public class AdminViewRespondentDataView extends JFrame {
-    private JButton backButton = new JButton("Back");
-    private Image backgroundImage;
+    final private JButton backButton = new JButton("Back");
+    final private Image backgroundImage;
 
-    public AdminViewRespondentDataView(ArrayList<Respondent> allRespondents) {
+    public AdminViewRespondentDataView(ArrayList<String> allNames, ArrayList<DateClass> allBirthdates, ArrayList<Integer> allAges, ArrayList<String> allEmails,
+                                        ArrayList<String> allUsernames, ArrayList<String> allSQs, ArrayList<DateClass> allDateJoineds) {
         backgroundImage = new ImageIcon("fadminViewRespondentDataView.png").getImage();
         
         setTitle("Respondents Data");
@@ -23,23 +25,22 @@ public class AdminViewRespondentDataView extends JFrame {
         add(titleLabel, BorderLayout.NORTH);
 
         String[] columnHeaders = {
-            "User ID", "Name", "Birthday", "Age",
-            "Email", "Username", "S.Q. ID", "Date Joined"
+            "Name", "Birthday", "Age", "Email", "Username", "Security Question", "Date Joined"
         };
 
         DefaultTableModel tableModel = new DefaultTableModel(columnHeaders, 0);
 
-        for (Respondent respondent : allRespondents) {
+        for (int i = 0; i < allNames.size(); i++) {
             Object[] row = {
-                respondent.getUserID(),
-                respondent.getName(),
-                respondent.getBirthday(),
-                respondent.getAge(),
-                respondent.getEmail(),
-                respondent.getUsername(),
-                respondent.getSecurityQuestionID(),
-                respondent.getDateJoined()
+                allNames.get(i),
+                allBirthdates.get(i), 
+                allAges.get(i),
+                allEmails.get(i),
+                allUsernames.get(i),
+                allSQs.get(i),
+                allDateJoineds.get(i) 
             };
+            
             tableModel.addRow(row);
         }
 
@@ -49,18 +50,9 @@ public class AdminViewRespondentDataView extends JFrame {
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
-        table.getColumnModel().getColumn(0).setCellRenderer(centerRenderer); // User ID
-        table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer); // Name
-        table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer); // Birthday
-        table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer); // Age
-        table.getColumnModel().getColumn(4).setCellRenderer(centerRenderer); // Email
-        table.getColumnModel().getColumn(5).setCellRenderer(centerRenderer); // Username
-        table.getColumnModel().getColumn(6).setCellRenderer(centerRenderer); // S.Q. ID
-        table.getColumnModel().getColumn(7).setCellRenderer(centerRenderer); // Date Joined
-
-        TableColumn userIdColumn = table.getColumnModel().getColumn(0); // User ID
-        userIdColumn.setPreferredWidth(50);
-        userIdColumn.setMaxWidth(50);
+        for (int col = 0; col < columnHeaders.length; col++) {
+            table.getColumnModel().getColumn(col).setCellRenderer(centerRenderer);
+        }
 
         TableColumn birthdayColumn = table.getColumnModel().getColumn(2); // Birthday
         birthdayColumn.setPreferredWidth(100);
@@ -70,9 +62,9 @@ public class AdminViewRespondentDataView extends JFrame {
         ageColumn.setPreferredWidth(50);
         ageColumn.setMaxWidth(50);
 
-        TableColumn sqIdColumn = table.getColumnModel().getColumn(6); // S.Q. ID
-        sqIdColumn.setPreferredWidth(100);
-        sqIdColumn.setMaxWidth(100);
+        TableColumn sqIdColumn = table.getColumnModel().getColumn(6); // Security Question
+        sqIdColumn.setPreferredWidth(150);
+        sqIdColumn.setMaxWidth(200);
 
         TableColumn dateJoinedColumn = table.getColumnModel().getColumn(7); // Date Joined
         dateJoinedColumn.setPreferredWidth(100);
@@ -80,7 +72,7 @@ public class AdminViewRespondentDataView extends JFrame {
 
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         panel.add(backButton);
-        add(panel, BorderLayout.SOUTH); 
+        add(panel, BorderLayout.SOUTH);
 
         JPanel tablePanel = new JPanel(new BorderLayout());
         tablePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -89,7 +81,7 @@ public class AdminViewRespondentDataView extends JFrame {
         add(tablePanel, BorderLayout.CENTER);
 
         setVisible(true);
-    }
+    }   
 
     public void setBackButtonListener(ActionListener listener) {
         backButton.addActionListener(listener);

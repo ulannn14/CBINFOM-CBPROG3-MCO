@@ -38,7 +38,7 @@ public class ChangeSecurityView extends JFrame{
     final private JLabel incorrectAccountPasswordLabel = new JLabel("Incorrect password.");
     final private JLabel newSecPassErrorLabel = new JLabel("Does not meet password requirements.");
 	
-	private Image backgroundImage;
+	final private Image backgroundImage;
     
     public ChangeSecurityView(){
 		JFrame frame = new JFrame("Change Security Question and Password");
@@ -147,70 +147,6 @@ public class ChangeSecurityView extends JFrame{
             }
         });
     }
-
-    public boolean validateNewSecurityPassword(String password){
-        int uppercaseCtr = 0, lowercaseCtr = 0, numberCtr = 0;
-        int length = password.length();
-        boolean valid = true;
-
-        if (length < 8 || length > 25){  // check if password is 8 to 25 characters long
-            newSecPassErrorLabel.setText("Password must be 8 to 25 characters long.");
-            valid = false;
-        } else {  // check if password contains at least one number
-            for (int x = 0; x <= 9; x++){
-                String number = Integer.toString(x);
-                if (password.contains(number))
-                    numberCtr++;
-            }
-            if (numberCtr == 0){
-                newSecPassErrorLabel.setText("Does not meet password requirements.");
-                valid = false;
-            } else { // check if password contains at least one symbol
-                if (!(password.contains("@") || password.contains("#")
-                        || password.contains("!") || password.contains("~")
-                        || password.contains("$") || password.contains("%")
-                        || password.contains("^") || password.contains("&")
-                        || password.contains("*") || password.contains("(")
-                        || password.contains(")") || password.contains("-")
-                        || password.contains("+") || password.contains("/")
-                        || password.contains(":") || password.contains(".")
-                        || password.contains(",") || password.contains("<")
-                        || password.contains(">") || password.contains("?")
-                        || password.contains("|"))) {
-                    newSecPassErrorLabel.setText("Does not meet password requirements.");
-                    valid = false;
-                } else { // check if password contains at least one uppercase letter
-                    for (int x = 65; x <= 90; x++){
-                        char ascii = (char)x;
-                        String upper = Character.toString(ascii);
-                        if (password.contains(upper))
-                            uppercaseCtr++;
-                    }
-                    if (uppercaseCtr == 0){
-                        newSecPassErrorLabel.setText("Does not meet password requirements.");
-                        valid = false;
-                    } else { // check if password contains at least one lowercase letter
-                        for (int x = 97; x <= 122; x++){
-                            char ascii = (char)x;
-                            String lower = Character.toString(ascii);
-                            if (password.contains(lower))
-                                lowercaseCtr++;
-                        }
-                        if (lowercaseCtr == 0){
-                            newSecPassErrorLabel.setText("Does not meet password requirements.");
-                            valid = false;
-                        } else {
-                            if (password.contains(" ")){ // check if password contains whitespaces
-                                newSecPassErrorLabel.setText("Does not meet password requirements.");
-                                valid = false;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return valid;
-    }
 	
 	public void setChangeSecurityDetailsButtonListener(ActionListener listener){
 		changeSecurityDetailsButton.addActionListener(listener);
@@ -220,17 +156,38 @@ public class ChangeSecurityView extends JFrame{
 		backButton.addActionListener(listener);
 	}
 	
-	public String getNewSecurityQuestion(){
+	public String getSecurityQuestion(){
 		return (String) securityQuestionsDropdown.getSelectedItem();
 	}
 	
-	public String getNewSecurityPasswordField(){
+	public String getSecurityPassword(){
 		return new String (newSecurityPasswordField.getPassword());
 	}
 	
-	public String getAccountPasswordField(){
+	public String getPassword(){
 		return new String (accountPasswordField.getPassword());
 	}
+
+    public boolean validateSecurityQuestion() {
+        if (    securityQuestionsDropdown.getSelectedItem().equals("Select security question...")) {
+            return false;
+        }
+        else
+            return true;
+    }
+
+    public boolean validateSecurityPassword(){
+        String password = getSecurityPassword();
+        int length = password.length();
+
+        if (password.length() < 8 || password.length() > 25) {
+            newSecPassErrorLabel.setText("Password must be 8 to 25 characters long.");
+            newSecPassErrorLabel.setVisible(true);
+            return false;
+        }
+        else
+            return true;
+    }
 
     public void setErrorMessages(boolean visible) {
         blankNewSecQuesLabel.setVisible(visible);
@@ -238,28 +195,8 @@ public class ChangeSecurityView extends JFrame{
         newSecPassErrorLabel.setVisible(visible);
     }	
 
-    public boolean validateSecurityQuestion() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public boolean validateSecurityPassword() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public String getSecurityQuestion() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public String getSecurityPassword() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public String getPassword() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
     public void wrongPassword() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        incorrectAccountPasswordLabel.setVisible(true);
     }
     
 }

@@ -1,14 +1,21 @@
-static class State implements Comparable<State> {
-    int node;
-    int cost;
+package Pathfinding;
 
-    State(int node, int cost) {
+public class State implements Comparable<State> {
+    public int node;
+    public double cost;
+
+    public State() {
+        // default constructor
+    }
+    
+    public State(int node, double cost) {
         this.node = node;
         this.cost = cost;
     }
 
-    @Override
+   @Override
     public int compareTo(State other) {
-        return Integer.compare(this.cost, other.cost);
+        return Double.compare(this.cost, other.cost);
     }
+
 }

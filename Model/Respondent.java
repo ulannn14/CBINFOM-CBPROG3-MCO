@@ -17,6 +17,15 @@ public class Respondent extends ProgramUser {
     private Survey[] surveyHistory = new Survey[100];
     private int numSurveyHistory = 0;
     private int userType;
+    private DateClass dateJoined; 
+
+    public DateClass getDateJoined() {
+        return dateJoined;
+    }
+
+    public void setDateJoined(DateClass date) {
+        dateJoined = date;
+    }
 
     public Respondent() {
         // Default constructor
@@ -32,6 +41,8 @@ public class Respondent extends ProgramUser {
         this.name = name;
         this.birthdate = birthdate;
         this.emailAddress = emailAddress;
+
+        createQuery();
     }
 
     @Override
@@ -39,7 +50,7 @@ public class Respondent extends ProgramUser {
         String insertRespondentQuery = "INSERT INTO `Respondent` (`name`, `emailAddress`, `birthDateID`, `dateJoinedID`, `surveyHistoryCtr`) "
                 + "VALUES (?, ?, ?, ?, ?)";
         
-        String insertProgramUserQuery = "`ProgramUser` (`username`, `accountPassword`, `securityQuestion`, `securityPassword`, `userType`) "
+        String insertProgramUserQuery = "INSERT INTO `ProgramUser` (`username`, `accountPassword`, `securityQuestion`, `securityPassword`, `userType`) "
                 + "VALUES (?, ?, ?, ?, ?)";
 
         String insertDateQuery = "INSERT INTO `Date` (`Year`, `Month`, `Day`) " + "VALUES (?, ?, ?);";
@@ -118,20 +129,18 @@ public class Respondent extends ProgramUser {
             respondentStatement.executeUpdate();
             programUserStatement.executeUpdate();
         } catch (SQLException e) {
-            connection.rollback();  // Rollback in case of error
             System.err.println("Error inserting data: " + e.getMessage());
         }
     }
 
-    @Override
-    public Respondent fetchUser(String username, String password) {
+    public static Respondent fetchUser(String username, String password) {
         // find the matched username and password of userType = 3 in the database
         // return null if no match,
         // return the whole user if a match is found (populate an instance of the user then return it)
         return null;
     }
 
-    public ArrayList<Respondent> fetchAllRespondents() {
+    public static ArrayList<Respondent> fetchAllRespondents() {
         // database, return all respondents
         return new ArrayList<>();
     }

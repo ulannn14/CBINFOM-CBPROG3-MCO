@@ -1,24 +1,20 @@
 package View;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+import javax.swing.*;
 
 public class AnalystWelcomeView extends JFrame{
-	private JButton viewSurveyDataButton = new JButton("View Survey Data");
-	private JButton generateComplaintReportButton = new JButton("Generate Complaint Report");
-	private JButton changePasswordButton = new JButton("Change Password");
-	private JButton changeSecurityQuesAndPassButton = new JButton("Change Security Ques. and Pass.");
-	private JButton findRecommendedPathButton = new JButton("Find Recommended Path");
-	private JButton viewGeneralDataButton = new JButton("View General Data");
-    private JButton backButton = new JButton("Logout");
+	final private JButton viewInstancesDataButton = new JButton("View Instances Data");
+	final private JButton changePasswordButton = new JButton("Change Password");
+	final private JButton changeSecurityQuesAndPassButton = new JButton("Change Security Ques. and Pass.");
+	final private JButton findRecommendedPathButton = new JButton("Find Recommended Path");
+	final private JButton viewGeneralDataButton = new JButton("View General Data");
+    final private JButton backButton = new JButton("Logout");
 
     final private JLabel header = new JLabel("Welcome, <analyst_username>.");
 	final private JLabel subheader = new JLabel("What would you like to do today?");
-    final private JLabel viewSurveyDataLabel = new JLabel("<html>Access detailed survey data to analyze safety<br>scores, times, and other relevant factors<br>for specific instances.</html>");
-	final private JLabel generateComplaintReportLabel = new JLabel("<html>Generate a complaint report that summarizes<br>respondent comments and feedback.</html>");
+    final private JLabel viewInstancesDataLabel = new JLabel("<html>Access detailed survey data to analyze safety<br>scores, times, and other relevant factors<br>for specific instances.</html>");
 	final private JLabel changePasswordLabel = new JLabel("<html>Update your account password for enhanced<br>security and access control.</html>");
 	final private JLabel changeSecurityQuesAndPassLabel = new JLabel("<html>Update your account security question and<br>password for enhanced security and<br>access control.</html>");
 	final private JLabel findRecommendedPathLabel = new JLabel("<html>Discover the shortest and safest path to<br>your destination.</html>");
@@ -46,11 +42,8 @@ public class AnalystWelcomeView extends JFrame{
 
         panel.setLayout(null); 
 
-        viewSurveyDataButton.setBounds(70, 176, 280, 41);
-        panel.add(viewSurveyDataButton);
-
-        generateComplaintReportButton.setBounds(459, 176, 280, 41);
-        panel.add(generateComplaintReportButton);
+        viewInstancesDataButton.setBounds(70, 176, 280, 41);
+        panel.add(viewInstancesDataButton);
 		
 		changePasswordButton.setBounds(70, 290, 280, 41);
         panel.add(changePasswordButton);
@@ -58,10 +51,10 @@ public class AnalystWelcomeView extends JFrame{
 		changeSecurityQuesAndPassButton.setBounds(459, 290, 280, 41);
         panel.add(changeSecurityQuesAndPassButton);
 		
-		findRecommendedPathButton.setBounds(849, 176, 280, 41);
+		findRecommendedPathButton.setBounds(459, 176, 280, 41); 
         panel.add(findRecommendedPathButton);
 		
-		viewGeneralDataButton.setBounds(849, 290, 280, 41);
+		viewGeneralDataButton.setBounds(849, 176, 280, 41);
         panel.add(viewGeneralDataButton);
 		
 		backButton.setBounds(50, 550, 100, 40);
@@ -74,11 +67,8 @@ public class AnalystWelcomeView extends JFrame{
 		subheader.setBounds(70, 115, 272, 18);
 		panel.add(subheader);
 		
-		viewSurveyDataLabel.setBounds(70, 216, 280, 62);
-		panel.add(viewSurveyDataLabel);
-		
-		generateComplaintReportLabel.setBounds(459, 216, 280, 40);
-		panel.add(generateComplaintReportLabel);
+		viewInstancesDataLabel.setBounds(70, 216, 280, 62);
+		panel.add(viewInstancesDataLabel);
 		
 		changePasswordLabel.setBounds(70, 330, 280, 40);
 		panel.add(changePasswordLabel);
@@ -86,21 +76,17 @@ public class AnalystWelcomeView extends JFrame{
 		changeSecurityQuesAndPassLabel.setBounds(459, 330, 280, 62);
 		panel.add(changeSecurityQuesAndPassLabel);
 		
-		findRecommendedPathLabel.setBounds(849, 216, 280, 40);
+		findRecommendedPathLabel.setBounds(70, 216, 280, 62); 
 		panel.add(findRecommendedPathLabel);
 		
-		viewGeneralDataLabel.setBounds(849, 330, 280, 62);
+		viewGeneralDataLabel.setBounds(849, 216, 280, 40);
 		panel.add(viewGeneralDataLabel);
 		
         frame.setVisible(true);
     }
 	
-	public void setViewSurveyDataButtonListener(ActionListener listener){
-		viewSurveyDataButton.addActionListener(listener);
-	}
-	
-	public void setGenerateComplaintReportButtonListener(ActionListener listener){
-		generateComplaintReportButton.addActionListener(listener);
+	public void setViewInstancesDataButtonListener(ActionListener listener){
+		viewInstancesDataButton.addActionListener(listener);
 	}
 	
 	public void setChangePasswordButtonListener(ActionListener listener){

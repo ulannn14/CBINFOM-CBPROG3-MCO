@@ -66,7 +66,7 @@ public class Instance extends TimeCategory {
     public void setSummaries(ArrayList<CommentSummary> summaries) { this.summaries = summaries; }
 
 
-    public void initializeInstances(Instance[] instances) {
+    public static void initializeInstances(Instance[] instances) {
         // populate from database
     }
 

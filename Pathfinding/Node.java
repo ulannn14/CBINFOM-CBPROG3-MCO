@@ -1,21 +1,27 @@
-static class Node {
-    private int id;        // Node identifier
-    private String name;   // Node name
-    private double zscore;    // Node zscore
-    private ArrayList<Edge> connectedPlace = new ArrayList<>();
+package Pathfinding;
 
-    public Node(int id, String name, int zscore) {
+import java.util.ArrayList;
+
+public class Node {
+    public int id;        // Node identifier
+    public String name;   // Node name
+    public double zscore;    // Node zscore
+    public Edge neighbor = new Edge();
+    public ArrayList<Edge> connectedPlace = new ArrayList<>();
+
+    public Node() {
+        // default constructor
+    }
+
+    public Node(int id, String name, double zscore) {
         this.id = id;
         this.name = name;
         this.zscore = zscore;
     }
 
-    public void addNeighbor(int neighborID, int weight) {
-        edge 
-        connectedPlace.add(new Edge(neighborId, weight));
+    public void addNeighbor(int neighborID, double weight) {
+        Edge edge = new Edge(neighborID, weight);
+        connectedPlace.add(edge);
     }
 
-    public String getName(){
-        return this.name;
-    }
 }

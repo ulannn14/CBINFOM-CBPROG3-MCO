@@ -1,5 +1,7 @@
 package Model;
 
+import DatabaseConnection.*;
+
 abstract public class ProgramUser extends DatabaseConnection {
     protected String username;
     protected String accountPassword;
@@ -55,7 +57,7 @@ abstract public class ProgramUser extends DatabaseConnection {
         return userType;
     }
 
-    public abstract <User extends ProgramUser> User fetchUser(String username, String password);
+    public static abstract <User extends ProgramUser> User fetchUser(String username, String password);
 
     // static since we cannot create an instance of 
     public static int changePassword(String username, String newPassword, String securityQuestion, String securityPassword) {
