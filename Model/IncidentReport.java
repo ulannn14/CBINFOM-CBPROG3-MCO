@@ -11,6 +11,11 @@ public class IncidentReport {
     String recipient;
     String body;
     String wholeText;
+    DateClass dateCreated;
+
+    public void setDateCreated(DateClass dateCreated) {
+        this.dateCreated = new dateCreated;
+    }
 
 
     public IncidentReport(String recipient, String sender, String body) {

@@ -16,8 +16,6 @@ public class Place extends DatabaseConnection{
     private int placeIdx; // Unique identifier for the place
     private String placeName; // Name of the place
 	private int placeType; // 0 for Landmark, 1 for Street
-    private Place[] connectedPlaces; // Array of connected places
-    private int numConnectedPlaces; // Number of connected places
 
     public Place() {
         

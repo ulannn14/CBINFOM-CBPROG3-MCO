@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.SQLException;
+import java.sql.Connection;
 
 public class Admin extends ProgramUser {
 
@@ -42,7 +43,6 @@ public class Admin extends ProgramUser {
         }
     }
 
-    @Override
     public static Admin fetchUser(String username, String password) {
         Admin admin = new Admin();
         boolean flag = false;

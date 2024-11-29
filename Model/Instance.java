@@ -17,7 +17,6 @@ public class Instance extends TimeCategory {
 
     private ArrayList<Survey> surveys;
     private ArrayList<String> tags;
-    private ArrayList<String> complaintReports;
     private ArrayList<CommentSummary> summaries;
     private ArrayList<IncidentReport> incidentReports;
 

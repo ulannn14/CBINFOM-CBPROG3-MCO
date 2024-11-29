@@ -21,11 +21,14 @@ public class AdminGenerateIncidentReportView extends JFrame {
     private JTextField fromField = new JTextField(30);
     private JTextArea reportField = new JTextArea(10, 50);
     
-    private String[] locations = Constants.allPlacesName;
+    private Place place = new Place();
+    private String[] locations = {
+        "Location", // Placeholder option
+        place.fetchPlaceNames().toArray(new String[0])
+    };  
     private String[] days = {
         "Day of the Week", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
     };
-
     private String[] times = {
         "Time",
         "Morning Rush Hour [6:00 to 8:59]",

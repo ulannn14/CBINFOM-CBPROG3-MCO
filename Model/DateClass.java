@@ -5,6 +5,10 @@ public class DateClass {
     private int month;
     private int day;
 
+    public DateClass() {
+        
+    }
+
     public DateClass(int month, int day, int year) {
         this.month = month;
         this.day = day;

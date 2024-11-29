@@ -24,15 +24,8 @@ public class HomepageView extends ViewAbstract {
     final private JLabel guestLabel = new JLabel("Continue as Guest?");
     final private JLabel descriptionLabel = new JLabel("<html>ISSPa empowers visually-impaired<br>individuals to safely navigate Intramuros<br>by providing survey data on the safest<br>paths and times for walking.<br><br>Log in or sign up to create an account<br>and participate in the survey.</html>");
 
-    final private JPanel panel = new JPanel();
-
     public HomepageView() {
-        setSize(1200, 700);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setResizable(false);
-        add(panel);
-
-        panel.setLayout(null);
+        super();
 
         forgotPasswordButton.setBounds(718,385,154,18);
         panel.add(forgotPasswordButton);
@@ -44,13 +37,12 @@ public class HomepageView extends ViewAbstract {
         panel.add(findRecommendedPathButton);
         viewSurveyDataButton.setBounds(380,550,421,41);
         panel.add(viewSurveyDataButton);
-
         
         usernameField.setBounds(675,260,240,30);
-        addPlaceholder(usernameField, " Enter username");
+        addPlaceholder(usernameField, " Enter username...");
         panel.add(usernameField);
         passwordField.setBounds(675,300,240,30);
-        addPasswordPlaceholder(passwordField, " Enter password")
+        addPasswordPlaceholder(passwordField, " Enter password...");
         panel.add(passwordField);
 
         titleLabel1.setBounds(520,64,140,67);
@@ -72,20 +64,20 @@ public class HomepageView extends ViewAbstract {
 
         wrongCredentialsLabel.setBounds(738, 220, 142, 20);
         wrongCredentialsLabel.setForeground(Color.RED);
-        wrongCredentialsLabel.setVisible(false);
         panel.add(wrongCredentialsLabel);
         
         invalidUsernamePasswordLabel.setBounds(711,236,211,18);
         invalidUsernamePasswordLabel.setForeground(Color.RED);
-        invalidUsernamePasswordLabel.setVisible(false);
         panel.add(invalidUsernamePasswordLabel);
 
-        setVisible(true);
+        setErrorMessages(false);
+
+        frameSetVisible();
     }
 
-    public void setErrorMessages(boolean setVisible) {
-        wrongCredentialsLabel.setVisible(setVisible);
-        invalidUsernamePasswordLabel.setVisible(setVisible);
+    public void setErrorMessages(boolean visible){
+        wrongCredentialsLabel.setVisible(visible);
+        invalidUsernamePasswordLabel.setVisible(visible);
     }
 
     public void setForgotPasswordButtonListener(ActionListener listener) {
@@ -120,5 +112,4 @@ public class HomepageView extends ViewAbstract {
         wrongCredentialsLabel.setVisible(true);
         invalidUsernamePasswordLabel.setVisible(true);
     }
-
 }

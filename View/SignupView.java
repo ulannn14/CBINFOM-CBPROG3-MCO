@@ -1,24 +1,8 @@
 package View;
 
-// CHANGE!! SEE ANO PANG KULANG!!!
-// reminder: error-handling netong lahat is mostly sa validate form expcept sa username validity, so need ng method for that to make it visible
-// notUniqueUsername method, make that label visible
-
-// HUWAG ALISIN UUNG ERRORMESSAGEVISIBLE NA METHOD OR THAT NAME GANON
-
-
-
-
-
-
-
-
-
-
-import java.awt.event.*;
 import javax.swing.*;
-
-// MISSING SECURITY PASSWORD AND RELATED METHODS OF IT
+import java.awt.*;
+import java.awt.event.*;
 
 public class SignupView extends ViewAbstract {
     final private JButton signupButton = new JButton("Sign Up");
@@ -74,9 +58,7 @@ public class SignupView extends ViewAbstract {
         // Does not meet password requirements.
         // Password must be 8 to 25 characters long.
     final private JLabel securityQuestionErrorLabel = new JLabel("Security Question cannot be blank.");
-    final private JLabel securityPasswordErrorLabel = new JLabel("");
-        // Does not meet password requirements.
-        // Security Password must be 8 to 25 characters long.
+    final private JLabel securityPasswordErrorLabel = new JLabel("Security Password must be 8 to 25 characters long.");
     final private JLabel birthdayErrorLabel = new JLabel("Must be at least 16 years old.");
     
     public SignupView() {
@@ -134,56 +116,45 @@ public class SignupView extends ViewAbstract {
 
         nameErrorLabel.setBounds(608,125,280,13);
         nameErrorLabel.setForeground(Color.RED);
-        nameErrorLabel.setVisible(true);
         panel.add(nameErrorLabel);
         emailErrorLabel.setBounds(608,195,280,13);
         emailErrorLabel.setForeground(Color.RED);
-        emailErrorLabel.setVisible(true);
         panel.add(emailErrorLabel);
         usernameErrorLabel.setBounds(608,265,280,13);
         usernameErrorLabel.setForeground(Color.RED);
-        usernameErrorLabel.setVisible(true);
         panel.add(usernameErrorLabel);
         passwordErrorLabel.setBounds(608,335,280,13);
         passwordErrorLabel.setForeground(Color.RED);
-        passwordErrorLabel.setVisible(true);
         panel.add(passwordErrorLabel);
         securityQuestionErrorLabel.setBounds(608,405,280,13);
         securityQuestionErrorLabel.setForeground(Color.RED);
-        securityQuestionErrorLabel.setVisible(true);
         panel.add(securityQuestionErrorLabel);
         securityPasswordErrorLabel.setBounds(608,475,300,13);
         securityPasswordErrorLabel.setForeground(Color.RED);
-        securityPasswordErrorLabel.setVisible(true);
         panel.add(securityPasswordErrorLabel);
         birthdayErrorLabel.setBounds(608,545,280,13);
         birthdayErrorLabel.setForeground(Color.RED);
-        birthdayErrorLabel.setVisible(true);
         panel.add(birthdayErrorLabel);
-    }
-    
-    // Helper method to create an invisible error label
-    private JLabel createErrorLabel(String message) {
-        JLabel label = new JLabel(message);
-        label.setForeground(Color.RED);
-        label.setVisible(false); // Start as invisible
-        return label;
+
+        setErrorMessages(false);
+
+        frameSetVisible();
     }
 
-    // Method to show or hide error labels based on validation
-    private void setErrorLabelsVisible(boolean visible) {
+    public void setErrorMessages(boolean visible) {
         nameErrorLabel.setVisible(visible);
         emailErrorLabel.setVisible(visible);
         usernameErrorLabel.setVisible(visible);
         passwordErrorLabel.setVisible(visible);
-        securityErrorLabel.setVisible(visible);
+        securityQuestionErrorLabel.setVisible(visible);
+        securityPasswordErrorLabel.setVisible(visible);
         birthdayErrorLabel.setVisible(visible);
     }
 
     // CHECK ALL NECESSARY SHITTT TAS GAWA
     public boolean validateForm() {
         boolean valid = true;
-        setErrorLabelsVisible(false); // Reset error visibility
+        setErrorMessages(false); // Reset error visibility
         
         // Validate name
         if (nameField.getText().length() == 0 || nameField.getText().length() > 30) {
@@ -211,13 +182,13 @@ public class SignupView extends ViewAbstract {
         }
         
         // Validate security question
-        if (securityQuestionDropdown.getSelectedIndex() == 0) {
-            securityErrorLabel.setVisible(true);
+        if (securityQuestionsDropdown.getSelectedIndex() == 0) {
+            securityQuestionErrorLabel.setVisible(true);
             valid = false;
         }
         
         // Validate birthday
-        if (dayDropdown.getSelectedIndex() == -1 || monthDropdown.getSelectedIndex() == -1 || yearDropdown.getSelectedIndex() == -1) {
+        if (daysDropdown.getSelectedIndex() == -1 || monthsDropdown.getSelectedIndex() == -1 || yearsDropdown.getSelectedIndex() == -1) {
             birthdayErrorLabel.setVisible(true);
             valid = false;
         }
@@ -225,18 +196,17 @@ public class SignupView extends ViewAbstract {
         return valid;
     }
 
-
-
     // Action listener methods
     public void setSignupButtonListener(ActionListener listener) {
-        submitButton.addActionListener(listener);
+        signupButton.addActionListener(listener);
     }
 
     public void setBackButtonListener(ActionListener listener) {
-        cancelButton.addActionListener(listener);
+        backButton.addActionListener(listener);
     }
 
     // Getter methods for the form data
+    @Override
     public String getName() {
         return nameField.getText();
     }
@@ -254,25 +224,19 @@ public class SignupView extends ViewAbstract {
     }
 
     public String getSecurityQuestion() {
-        return (String) securityQuestionDropdown.getSelectedItem();
+        return (String) securityQuestionsDropdown.getSelectedItem();
     }
 
     public String getBirthday() {
-        return dayDropdown.getSelectedItem() + " " + monthDropdown.getSelectedItem() + " " + yearDropdown.getSelectedItem();
+        return daysDropdown.getSelectedItem() + "/" + monthsDropdown.getSelectedItem() + "/" + yearsDropdown.getSelectedItem();
     }
 
     public String getSecurityPassword() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getSecurityPassword'");
+        return securityPasswordField.getText();
     }
 
     public void notUniqueUsername() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'notUniqueUsername'");
-    }
-
-    public void setErrorMessages(boolean setVisible) {
-        // define
+        boolean valid;
     }
     
 }

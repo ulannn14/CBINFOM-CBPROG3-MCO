@@ -3,6 +3,7 @@ package Controller;
 import Model.*;
 import View.*;
 import ServiceClassPackage.*;
+import java.security.Provider;
 
 import java.util.ArrayList;
 
@@ -92,7 +93,7 @@ public class Controller {
                 case 3: pmv.wrongSecurityQuestion(); break;
                 case 4: pmv.wrongSecurityPassword(); break;
             }
-        });
+        } );
     
         pmv.setBackButtonListener(e -> { pmv.dispose(); Homepage(); });
     }
@@ -179,11 +180,13 @@ public class Controller {
 
     public void AdminWelcome(Admin admin) {
         AdminWelcomeView awv = new AdminWelcomeView();
+
         
+
         awv.setViewRespondentsDataButtonListener (e -> { AdminViewRespondentData(admin); awv.dispose(); } );
         awv.setViewAnalystsDataButtonListener (e -> { AdminViewAnalystData(admin); awv.dispose(); } );
         awv.setAddNewAnalystButtonListener (e -> { AdminAddAnalyst(admin); awv.dispose(); } );        
-        awv.setViewComplaintReportsButtonListener(e -> { AdminViewComplaintReports(admin); awv.dispose(); } );
+        awv.setViewCommentSummaryReportsButtonListener(e -> { AdminViewCommentSummaryReports(admin); awv.dispose(); } );
         awv.setChangeSecurityQuesAndPassButtonListener(e -> { ChangeSecurity(admin); awv.dispose(); } );
         awv.setChangePasswordButtonListener(e -> { PasswordManager(admin); awv.dispose(); } );
         awv.setGenerateIncidentReportsButtonListener(e -> { AdminGenerateIncidentReport(admin); awv.dispose(); } );        
@@ -239,10 +242,10 @@ public class Controller {
     public void AdminAddAnalyst(Admin admin) {
         AdminAddAnalystView aaav = new AdminAddAnalystView();
     
-        aaav.setAddNewAnalystButtonListener(e -> {
+        aaav.setAddButtonListener(e -> {
             aaav.setErrorMessages(false);
     
-            boolean validUsername = ProgramUser.checkUsernameValid(username); 
+            boolean validUsername = ProgramUser.checkUsernameValid(aaav.getUsername()); 
             boolean validPassword = aaav.validatePassword();
     
             if (validUsername && validPassword) {
@@ -265,11 +268,33 @@ public class Controller {
     }
     
     
-// mac paedit adminViewCommentSummaryReportsView
-    public void AdminViewComplaintReports(Admin admin) {
-        AdminViewIncidentReportsView avirv = new AdminViewIncidentReportsView(instances);
+    public void AdminViewCommentSummaryReports(Admin admin) {
+        int[] instanceIDs = new int[Constants.MAX_INSTANCE];
+        String[] places = new String[Constants.MAX_INSTANCE];
+        String[] days = new String[Constants.MAX_INSTANCE];
+        String[] times = new String[Constants.MAX_INSTANCE];
+        String[][] commentSummaries = new String[Constants.MAX_INSTANCE][100];
+        String[][] admins = new String[Constants.MAX_INSTANCE][100];
+        int counterCS;
 
-        avirv.setBackButtonListener(e -> {avirv.dispose(); AdminWelcome(admin); } );
+        // access data based sa unang parameter
+        for (int i=0; i<Constants.MAX_INSTANCE; i++) {
+            instanceIDs[i] = instances[i].getInstanceID();
+            places[i] = instances[i].getPlaceName();
+            days[i] = instances[i].getDayName();
+            times[i] = instances[i].getTimeName();
+            counterCS = instances[i].getSummaries().size();
+
+            for (int j=0; i<counterCS; i++) {
+                ArrayList<CommentSummary> tempCommentSummaries = new ArrayList<>();
+                ArrayList<CommentSummary> tempAdmins = new ArrayList<>();
+                commentSummaries[i][j] = tempCommentSummaries.get(j).getCommentSummary();
+                admins[i][j] = tempAdmins.get(j).getUsername();
+            }
+        }
+        AdminViewCommentSummaryReportsView avcsrv = new AdminViewCommentSummaryReportsView(instanceIDs,places,days,times,commentSummaries,admins,counterCS);
+
+        avcsrv.setBackButtonListener(e -> {avcsrv.dispose(); AdminWelcome(admin); } );
     }
 
     public void AdminGenerateIncidentReport(Admin admin) {
@@ -281,9 +306,10 @@ public class Controller {
             if (agirv.validateFields() == true) {
                 String Recipient = agirv.getToField();
                 String Sender = agirv.getFromField();
-                String Body = agirv.getBodyField();
+                String Body = agirv.getReportField();
                 IncidentReport incidentReport = new IncidentReport(Recipient, Sender, Body);
 
+                // new method, and indexID = String location,day,and time
                 instances[agirv.getIndexID()].addIncidentReport(incidentReport);
                 incidentReport.saveToFile(instances[agirv.getIndexID()].getPlaceName(), instances[agirv.getIndexID()].getDayName(), instances[agirv.getIndexID()].getTimeName(), instances[agirv.getIndexID()].getIncidentReportCount());
                 
@@ -308,8 +334,37 @@ public class Controller {
         anwv.setBackButtonListener(e -> {anwv.dispose(); Homepage(instances); } );
     }
 
-    public void AnalystViewSurveyData(Analyst analyst) {
-        AnalystViewSurveyDataView avsdv = new AnalystViewSurveyDataView(instances);
+
+    public void AnalystViewInstancesData(Analyst analyst) {
+        ArrayList<Integer> service.zTestComputation(instances);
+        
+        int[] instanceIDs = new int[Constants.MAX_INSTANCE];
+        String[] places = new String[Constants.MAX_INSTANCE];
+        String[] days = new String[Constants.MAX_INSTANCE];
+        String[] times = new String[Constants.MAX_INSTANCE];
+        
+        String[][] commentSummaries = new String[Constants.MAX_INSTANCE][100];
+        String[][] admins = new String[Constants.MAX_INSTANCE][100];
+        
+        int counterCS;
+
+        // access data based sa unang parameter
+        for (int i=0; i<Constants.MAX_INSTANCE; i++) {
+            instanceIDs[i] = instances[i].getInstanceID();
+            places[i] = instances[i].getPlaceName();
+            days[i] = instances[i].getDayName();
+            times[i] = instances[i].getTimeName();
+            counterCS = instances[i].getSummaries().size();
+
+            for (int j=0; i<counterCS; i++) {
+                ArrayList<CommentSummary> tempCommentSummaries = new ArrayList<>();
+                ArrayList<CommentSummary> tempAdmins = new ArrayList<>();
+                commentSummaries[i][j] = tempCommentSummaries.get(j).getCommentSummary();
+                admins[i][j] = tempAdmins.get(j).getUsername();
+            }
+        }
+
+        AnalystViewInstancesDataView avsdv = new AnalystViewInstancesDataView(instances);
         
         avsdv.setModifyButtonListener(e -> {
             if (avsdv.validateInstanceID() == true) {
@@ -341,7 +396,7 @@ public class Controller {
             amtacv.setErrorMessages(false); 
             if (amtacv.validateAddTag() == true) {
                 ArrayList<String> newTags = amtacv.getNewTags();
-                instance.addTags(newTags);
+                instance.addTags(newTags,analyst.getUsername());
                 amtacv.dispose(); 
                 AnalystViewSurveyData(analyst,instance);
             }
@@ -351,7 +406,7 @@ public class Controller {
             amtacv.setErrorMessages(false);
             if (amtacv.validateAddCS() == true) {
                 CommentSummary newCS = amtacv.getNewCS();   // MUST RETURN CS!!!
-                instance.addCommentSummary(newCS);
+                instance.addCommentSummary(newCS,analyst.getUsername());
                 amtacv.dispose(); 
                 AnalystViewSurveyData(analyst,instance);
             }
@@ -361,6 +416,7 @@ public class Controller {
     }
 
     public void AnalystGenerateComplaintReport(Analyst analyst) {
+
         AnalystGenerateComplaintReportView agcrv = new AnalystGenerateComplaintReportView();
         
         agcrv.setSubmitButtonListener(e -> { 

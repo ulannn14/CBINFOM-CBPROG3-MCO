@@ -8,7 +8,7 @@ public class AdminWelcomeView extends JFrame {
     final private JButton respondentsDataButton = new JButton("View Respondents' Data");
     final private JButton analystsDataButton = new JButton("View Analysts' Data");
     final private JButton addAnalystButton = new JButton("Add New Analyst");
-    final private JButton complaintReportsButton = new JButton("View Complaint Reports");
+    final private JButton commentSummaryButton = new JButton("View Complaint Reports");
     final private JButton changeSecQuesPassButton = new JButton("Change Security Ques. and Pass.");
     final private JButton changePassButton = new JButton("Change Password");
     final private JButton incidentReportButton = new JButton("Generate Incident Reports");
@@ -47,8 +47,8 @@ public class AdminWelcomeView extends JFrame {
         panel.add(analystsDataButton);
 		addAnalystButton.setBounds(70, 404, 280, 41);
         panel.add(addAnalystButton);
-		complaintReportsButton.setBounds(459, 176, 280, 41);
-        panel.add(complaintReportsButton);
+		commentSummaryButton.setBounds(459, 176, 280, 41);
+        panel.add(commentSummaryButton);
 		changeSecQuesPassButton.setBounds(459, 290, 280, 41);
         panel.add(changeSecQuesPassButton);
 		changePassButton.setBounds(459, 404, 280, 41);
@@ -103,8 +103,8 @@ public class AdminWelcomeView extends JFrame {
         addAnalystButton.addActionListener(listener);
     }
 
-    public void setViewComplaintReportsButtonListener(ActionListener listener) {
-        complaintReportsButton.addActionListener(listener);
+    public void setViewCommentSummaryReportsButtonListener(ActionListener listener) {
+        commentSummaryButton.addActionListener(listener);
     }
 
     public void setChangeSecurityQuesAndPassButtonListener(ActionListener listener) {

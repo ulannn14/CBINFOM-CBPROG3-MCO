@@ -2,6 +2,11 @@ package Model;
 
 import DatabaseConnection.*;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.DriverManager;
+import java.sql.Connection;
+
 abstract public class ProgramUser extends DatabaseConnection {
     protected String username;
     protected String accountPassword;
@@ -10,26 +15,53 @@ abstract public class ProgramUser extends DatabaseConnection {
     protected int userType;
 
     // SETTERS
-    public void setUsername(String username){
-        this.username = username;
-    }
 
     public void setAccountPassword(String accountPassword){
-
-        // used in changing the password, so must also reflect in the database
-
         this.accountPassword = accountPassword;
+
+        String updateAccPasswordQuery = "UPDATE ProgramUser SET accountPassword = ? WHERE username = ?";
+
+        try (Connection connection = createConnection();
+             PreparedStatement accPasswordStatement = connection.prepareStatement(updateAccPasswordQuery);) {
+                accPasswordStatement.setString(1, accountPassword);
+                accPasswordStatement.setString(2, username);
+
+                accPasswordStatement.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Error inserting data: " + e.getMessage());
+        }
     }
 
     public void setSecurityQuestion(String securityQuestion){
         this.securityQuestion = securityQuestion;
-                // changed in the program,, so must also reflect in the database
+        
+        String updateSecQuestionQuery = "UPDATE ProgramUser SET securityPassword = ? WHERE username = ?";
+
+        try (Connection connection = createConnection();
+             PreparedStatement secQuestionStatement = connection.prepareStatement(updateSecQuestionQuery);) {
+                secQuestionStatement.setString(1, securityQuestion);
+                secQuestionStatement.setString(2, username);
+
+                secQuestionStatement.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Error inserting data: " + e.getMessage());
+        }
     }
 
     public void setSecurityPassword(String securityPassword){
         this.securityPassword = securityPassword;
-                // changed in the program, so must also reflect in the database
+        
+        String updateSecPasswordQuery = "UPDATE ProgramUser SET securityPassword = ? WHERE username = ?";
 
+        try (Connection connection = createConnection();
+             PreparedStatement secPasswordStatement = connection.prepareStatement(updateSecPasswordQuery);) {
+                secPasswordStatement.setString(1, securityPassword);
+                secPasswordStatement.setString(2, username);
+
+                secPasswordStatement.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Error inserting data: " + e.getMessage());
+        }
     }
 
     public void setUserType(int userType){
@@ -57,7 +89,7 @@ abstract public class ProgramUser extends DatabaseConnection {
         return userType;
     }
 
-    public static abstract <User extends ProgramUser> User fetchUser(String username, String password);
+    public abstract <User extends ProgramUser> User fetchUser(String username, String password);
 
     // static since we cannot create an instance of 
     public static int changePassword(String username, String newPassword, String securityQuestion, String securityPassword) {
@@ -77,9 +109,5 @@ abstract public class ProgramUser extends DatabaseConnection {
         */
         return false;
     }
-
-
-
-
 
 }

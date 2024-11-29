@@ -1,10 +1,10 @@
 package Model;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -14,9 +14,6 @@ public class Respondent extends ProgramUser {
     private String name;
     private DateClass birthdate = new DateClass(0,1,1);
     private String emailAddress;
-    private Survey[] surveyHistory = new Survey[100];
-    private int numSurveyHistory = 0;
-    private int userType;
     private DateClass dateJoined; 
 
     public DateClass getDateJoined() {

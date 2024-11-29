@@ -1,10 +1,11 @@
 package View;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 
 
-public abstract class ViewAbstract extends JFrame{
+abstract class ViewAbstract extends JFrame{
     JPanel panel = new JPanel();
 
     public ViewAbstract(){
@@ -14,11 +15,13 @@ public abstract class ViewAbstract extends JFrame{
         add(panel);
 
         panel.setLayout(null);
+    }
 
+    public void frameSetVisible(){
         setVisible(true);
     }
 
-    private static void addPlaceholder(JTextField textField, String placeholder) {
+    protected static void addPlaceholder(JTextField textField, String placeholder) {
         textField.setForeground(Color.GRAY);
         textField.setText(placeholder);
 
@@ -41,7 +44,7 @@ public abstract class ViewAbstract extends JFrame{
         });
     }
 
-    private static void addPasswordPlaceholder(JPasswordField passwordField, String placeholder) {
+    protected static void addPasswordPlaceholder(JPasswordField passwordField, String placeholder) {
         passwordField.setText(placeholder);
         passwordField.setEchoChar((char) 0); // Disable masking
         passwordField.setForeground(Color.GRAY);
