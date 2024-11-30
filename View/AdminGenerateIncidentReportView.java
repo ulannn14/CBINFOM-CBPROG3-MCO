@@ -1,10 +1,11 @@
 package View;
 
+import Model.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 
-public class AdminGenerateIncidentReportView extends JFrame {
+public class AdminGenerateIncidentReportView extends ViewAbstract {
     private JLabel instanceLabel = new JLabel("Choose the instance you would like to make a report about.");
     private JLabel toLabel = new JLabel("To: ");
     private JLabel fromLabel = new JLabel("From: ");
@@ -264,16 +265,17 @@ public class AdminGenerateIncidentReportView extends JFrame {
         return reportField.getText();
     }
 
-	public String getSelectedLocation() {
+	public String getPlaceName() {
 		return (String) locationDropdown.getSelectedItem();
 	}
 
 
-    public String getDayOfWeek() {
+    public String getDayName() {
         return (String) dayOfTheWeekDropdown.getSelectedItem();
     }
 
-    public String getTimeOfDay() {
+    public String getTimeName() {
         return (String) timeOfDayDropdown.getSelectedItem();
     }
+
 }

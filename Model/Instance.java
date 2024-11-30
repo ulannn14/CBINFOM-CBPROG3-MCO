@@ -16,8 +16,8 @@ public class Instance extends TimeCategory {
     private TimeCategory time;
 
     private ArrayList<Survey> surveys;
-    private ArrayList<String> tags;
-    private ArrayList<CommentSummary> summaries;
+    private ArrayList<CommentSummaryAndTag> tags;
+    private ArrayList<CommentSummaryAndTag> summaries;
     private ArrayList<IncidentReport> incidentReports;
 
 
@@ -58,11 +58,11 @@ public class Instance extends TimeCategory {
     public ArrayList<Survey> getSurveys() { return surveys; }
     public void setSurveys(ArrayList<Survey> surveys) { this.surveys = surveys; }
 
-    public ArrayList<String> getTags() { return tags; }
-    public void setTags(ArrayList<String> tags) { this.tags = tags; }
+    public ArrayList<CommentSummaryAndTag> getTags() { return tags; }
+    public void setTags(ArrayList<CommentSummaryAndTag> tags) { this.tags = tags; }
 
-    public ArrayList<CommentSummary> getSummaries() { return summaries; }
-    public void setSummaries(ArrayList<CommentSummary> summaries) { this.summaries = summaries; }
+    public ArrayList<CommentSummaryAndTag> getSummaries() { return summaries; }
+    public void setSummaries(ArrayList<CommentSummaryAndTag> summaries) { this.summaries = summaries; }
 
 
     public static void initializeInstances(Instance[] instances) {
@@ -80,40 +80,37 @@ public class Instance extends TimeCategory {
         return incidentReports.size();
     } 
 
-    public void addCommentSummary(CommentSummary summary) {
+    public void addCommentSummary(CommentSummaryAndTag summary) {
         this.summaries.add(summary);
         // add to database
     }
 
-    public void addTags(ArrayList<String> tags) {
-        // parse string then add to local arraylist of tags
-        // parse then add to database
+
+
+    public void addTag(CommentSummaryAndTag tag) {
+        tags.add(tag);
+        // add to database then get there the id and set local variable
     }
 
-    public void deleteTags(ArrayList<Integer> tagIDsToDelete) {
-        // parse then delete local
+    public void deleteTags(ArrayList<Integer> tagToDelete) {
+        // if magmatch yung id, delete
         // parse then delete in database
     }
 
     public void deleteSummaries(ArrayList<Integer> summaryIDsToDelete) {
-        // parse then delete local
+        // if magmatch yung id, delete 
         // parse then delete in database
-    }
-
-
-    public void addNewComplaintReport(String report) {
-        this.complaintReports.add(report);
-        // add to database
     }
 
 
     public void takeSurvey(Survey survey) {
         this.surveys.add(survey);
+        this.sampleSize++;
     }
 
-    // for fetching ALL data of ALL instance
-    public static ArrayList<String> fetchAllComplaintReports() {
-
+    public static ArrayList<Survey> fetchByRespondentUsername(String username) {
+        // find sa database
+        return null;
     }
     
     public static ArrayList<Survey> fetchAnalystSurveyData() {
@@ -139,9 +136,17 @@ public class Instance extends TimeCategory {
     public ArrayList<Double> getSurveyMeans() {
         ArrayList<Double> newSurveyMeans = new ArrayList<>();
         for (Survey cSurvey : surveys) {
-            newSurveyMeans.add(cSurvey.computeSurveyMean());
+            newSurveyMeans.add(cSurvey.getSurveyMean());
         }
         return newSurveyMeans;
+    }
+
+    public String getInterpretation() {
+        if (zScore >= 0) { // if positive
+            return "NOT SAFE";
+        }
+        else
+            return "SAFE";
     }
 
 

@@ -98,12 +98,12 @@ public class Path extends DatabaseConnection {
             previous[i] = -1;
         }
 
-        distances[start] = 0;
-        PriorityQueue<State> queue = new PriorityQueue<>();
-        queue.add(new State(start, 0));
+        distances[start] = 0; // set distance of the start node to 0
+        PriorityQueue<State> queue = new PriorityQueue<>(); // create priority queue of states
+        queue.add(new State(start, 0)); // add state of the start node
 
         while (!queue.isEmpty()) {
-            State current = queue.poll();
+            State current = queue.poll(); // get and remove head of the queue
             int currentNode = current.node;
 
             if (!visited[currentNode]) {

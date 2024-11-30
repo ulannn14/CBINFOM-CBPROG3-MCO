@@ -25,12 +25,12 @@ public class Analyst extends ProgramUser {
 
     }
 
-    public Analyst(String username, String accountPassword, String securityQuestion, String securityPassword, int userType) {
+    public Analyst(String username, String accountPassword) {
         this.username = username;
         this.accountPassword = accountPassword;
-        this.securityQuestion = securityQuestion;
-        this.securityPassword = securityPassword;
-        this.userType = userType;
+        this.securityQuestion = "What is your mother's maiden name?";
+        this.securityPassword = "admin1234";
+        this.userType = 3;
     }
 
     @Override

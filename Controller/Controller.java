@@ -3,9 +3,9 @@ package Controller;
 import Model.*;
 import View.*;
 import ServiceClassPackage.*;
-import java.security.Provider;
-
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Controller {
 
@@ -87,11 +87,12 @@ public class Controller {
         pmv.setChangePasswordButtonListener(e -> {
             pmv.setErrorMessages(false);
             switch (ProgramUser.changePassword(pmv.getUsername(), pmv.getPassword(), pmv.getSecurityQuestion(), pmv.getSecurityPassword())) {
-                case 1: 
-                    if (pmv.validatePassword(pmv.getPassword())) { pmv.dispose(); Homepage(); } break;
-                case 2: pmv.wrongUsername(); break;
-                case 3: pmv.wrongSecurityQuestion(); break;
-                case 4: pmv.wrongSecurityPassword(); break;
+                case 1 -> {
+                    if (pmv.validatePassword(pmv.getPassword())) { pmv.dispose(); Homepage(); }
+                }
+                case 2 -> pmv.wrongUsername();
+                case 3 -> pmv.wrongSecurityQuestion();
+                case 4 -> pmv.wrongSecurityPassword();
             }
         } );
     
@@ -180,9 +181,7 @@ public class Controller {
 
     public void AdminWelcome(Admin admin) {
         AdminWelcomeView awv = new AdminWelcomeView();
-
         
-
         awv.setViewRespondentsDataButtonListener (e -> { AdminViewRespondentData(admin); awv.dispose(); } );
         awv.setViewAnalystsDataButtonListener (e -> { AdminViewAnalystData(admin); awv.dispose(); } );
         awv.setAddNewAnalystButtonListener (e -> { AdminAddAnalyst(admin); awv.dispose(); } );        
@@ -249,6 +248,7 @@ public class Controller {
             boolean validPassword = aaav.validatePassword();
     
             if (validUsername && validPassword) {
+                @SuppressWarnings("unused")
                 Analyst analyst = new Analyst(aaav.getUsername(), aaav.getPassword()); // Example constructor
                 
                 aaav.dispose(); // Close the view
@@ -275,7 +275,9 @@ public class Controller {
         String[] times = new String[Constants.MAX_INSTANCE];
         String[][] commentSummaries = new String[Constants.MAX_INSTANCE][100];
         String[][] admins = new String[Constants.MAX_INSTANCE][100];
-        int counterCS;
+        String[] interpretations = new String[Constants.MAX_INSTANCE]; 
+
+        int counterCS = 0;
 
         // access data based sa unang parameter
         for (int i=0; i<Constants.MAX_INSTANCE; i++) {
@@ -283,16 +285,16 @@ public class Controller {
             places[i] = instances[i].getPlaceName();
             days[i] = instances[i].getDayName();
             times[i] = instances[i].getTimeName();
+            interpretations[i] = instances[i].getInterpretation();
             counterCS = instances[i].getSummaries().size();
 
             for (int j=0; i<counterCS; i++) {
-                ArrayList<CommentSummary> tempCommentSummaries = new ArrayList<>();
-                ArrayList<CommentSummary> tempAdmins = new ArrayList<>();
-                commentSummaries[i][j] = tempCommentSummaries.get(j).getCommentSummary();
-                admins[i][j] = tempAdmins.get(j).getUsername();
+                ArrayList<CommentSummaryAndTag> tempCommentSummaries = instances[i].getSummaries();
+                commentSummaries[i][j] = tempCommentSummaries.get(j).getCSorTag();
+                admins[i][j] = tempCommentSummaries.get(j).getUsername();
             }
         }
-        AdminViewCommentSummaryReportsView avcsrv = new AdminViewCommentSummaryReportsView(instanceIDs,places,days,times,commentSummaries,admins,counterCS);
+        AdminViewCommentSummaryReportsView avcsrv = new AdminViewCommentSummaryReportsView(instanceIDs,places,days,times,interpretations,commentSummaries,admins,counterCS);
 
         avcsrv.setBackButtonListener(e -> {avcsrv.dispose(); AdminWelcome(admin); } );
     }
@@ -304,14 +306,16 @@ public class Controller {
             agirv.setErrorMessages(false);
 
             if (agirv.validateFields() == true) {
-                String Recipient = agirv.getToField();
-                String Sender = agirv.getFromField();
-                String Body = agirv.getReportField();
-                IncidentReport incidentReport = new IncidentReport(Recipient, Sender, Body);
+                String recipient = agirv.getToField();
+                String sender = agirv.getFromField();
+                String body = agirv.getReportField();
+                LocalDate today = LocalDate.now();
+                DateClass dateCreated = new DateClass(today.getMonthValue(), today.getDayOfMonth(), today.getYear()); 
+                IncidentReport incidentReport = new IncidentReport(recipient, sender, body, dateCreated);
 
-                // new method, and indexID = String location,day,and time
-                instances[agirv.getIndexID()].addIncidentReport(incidentReport);
-                incidentReport.saveToFile(instances[agirv.getIndexID()].getPlaceName(), instances[agirv.getIndexID()].getDayName(), instances[agirv.getIndexID()].getTimeName(), instances[agirv.getIndexID()].getIncidentReportCount());
+                int idx = getInstanceID(agirv.getPlaceName(), agirv.getDayName(), agirv.getTimeName());
+                instances[idx].addIncidentReport(incidentReport);
+                incidentReport.saveToFile(instances[idx].getPlaceName(), instances[idx].getDayName(), instances[idx].getTimeName(), instances[idx].getIncidentReportCount());
                 
                 agirv.dispose(); 
                 AdminWelcome(admin);
@@ -321,32 +325,42 @@ public class Controller {
         agirv.setBackButtonListener(e -> {agirv.dispose(); AdminWelcome(admin); } );
     }
 
+    public int getInstanceID(String place, String day, String time) {
+        for (int i=0; i<Constants.MAX_INSTANCE; i++) {
+            Instance instance = instances[i];
+            if (instance.getPlaceName().equals(place) && instance.getTimeName().equals(day) && instance.getDayName().equals(time))
+                return i;
+        }
+        return -1;
+    }
+
     public void AnalystWelcome(Analyst analyst) {
         AnalystWelcomeView anwv = new AnalystWelcomeView();
 
-        anwv.setViewSurveyDataButtonListener(e -> { AnalystViewSurveyData(analyst); anwv.dispose(); } );
-        anwv.setAnalystGenerateComplaintReportButtonListener(e -> { AnalystGenerateComplaintReport(analyst); anwv.dispose(); } );
-        anwv.setChangeSecurityQuesAndPassButtonListener(e -> { ChangeSecurityView(analyst); anwv.dispose(); } );
+        anwv.setViewInstancesDataButtonListener(e -> { AnalystViewInstancesData(analyst); anwv.dispose(); } );
+        anwv.setChangeSecurityQuesAndPassButtonListener(e -> { ChangeSecurity(analyst); anwv.dispose(); } );
         anwv.setChangePasswordButtonListener(e -> { PasswordManager(analyst); anwv.dispose(); } );
-        anwv.setFindRecommendedPathButtonListener(e-> { GuestChooseLRecommendedPath(analyst); anwv.dispose(); } );
-        anwv.setViewGeneralDataButtonListener(e-> {GuestSelectSurveyData(analyst); anwv.dispose(); } );       
+        //anwv.setFindRecommendedPathButtonListener(e-> { GuestChooseLRecommendedPath(analyst); anwv.dispose(); } );
+        //anwv.setViewGeneralDataButtonListener(e-> {GuestSelectSurveyData(analyst); anwv.dispose(); } );       
 
-        anwv.setBackButtonListener(e -> {anwv.dispose(); Homepage(instances); } );
+        anwv.setBackButtonListener(e -> {anwv.dispose(); Homepage(); } );
     }
 
 
     public void AnalystViewInstancesData(Analyst analyst) {
-        ArrayList<Integer> service.zTestComputation(instances);
+        service.zTestComputation(instances);
         
         int[] instanceIDs = new int[Constants.MAX_INSTANCE];
         String[] places = new String[Constants.MAX_INSTANCE];
         String[] days = new String[Constants.MAX_INSTANCE];
         String[] times = new String[Constants.MAX_INSTANCE];
-        
+        Double[] zScores = new Double[Constants.MAX_INSTANCE];
+        String[] interpretations = new String[Constants.MAX_INSTANCE]; 
+
         String[][] commentSummaries = new String[Constants.MAX_INSTANCE][100];
-        String[][] admins = new String[Constants.MAX_INSTANCE][100];
+        String[][] tags = new String[Constants.MAX_INSTANCE][100];
         
-        int counterCS;
+        int counterCS = 0, counterTag = 0;
 
         // access data based sa unang parameter
         for (int i=0; i<Constants.MAX_INSTANCE; i++) {
@@ -354,21 +368,31 @@ public class Controller {
             places[i] = instances[i].getPlaceName();
             days[i] = instances[i].getDayName();
             times[i] = instances[i].getTimeName();
+            zScores[i] = instances[i].getZScore();
+            interpretations[i] = instances[i].getInterpretation();
+
             counterCS = instances[i].getSummaries().size();
+            counterTag = instances[i].getTags().size();
 
             for (int j=0; i<counterCS; i++) {
-                ArrayList<CommentSummary> tempCommentSummaries = new ArrayList<>();
-                ArrayList<CommentSummary> tempAdmins = new ArrayList<>();
-                commentSummaries[i][j] = tempCommentSummaries.get(j).getCommentSummary();
-                admins[i][j] = tempAdmins.get(j).getUsername();
+                ArrayList<CommentSummaryAndTag> tempCommentSummaries = instances[i].getSummaries();
+                commentSummaries[i][j] = "[" +  tempCommentSummaries.get(j).getUsername() + "] " + tempCommentSummaries.get(j).getCSorTag();
             }
+
+            for (int j=0; i<counterTag; i++) {
+                ArrayList<CommentSummaryAndTag> tempTags = instances[i].getTags();
+                tags[i][j] = "[" +  tempTags.get(j).getUsername() + "] " + tempTags.get(j).getCSorTag();
+            }
+
         }
 
-        AnalystViewInstancesDataView avsdv = new AnalystViewInstancesDataView(instances);
+        AnalystViewInstancesDataView avsdv = new AnalystViewInstancesDataView(instanceIDs,places,days,times,zScores,interpretations,counterCS,counterTag);
         
         avsdv.setModifyButtonListener(e -> {
             if (avsdv.validateInstanceID() == true) {
-                Instance selectedInstance = instances[avsdv.getInstanceID()]; // instance id directly ng chinoose
+                int index = avsdv.getInstanceID();
+                index--;
+                Instance selectedInstance = instances[index]; // instance id directly ng chinoose
                 analystModifyTagsAndComments(analyst, selectedInstance);
             }
         } );
@@ -378,59 +402,58 @@ public class Controller {
     
     public void analystModifyTagsAndComments(Analyst analyst, Instance instance) {
         // need to have parameter instance to know which tag to display
-        AnalystModifyTagsAndCommentsView amtacv = new AnalystModifyTagsAndCommentsView(instance);
+        ArrayList<CommentSummaryAndTag> tempCS = instance.getSummaries();
+        ArrayList<CommentSummaryAndTag> tempTags = instance.getTags();
+        int counterCS = instance.getSummaries().size();
+        int counterTag = instance.getTags().size();
+
+        String[] summaries = new String[counterCS];
+        String[] tags = new String[counterTag];
+
+        for (int i=0; i<counterCS; i++) {
+            summaries[i] = "[" + tempCS.get(i).getUsername() + "] " + tempCS.get(i).getCSorTag();
+        }
+
+        for (int i=0; i<counterTag; i++) {
+            tags[i] = "[" + tempTags.get(i).getUsername() + "] " + tempTags.get(i).getCSorTag();
+        }        
+
+        AnalystModifyTagsAndCommentsView amtacv = new AnalystModifyTagsAndCommentsView(instance.getInstanceID(),summaries,tags,counterCS,counterTag);
 
         amtacv.setDeleteButtonListener(e -> { 
             amtacv.setErrorMessages(false);
             if (amtacv.validateDelete() == true) {
-                ArrayList<Integer> tagsToDelete = amtacv.getTagsIDs(); // return int tagID to delete
+                // provide IDs to delete
+                ArrayList<Integer> tagsToDelete = amtacv.getTagIDsToDelete(); // return int tagID to delete
                 instance.deleteTags(tagsToDelete);
-                ArrayList<Integer> commentSummariesToDelete = amtacv.getCommentSummariesIDs(); // return int csID to delete
-                instance.deleteCS(commentSummariesToDelete); 
+                ArrayList<Integer> commentSummariesToDelete = amtacv.getSummariesIDsToDelete(); // return int csID to delete
+                instance.deleteSummaries(commentSummariesToDelete); 
                 amtacv.dispose(); 
-                AnalystViewSurveyData(analyst,instance);
+                AnalystViewInstancesData(analyst);
             }
         } );
 
         amtacv.setAddTagButtonListener(e -> {
             amtacv.setErrorMessages(false); 
             if (amtacv.validateAddTag() == true) {
-                ArrayList<String> newTags = amtacv.getNewTags();
-                instance.addTags(newTags,analyst.getUsername());
+                CommentSummaryAndTag newTag = new CommentSummaryAndTag(analyst.getUsername(), amtacv.getNewTag());
+                instance.addTag(newTag);
                 amtacv.dispose(); 
-                AnalystViewSurveyData(analyst,instance);
+                AnalystViewInstancesData(analyst);
             }
         } );
 
-        amtacv.setAddCommentButtonListener(e -> { 
+        amtacv.setAddSummaryButtonListener(e -> { 
             amtacv.setErrorMessages(false);
             if (amtacv.validateAddCS() == true) {
-                CommentSummary newCS = amtacv.getNewCS();   // MUST RETURN CS!!!
-                instance.addCommentSummary(newCS,analyst.getUsername());
+                CommentSummaryAndTag newCS = new CommentSummaryAndTag(analyst.getUsername(), amtacv.getNewCS());   // MUST RETURN STRING
+                instance.addCommentSummary(newCS);
                 amtacv.dispose(); 
-                AnalystViewSurveyData(analyst,instance);
+                AnalystViewInstancesData(analyst);
             }
         } );        
 
         amtacv.setBackButtonListener(e -> {amtacv.dispose(); AnalystViewSurveyData(analyst); } );
-    }
-
-    public void AnalystGenerateComplaintReport(Analyst analyst) {
-
-        AnalystGenerateComplaintReportView agcrv = new AnalystGenerateComplaintReportView();
-        
-        agcrv.setSubmitButtonListener(e -> { 
-            agcrv.setErrorMessages(false);
-
-            if (agcrv.validateFields() == true) {
-                instances[agcrv.getInstanceID()].addNewComplaintReport(agcrv.getReport());
-                agcrv.dispose(); 
-                AnalystWelcome(analyst);
-            }
-
-        } );
-        
-        agcrv.setBackButtonListener(e -> {agcrv.dispose(); AnalystWelcome(analyst); } );
     }
 
     
@@ -440,12 +463,12 @@ public class Controller {
         rwv.setTakeSurveyButtonListener(e -> { rwv.dispose(); RespondentTakeSurvey(respondent); } );
         rwv.setViewSurveyHistoryButtonListener(e -> { rwv.dispose(); RespondentViewHistory(respondent); } );
         rwv.setViewOrUpdateProfileButtonListener(e -> { rwv.dispose(); RespondentProfile(respondent); } );
-        rwv.setChangeSecurityQuesAndPassButtonListener(e -> { rwv.dispose(); ChangeSecurityView(respondent); } );
+        rwv.setChangeSecurityQuesAndPassButtonListener(e -> { rwv.dispose(); ChangeSecurity(respondent); } );
         rwv.setChangePasswordButtonListener(e -> { rwv.dispose(); PasswordManager(respondent); } );
-        rwv.setFindRecommendedPathButtonListener(e-> { rwv.dispose(); GuestChooseLRecommendedPath(respondent); } );
-        rwv.setViewGeneralDataButtonListener(e-> { rwv.dispose(); GuestSelectSurveyData(respondent); } );       
+        //rwv.setFindRecommendedPathButtonListener(e-> { rwv.dispose(); GuestChooseLRecommendedPath(respondent); } );
+        //rwv.setViewGeneralDataButtonListener(e-> { rwv.dispose(); GuestSelectSurveyData(respondent); } );       
 
-        rwv.setBackButtonListener(e -> {rwv.dispose(); Homepage(instances); } );
+        rwv.setBackButtonListener(e -> {rwv.dispose(); Homepage(); } );
     }
 
     // mali pa to !!!
@@ -455,8 +478,14 @@ public class Controller {
         rtsv.setSubmitButtonListener(e -> { 
             rtsv.setErrorMessages(false);
             if (validateForm() == true) {
-                Survey survey = rtsv.getSurvey();
-                instances[rtsv.getInstanceID()].takeSurvey(survey);
+                // must be able to give the following:
+                            
+                int idx = getInstanceID(rtsv.getPlaceName(), rtsv.getPlaceDay(), rtsv.getPlaceTime());
+                LocalDate today = LocalDate.now();
+                DateClass dateTaken = new DateClass(today.getMonthValue(), today.getDayOfMonth(), today.getYear()); 
+
+                Survey survey = new Survey(rtsv.getAnswers(), respondent.getUsername(), rtsv.getComment(), dateTaken, rtsv.getPlace(), rtsv.getDay(), rtsv.getTime());
+                instances[idx].takeSurvey(survey);
                 rtsv.dispose();
                 RespondentWelcome(respondent);
             }
@@ -466,8 +495,34 @@ public class Controller {
     }
 
     public void RespondentViewHistory(Respondent respondent) {
-        RespondentViewHistoryView rvhv = new RespondentViewHistoryView(instances);
-       
+        ArrayList<Survey> surveys = Instance.fetchByRespondentUsername(respondent.getUsername());
+        
+        int[][] answers = new int[Constants.MAX_INSTANCE][20];   
+        String[] places;
+        String[] days;
+        String[] times;
+        String[] dateTakens;
+        int surveyCounter = surveys.size();
+        
+        // iterate through each survey
+        for (int i=0; i<surveyCounter; i++) {
+            places[i] = surveys.get(i).getPlaceName();
+            days[i] = surveys.get(i).getDayName();
+            times[i] = surveys.get(i).getDayName();
+            DateClass tempDate = surveys.get(i).getDateTaken();
+            dateTakens[i] = tempDate.convertToString();
+
+            int[] tempAnswers = new int[20]; // Declare and initialize the array
+            tempAnswers = surveys.get(i).getAnswers(); // Assign the answers from the survey to tempAnswers
+            for (int j=0; j<20; j++) {
+                answers[i][j] = tempAnswers[j];
+            } 
+        }
+        
+        RespondentViewHistoryView rvhv = new RespondentViewHistoryView(answers,places,days,times,dateTakens);
+        
+        
+
         rvhv.setBackButtonListener(e -> {rvhv.dispose(); RespondentWelcome(respondent); } );
     }
     
@@ -483,7 +538,7 @@ public class Controller {
                     RespondentWelcome(respondent);
                 }
                 else
-                    notUniqueUsername();
+                rpv.;notUniqueUsername();
             }
 
         } );
@@ -491,7 +546,7 @@ public class Controller {
         rpv.setBackButtonListener(e -> {rpv.dispose(); RespondentWelcome(respondent); } );
     }
     
-    /*
+    
     // as guest
     public void GuestChooseLRecommendedPath(Instance[] instances) {
         service.zTestComputation(instances);
@@ -500,17 +555,24 @@ public class Controller {
         gclrpv.setSubmitButtonListener( e -> {
             gclrpv.setErrorMessages(false);
 
-            if (validateField() == true)
-                
+            if (validateField() == true) {
+            
+                //ArrayList<String> placesToFind
+            
                 GuestRecommendedPath();
+            }
+
+
 
         } );
     }
 
     public void GuestRecommendedPath() {
-
+        
     }
 
+
+    // if all, return all names in an arraylist ha
     public void GuestSelectSurveyData(Instance[] instances) {
         service.zTestComputation(instances);
         GuestSelectSurveyDataView gssdv = new GuestSelectSurveyDataView();
@@ -518,21 +580,101 @@ public class Controller {
         gssdv.setSubmitButtonListener(e -> {
             gssdv.setErrorMessages(false);
             if (validateForm() == true) {
+                
+                ArrayList<String> places = gssdv.getPlaces();
+                ArrayList<String> days = gssdv.getDays();
+                ArrayList<String> times = gssdv.getTimes();
+                String recommendation = gssdv.getRecommendation();
+                int nRec = gssdv.getRecNum();
+
+                ArrayList<Instance> newInstances;
+
+                if (recommendation != null) {
+                    newInstances = FilterData(gssdv, instances, places, days, times);
+                } else 
+                    newInstances = RankData(gssdv, instances, places, days, times, recommendation, nRec);
+                
                 gssdv.dispose();
-                // 0 - no ranking
-                // 1 - best to worst
-                // 2 - worst to best
-                ArrayList<Survey> surveys = ProgramUser.fetchGeneraldata(gssdv.getPlaces(), gssdv.getDays(), gssdv.getTimes(), gssdv.getRankingType(), gssdv.getNumRec());
-                GuestSurveyData(); 
+                GuestSurveyData(newInstances); 
             }
         } );
 
         gssdv.setBackButtonListener(e -> {gssdv.dispose(); Homepage(); } );        
     }
 
-    public void GuestSurveyData(ArrayList<Survey> surveys) {
-        GuestSurveyDataView gsdv = new GuestSurveyDataView(surveys);
-        gsdv.setBackButtonListener(e -> {gsdv.dispose(); Homepage(); } );        
+
+    public ArrayList<Instance> FilterData(GuestSelectSurveyDataView gssdv, Instance[] instances, ArrayList<String> places, ArrayList<String> days, ArrayList<String> times) {
+        ArrayList<Instance> temp = new ArrayList<>();
+        for (int i=0; i<Constants.MAX_INSTANCE; i++ ) {
+            if (places.contains(instances[i].getPlaceName()) && days.contains(instances[i].getDayName()) && times.contains(instances[i].getTimeName()) && instances[i].getSampleSize() != 0) {
+                temp.add(instances[i]);
+            }
+        }
+        return temp;
     }
- */
+
+    public ArrayList<Instance> RankData(GuestSelectSurveyDataView gssdv, Instance[] instances, ArrayList<String> places, 
+                         ArrayList<String> days, ArrayList<String> times, String recommendation, int nRec) {
+        ArrayList<Instance> temp = new ArrayList<>();
+        int counter = 0;
+        for (int i=0; (i<Constants.MAX_INSTANCE) && (counter <= nRec); i++ ) {
+            if (places.contains(instances[i].getPlaceName()) && days.contains(instances[i].getDayName()) && times.contains(instances[i].getTimeName()) && instances[i].getSampleSize() != 0) {
+                temp.add(instances[i]);
+                counter++;
+            }
+        }
+
+        // sort
+        if ( recommendation.equals("Best to worst") ) {
+            Collections.sort(temp, (Instance o1, Instance o2) -> Double.compare(o1.getZScore(), o2.getZScore()));
+        } else {
+            Collections.sort(temp, (Instance o1, Instance o2) -> Double.compare(o2.getZScore(), o1.getZScore()));
+        }
+
+        return temp;
+    }
+
+    public void GuestSurveyData(ArrayList<Instance> x) {
+        final Instance[] instances = x.toArray(Instance[]::new);
+        String[] places = new String[Constants.MAX_INSTANCE];
+        String[] days = new String[Constants.MAX_INSTANCE];
+        String[] times = new String[Constants.MAX_INSTANCE];
+        String[] interpretations = new String[Constants.MAX_INSTANCE]; 
+
+        String[][] commentSummaries = new String[Constants.MAX_INSTANCE][100];
+        String[][] tags = new String[Constants.MAX_INSTANCE][100];
+        
+        int counterCS = 0, counterTag = 0;
+
+        // access data based sa unang parameter
+        for (int i=0; i<Constants.MAX_INSTANCE; i++) {
+            
+            places[i] = instances[i].getPlaceName();
+            days[i] = instances[i].getDayName();
+            times[i] = instances[i].getTimeName();
+            interpretations[i] = instances[i].getInterpretation();
+
+            counterCS = instances[i].getSummaries().size();
+            counterTag = instances[i].getTags().size();
+
+            for (int j=0; i<counterCS; i++) {
+                ArrayList<CommentSummaryAndTag> tempCommentSummaries = instances[i].getSummaries();
+                commentSummaries[i][j] = tempCommentSummaries.get(j).getCSorTag();
+            }
+
+            for (int j=0; i<counterTag; i++) {
+                ArrayList<CommentSummaryAndTag> tempTags = instances[i].getTags();
+                tags[i][j] = tempTags.get(j).getCSorTag();
+            }
+
+        }
+
+
+        GuestSurveyDataView gsdv = new GuestSurveyDataView(places,days,times,interpretations,commentSummaries,counterCS,tags,counterTag);
+        gsdv.setBackButtonListener(e -> {gsdv.dispose(); Homepage(); } ); 
+
+    }
+
+
+
 }

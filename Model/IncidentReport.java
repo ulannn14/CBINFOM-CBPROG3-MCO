@@ -18,7 +18,7 @@ public class IncidentReport {
     }
 
 
-    public IncidentReport(String recipient, String sender, String body) {
+    public IncidentReport(String recipient, String sender, String body, DateClass dateCreated) {
         this.sender = sender;
         this.recipient = recipient;
         this.body = body;
