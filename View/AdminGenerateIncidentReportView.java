@@ -2,35 +2,33 @@ package View;
 
 import Model.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import javax.swing.*;
+import java.awt.event.*;
 
 public class AdminGenerateIncidentReportView extends ViewAbstract {
-    private JLabel instanceLabel = new JLabel("Choose the instance you would like to make a report about.");
-    private JLabel toLabel = new JLabel("To: ");
-    private JLabel fromLabel = new JLabel("From: ");
-    private JLabel reportLabel = new JLabel("Write the report you would like to address to a government agency or official.");
+    final private JLabel instanceLabel = new JLabel("Choose the instance you would like to make a report about.");
+    final private JLabel toLabel = new JLabel("To: ");
+    final private JLabel fromLabel = new JLabel("From: ");
+    final private JLabel reportLabel = new JLabel("Write the report you would like to address to a government agency or official.");
 
-    private JLabel toBlankLabel = new JLabel("");
-    private JLabel fromBlankLabel = new JLabel("");
-    private JLabel reportBlankLabel = new JLabel("");
-    private JLabel locationErrorLabel = new JLabel("Please select a valid location.");
-    private JLabel dayErrorLabel = new JLabel("Please select a valid day.");
-    private JLabel timeErrorLabel = new JLabel("Please select a valid time.");
+    final private JLabel toBlankLabel = new JLabel("");
+    final private JLabel fromBlankLabel = new JLabel("");
+    final private JLabel reportBlankLabel = new JLabel("");
+    final private JLabel locationErrorLabel = new JLabel("Please select a valid location.");
+    final private JLabel dayErrorLabel = new JLabel("Please select a valid day.");
+    final private JLabel timeErrorLabel = new JLabel("Please select a valid time.");
 
-    private JTextField toField = new JTextField(30);
-    private JTextField fromField = new JTextField(30);
-    private JTextArea reportField = new JTextArea(10, 50);
+    final private JTextField toField = new JTextField(30);
+    final private JTextField fromField = new JTextField(30);
+    final private JTextArea reportField = new JTextArea(10, 50);
     
-    private Place place = new Place();
-    private String[] locations = {
+    final private Place place = new Place();
+    final private String[] locations = {
         "Location", // Placeholder option
         place.fetchPlaceNames().toArray(new String[0])
     };  
-    private String[] days = {
-        "Day of the Week", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
-    };
-    private String[] times = {
+    final private String[] days = {"Day of the Week", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+    final private String[] times = {
         "Time",
         "Morning Rush Hour [6:00 to 8:59]",
         "Mid-morning [9:00 to 10:59]",
@@ -40,35 +38,21 @@ public class AdminGenerateIncidentReportView extends ViewAbstract {
         "Rest of the Day [22:00 to 5:59]"
     };
 
-    private JComboBox<String> locationDropdown = new JComboBox<>(locations);
-    private JComboBox<String> dayOfTheWeekDropdown = new JComboBox<>(days);
-    private JComboBox<String> timeOfDayDropdown = new JComboBox<>(times);
+    final private JComboBox<String> locationDropdown = new JComboBox<>(locations);
+    final private JComboBox<String> dayOfTheWeekDropdown = new JComboBox<>(days);
+    final private JComboBox<String> timeOfDayDropdown = new JComboBox<>(times);
 
-    private JButton submitButton = new JButton("Submit");
-    private JButton backButton = new JButton("Back");
-
-    private Image backgroundImage;
+    final private JButton submitButton = new JButton("Submit");
+    final private JButton backButton = new JButton("Back");
 
     public AdminGenerateIncidentReportView() {
-        setTitle("Generate Incident Report");
-        setSize(1200, 700);
-        setResizable(false);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+        super();
 
+        setTitle("Generate Incident Report");
+        
         JLabel titleLabel = new JLabel("Generate Incident Report", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Garamond", Font.BOLD, 30));
         add(titleLabel, BorderLayout.NORTH);
-
-        backgroundImage = new ImageIcon("fgenerateIncidentReport.png").getImage();
-
-        JPanel panel = new JPanel(null) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
-            }
-        };
 
         instanceLabel.setBounds(70, 50, 500, 18);
         panel.add(instanceLabel);
@@ -147,8 +131,18 @@ public class AdminGenerateIncidentReportView extends ViewAbstract {
         timeErrorLabel.setVisible(false);
         panel.add(timeErrorLabel);
 
-        add(panel);
-        setVisible(true);
+        setErrorMessages(false);
+
+        frameSetVisible();
+    }
+
+    public void setErrorMessages(boolean visible) {
+        toBlankLabel.setVisible(visible);
+        fromBlankLabel.setVisible(visible);
+        reportBlankLabel.setVisible(visible);
+        locationErrorLabel.setVisible(visible);
+        dayErrorLabel.setVisible(visible);
+        timeErrorLabel.setVisible(visible);
     }
 
     public boolean validateFields() {
@@ -167,7 +161,7 @@ public class AdminGenerateIncidentReportView extends ViewAbstract {
             showError(reportBlankLabel, "Report cannot be blank.");
             blankReportField();
             valid = false;
-        } else if (reportField.getText().length() > 280) {
+        } else if (reportField.getText().length() > 500) {
             showError(reportBlankLabel, "Report must be at most 280 characters.");
             blankReportField();
             valid = false;
@@ -191,11 +185,6 @@ public class AdminGenerateIncidentReportView extends ViewAbstract {
         return valid;
     }
 
-    public void showError(JLabel label, String errorMessage) {
-        label.setText(errorMessage);
-        label.setVisible(true);
-    }
-
     public boolean validateNameField(JTextField field, JLabel errorLabel, String errorMessage) {
         if (field.getText().trim().isEmpty()) {
             showError(errorLabel, errorMessage);
@@ -210,6 +199,11 @@ public class AdminGenerateIncidentReportView extends ViewAbstract {
             return false;
         }
         return true;
+    }
+
+    public void showError(JLabel label, String errorMessage) {
+        label.setText(errorMessage);
+        label.setVisible(true);
     }
 
     public void blankToField() {
@@ -236,23 +230,6 @@ public class AdminGenerateIncidentReportView extends ViewAbstract {
         timeErrorLabel.setVisible(true);
     }
 
-    public void setErrorMessages(boolean visible) {
-        toBlankLabel.setVisible(visible);
-        fromBlankLabel.setVisible(visible);
-        reportBlankLabel.setVisible(visible);
-        locationErrorLabel.setVisible(visible);
-        dayErrorLabel.setVisible(visible);
-        timeErrorLabel.setVisible(visible);
-    }
-
-    public void setSubmitButtonListener(ActionListener listener) {
-        submitButton.addActionListener(listener);
-    }
-
-    public void setBackButtonListener(ActionListener listener) {
-        backButton.addActionListener(listener);
-    }
-
     public String getToField() {
         return toField.getText();
     }
@@ -269,7 +246,6 @@ public class AdminGenerateIncidentReportView extends ViewAbstract {
 		return (String) locationDropdown.getSelectedItem();
 	}
 
-
     public String getDayName() {
         return (String) dayOfTheWeekDropdown.getSelectedItem();
     }
@@ -278,4 +254,11 @@ public class AdminGenerateIncidentReportView extends ViewAbstract {
         return (String) timeOfDayDropdown.getSelectedItem();
     }
 
+    public void setSubmitButtonListener(ActionListener listener) {
+        submitButton.addActionListener(listener);
+    }
+
+    public void setBackButtonListener(ActionListener listener) {
+        backButton.addActionListener(listener);
+    }
 }

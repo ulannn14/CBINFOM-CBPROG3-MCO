@@ -30,8 +30,6 @@ public class Place extends DatabaseConnection{
         this.numConnectedPlaces = 0;
     }
 
-    public 
-
     // Method to add a connected place
     public void addConnectedPlace(Place place) {
         if (numConnectedPlaces < connectedPlaces.length) {

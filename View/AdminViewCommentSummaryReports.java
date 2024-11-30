@@ -1,22 +1,18 @@
 package View;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.*;
+import java.awt.event.*;
 
-public class AdminViewCommentSummaryReportsView extends JFrame {
-    
+public class AdminViewCommentSummaryReports extends ViewAbstract {
     private JButton backButton;
     private Instance[] instances;
 
-///// papalitan pa paramssss
-    public AdminViewCommentSummaryReportsView(Instance[] instances) {
+    ///// papalitan pa paramssss
+    public AdminViewCommentSummaryReports(Instance[] instances) {
         this.instances = instances;
 
         setTitle("Comment Summary Reports");
-        setSize(1200, 700);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
 
@@ -75,12 +71,12 @@ public class AdminViewCommentSummaryReportsView extends JFrame {
             }
         });
 
-        setVisible(true);
+        frameSetVisible();
     }
 
     
     public JPanel createSurveyDetailsPanel(String instanceID, String place, String day, 
-                                            String time, String interpretation, String[] commentSummary) {
+        String time, String interpretation, String[] commentSummary) {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));

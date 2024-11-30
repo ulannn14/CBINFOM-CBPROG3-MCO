@@ -1,8 +1,9 @@
 package View;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.time.*;
+import javax.swing.*;
 
 
 abstract class ViewAbstract extends JFrame{
@@ -17,7 +18,7 @@ abstract class ViewAbstract extends JFrame{
         panel.setLayout(null);
     }
 
-    public void frameSetVisible(){
+    protected void frameSetVisible(){
         setVisible(true);
     }
 
@@ -68,5 +69,100 @@ abstract class ViewAbstract extends JFrame{
                 }
             }
         });
+    }
+
+    protected boolean validateBirthday(int month, int day, int year){
+        LocalDate today = LocalDate.now();
+        int curryear = today.getYear();
+        int currmonth = today.getMonthValue();
+        int currday = today.getDayOfMonth();
+        int age = curryear - year;
+        boolean flag, valid;
+
+        if (curryear >= year) {
+            if (curryear == year) {
+                if (currmonth >= month) {
+                    if (currmonth == month) {
+                        if (currday >= day)
+                            flag = true;
+                        else 
+                            flag = false;
+                    } else 
+                        flag = true;
+                } else 
+                    flag = false;
+            } else 
+                flag = true;
+        } else 
+            flag = false;
+
+        if (!flag) age -= 1;
+
+        if (age >= 16) valid = true;
+        else valid = false;
+
+        return valid;
+    }
+
+    protected boolean validateLength(String input){
+        boolean valid = true;
+
+        if (input.length() < 8 || input.length() > 25)  // check if input is 8 to 25 characters long
+            valid = false;
+
+        return valid;
+    }
+
+    protected boolean validatePasswordCharacters(String password){
+        int uppercaseCtr = 0, lowercaseCtr = 0, numberCtr = 0;
+        boolean valid = true;
+
+        for (int x = 0; x <= 9; x++){
+            String number = Integer.toString(x);
+            if (password.contains(number))
+                numberCtr++;
+        }
+        if (numberCtr == 0){ // check if password contains at least one number
+            valid = false;
+        } else { // check if password contains at least one symbol
+            if (!(password.contains("@") || password.contains("#")
+                    || password.contains("!") || password.contains("~")
+                    || password.contains("$") || password.contains("%")
+                    || password.contains("^") || password.contains("&")
+                    || password.contains("*") || password.contains("(")
+                    || password.contains(")") || password.contains("-")
+                    || password.contains("+") || password.contains("/")
+                    || password.contains(":") || password.contains(".")
+                    || password.contains(",") || password.contains("<")
+                    || password.contains(">") || password.contains("?")
+                    || password.contains("|"))) {
+                valid = false;
+            } else { // check if password contains at least one uppercase letter
+                for (int x = 65; x <= 90; x++){
+                    char ascii = (char)x;
+                    String upper = Character.toString(ascii);
+                    if (password.contains(upper))
+                        uppercaseCtr++;
+                }
+                if (uppercaseCtr == 0){
+                    valid = false;
+                } else { // check if password contains at least one lowercase letter
+                    for (int x = 97; x <= 122; x++){
+                        char ascii = (char)x;
+                        String lower = Character.toString(ascii);
+                        if (password.contains(lower))
+                            lowercaseCtr++;
+                    }
+                    if (lowercaseCtr == 0){
+                        valid = false;
+                    } else {
+                        if (password.contains(" ")){ // check if password contains whitespaces
+                            valid = false;
+                        }
+                    }
+                }
+            }
+        }
+        return valid;
     }
 }

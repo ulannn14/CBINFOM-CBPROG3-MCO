@@ -1,10 +1,10 @@
 package View;
 
 import java.awt.*;
-import java.awt.event.ActionListener;
 import javax.swing.*;
+import java.awt.event.*;
 
-public class AnalystWelcomeView extends JFrame{
+public class AnalystWelcomeView extends ViewAbstract{
 	final private JButton viewInstancesDataButton = new JButton("View Instances Data");
 	final private JButton changePasswordButton = new JButton("Change Password");
 	final private JButton changeSecurityQuesAndPassButton = new JButton("Change Security Ques. and Pass.");
@@ -19,28 +19,11 @@ public class AnalystWelcomeView extends JFrame{
 	final private JLabel changeSecurityQuesAndPassLabel = new JLabel("<html>Update your account security question and<br>password for enhanced security and<br>access control.</html>");
 	final private JLabel findRecommendedPathLabel = new JLabel("<html>Discover the shortest and safest path to<br>your destination.</html>");
 	final private JLabel viewGeneralDataLabel = new JLabel("<html>Access general data, including insights<br>on safety ratings and feedback from<br>respondents.</html>");
-	
-	private Image backgroundImage;
     
     public AnalystWelcomeView(){
-		JFrame frame = new JFrame("Welcome, Analyst");
-		
-		backgroundImage = new ImageIcon("fanalystWelcomeView.png").getImage();
-        
-		JPanel panel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
-            }
-        }; 		
-		
-		frame.setSize(1200, 700);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setResizable(false);
-        frame.add(panel);
+		super();
 
-        panel.setLayout(null); 
+		setTitle("Welcome, Analyst");
 
         viewInstancesDataButton.setBounds(70, 176, 280, 41);
         panel.add(viewInstancesDataButton);
@@ -82,7 +65,7 @@ public class AnalystWelcomeView extends JFrame{
 		viewGeneralDataLabel.setBounds(849, 216, 280, 40);
 		panel.add(viewGeneralDataLabel);
 		
-        frame.setVisible(true);
+        frameSetVisible(true);
     }
 	
 	public void setViewInstancesDataButtonListener(ActionListener listener){

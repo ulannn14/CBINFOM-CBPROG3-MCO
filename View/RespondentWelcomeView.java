@@ -1,12 +1,10 @@
 package View;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+import javax.swing.*;
+import java.awt.event.*;
 
-public class RespondentWelcomeView extends JFrame{
+public class RespondentWelcomeView extends ViewAbstract{
 	final private JButton takeSurveyButton = new JButton("Take Survey");
 	final private JButton viewSurveyHistoryButton = new JButton("View Survey History");
 	final private JButton viewOrUpdateProfileButton = new JButton("View or Update Profile");
@@ -25,28 +23,11 @@ public class RespondentWelcomeView extends JFrame{
 	final private JLabel changeSecurityQuesAndPassLabel = new JLabel("<html>Update your account security question and<br>password for enhanced security and<br>access control.</html>");
 	final private JLabel findRecommendedPathLabel = new JLabel("<html>Discover the shortest and safest path to<br>your destination.</html>");
 	final private JLabel viewGeneralDataLabel = new JLabel("<html>Access general data, including insights<br>on safety ratings and feedback from<br>respondents.</html>");
-	
-	private Image backgroundImage;
     
     public RespondentWelcomeView(){
-		JFrame frame = new JFrame("Welcome, Respondent");
-		
-		backgroundImage = new ImageIcon("frespondentWelcomeView.png").getImage();
-        
-		JPanel panel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
-            }
-        }; 		
-		
-		frame.setSize(1200, 700);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setResizable(false);
-        frame.add(panel);
-	
-        panel.setLayout(null); 
+		super();
+
+		setTitle("Welcome, Respondent");
 
         takeSurveyButton.setBounds(70, 176, 280, 41);
         panel.add(takeSurveyButton);
@@ -100,7 +81,7 @@ public class RespondentWelcomeView extends JFrame{
 		viewGeneralDataLabel.setBounds(849, 330, 280, 62);
 		panel.add(viewGeneralDataLabel);
 		
-        frame.setVisible(true);
+        frameSetVisible();
     }
 	
 	public void setTakeSurveyButtonListener(ActionListener listener){

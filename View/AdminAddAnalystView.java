@@ -1,12 +1,10 @@
 package View;
 
 import java.awt.*;
-import java.awt.event.ActionListener;
 import javax.swing.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+import java.awt.event.*;
 
-public class AdminAddAnalystView extends JFrame {
+public class AdminAddAnalystView extends ViewAbstract {
     final private JButton addButton = new JButton("Add");
     final private JButton backButton = new JButton("Back");
 
@@ -18,29 +16,11 @@ public class AdminAddAnalystView extends JFrame {
     final private JLabel passwordLabel = new JLabel("Password");
     final private JLabel usernameErrorLabel = new JLabel("Username is already taken.");
     final private JLabel passwordErrorLabel = new JLabel("");
-    final private Image backgroundImage;
 
     public AdminAddAnalystView() {
-        // Load the background image
-        backgroundImage = new ImageIcon("adminAddAnalystView.png").getImage();
+        super(); 
 
-        // Set frame properties
-        setTitle("Add New Analyst");
-        setSize(1200, 700);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setResizable(false);
-
-        // Create a custom JPanel
-        JPanel panel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
-            }
-        };
-
-        add(panel);
-        panel.setLayout(null);
+        setTitle("Add Analyst Manager");
 
         // Add components to the panel
         addButton.setBounds(480, 550, 150, 41);
@@ -76,54 +56,34 @@ public class AdminAddAnalystView extends JFrame {
         passwordErrorLabel.setVisible(false);
         panel.add(passwordErrorLabel);
 
-        setVisible(true);
+        setErrorMessages(false);
+
+        frameSetVisible();
     }
 
-    private void addPlaceholder(JTextField textField, String placeholder) {
-        textField.setForeground(Color.GRAY);
-        textField.setText(placeholder);
-
-        textField.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                if (textField.getText().equals(placeholder)) {
-                    textField.setText("");
-                    textField.setForeground(Color.BLACK);
-                }
-            }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                if (textField.getText().isEmpty()) {
-                    textField.setText(placeholder);
-                    textField.setForeground(Color.GRAY);
-                }
-            }
-        });
-    }
-
-    public boolean validatePassword() {
-        String password = passwordField.getText();
-        if (!password.matches(".*[A-Z].*") || !password.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
-            passwordErrorLabel.setText("Password must have an uppercase letter and special character.");
-            passwordErrorLabel.setVisible(true);
-            return false;
-        } else if (password.length() < 8 || password.length() > 25) {
-            passwordErrorLabel.setText("Password must be 8 to 25 characters long.");
-            passwordErrorLabel.setVisible(true);
-            return false;
-        }
-        passwordErrorLabel.setVisible(false);
-        return true;
+    public void setErrorMessages(boolean visible) {
+        usernameErrorLabel.setVisible(visible);
+        passwordErrorLabel.setText("");
     }
 
     public void notUniqueUsername() {
         usernameErrorLabel.setVisible(true);
     }
 
-    public void setErrorMessages(boolean visible) {
-        usernameErrorLabel.setVisible(visible);
-        passwordErrorLabel.setVisible(visible);
+    public boolean validatePassword() {
+        boolean valid = true;
+        setErrorMessages(false);
+
+        if (validateLength(passwordField.getText()) == false){
+            passwordErrorLabel.setText("Password must be 8 to 25 characters long.");
+            passwordErrorLabel.setVisible(true);
+        }
+        if (validatePasswordCharacters(passwordField.getText()) == false) {
+            passwordErrorLabel.setText("Does not meet password requirements.");
+            passwordErrorLabel.setVisible(true);
+        }
+
+        return valid;
     }
 
     public String getUsername() {

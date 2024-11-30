@@ -8,19 +8,22 @@ public class Survey {
     private String comment;
     private DateClass dateTaken;
     private String respondentUsername;
-    private String placeName;
-    private String dayName;
-    private String timeName;
+    private int instanceID;
 
+    public int getInstanceID() {
+        return instanceID;
+    }
 
-    public Survey(int[] answers, String respondentUsername, String comment, DateClass dateTaken, String place, String day, String time) {
+    public void setInstanceID(int x) {
+        instanceID = x;
+    }
+
+    public Survey(int[] answers, String respondentUsername, String comment, DateClass dateTaken, Int id) {
         this.answers = answers;
         this.comment = comment;
         this.dateTaken = dateTaken;
         this.respondentUsername = respondentUsername;
-        this.placeName = place;
-        this.dayName = day;
-        this.timeName = time;
+        this.instanceID = id;
         double sum = 0;
         for (int num : answers) {
             sum += num;
@@ -40,16 +43,12 @@ public class Survey {
     public double getSurveyMean() { return surveyMean; }
     public String getRespondentUsername() { return respondentUsername; }
 
-    public String getPlaceName() { return placeName; }
-    public void setPlaceName(String placeName) { this.placeName = placeName; }
-    
-    public String getDayName() { return dayName; }
-    public void setDayName(String dayName) { this.dayName = dayName; }
-    
     public String getTimeName() { return timeName; }
     public void setTimeName(String timeName) { this.timeName = timeName; }
 
     public static ArrayList<Survey> fetchByRespondentId(String respondentID) {
+        // sa survey na table, query lahat ng may ganon, also match yung IDS ng instance names
+        
         throw new UnsupportedOperationException("Not supported yet.");
     }    
 }

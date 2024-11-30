@@ -1,14 +1,14 @@
 package View;
 
 import java.awt.*;
-import java.awt.event.ActionListener;
 import javax.swing.*;
+import java.awt.event.*;
 
-public class PasswordManagerView extends JFrame{
+public class PasswordManagerView extends ViewAbstract{
     final private JButton changePasswordButton = new JButton("Change Password");
     final private JButton backButton = new JButton("Back");
 
-    private String[] securityQuestions = {
+    final private String[] securityQuestions = {
         "Select security question...",
         "What is your mother's maiden name?",
         "What is the name of your first pet?",
@@ -21,11 +21,11 @@ public class PasswordManagerView extends JFrame{
         "What is the name of the street you grew up on?",
         "What is your favorite food?"
     };
-    private JComboBox securityQuestionsDropdown = new JComboBox<String>(securityQuestions);
+    final private JComboBox securityQuestionsDropdown = new JComboBox<String>(securityQuestions);
 
-    private JTextField usernameField = new JTextField(15);
-    private JTextField securityPasswordField = new JTextField(15);
-    private JTextField newPasswordField = new JTextField(15);
+    final private JTextField usernameField = new JTextField(15);
+    final private JTextField securityPasswordField = new JTextField(15);
+    final private JTextField newPasswordField = new JTextField(15);
 
     final private JLabel header = new JLabel("Password Manager");
     final private JLabel usernameLabel = new JLabel("Username");
@@ -39,16 +39,11 @@ public class PasswordManagerView extends JFrame{
     final private JLabel passwordErrorLabel = new JLabel("");
         // "Does not meet password requirements"
         // "Password must be 8 to 25 charactes long"
-    
-    private JPanel panel = new JPanel();
 
     public PasswordManagerView(){
-        setSize(1200, 700);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setResizable(false);
-        add(panel);
+        super();
 
-        panel.setLayout(null); 
+        setTitle("Password Manager");
 
         changePasswordButton.setBounds(494,550,211,41);
         panel.add(changePasswordButton);
@@ -80,21 +75,43 @@ public class PasswordManagerView extends JFrame{
 
         usernameExistsLabel.setBounds(420,190,165,13);
         usernameExistsLabel.setForeground(Color.RED);
-        usernameExistsLabel.setVisible(false);
         panel.add(usernameExistsLabel);
         mismatchedSecurityQuestionLabel.setBounds(420,268,190,13);
         mismatchedSecurityQuestionLabel.setForeground(Color.RED);
-        mismatchedSecurityQuestionLabel.setVisible(false);
         panel.add(mismatchedSecurityQuestionLabel);
         incorrectSecurityPasswordLabel.setBounds(420,340,209,13);
         incorrectSecurityPasswordLabel.setForeground(Color.RED);
-        incorrectSecurityPasswordLabel.setVisible(false);
         panel.add(incorrectSecurityPasswordLabel);
         passwordErrorLabel.setBounds(420,418,237,13);
         passwordErrorLabel.setForeground(Color.RED);
         panel.add(passwordErrorLabel);
 
-        setVisible(true);
+        setErrorMessages(false);
+
+        frameSetVisible();
+    }
+
+    public void setErrorMessages(boolean visible){
+        usernameExistsLabel.setVisible(visible);
+        mismatchedSecurityQuestionLabel.setVisible(visible);
+        incorrectSecurityPasswordLabel.setVisible(visible);
+        passwordErrorLabel.setText("");
+    }
+
+    public String getUsername() {
+        return usernameField.getText();
+    }
+
+    public String getSecurityQuestion() {
+        return (String) securityQuestionsDropdown.getSelectedItem();
+    }
+
+    public String getSecurityPassword() {
+        return securityPasswordField.getText();
+    }
+
+    public String getPassword() {
+        return newPasswordField.getText();
     }
 
     public void wrongUsername(){
@@ -110,103 +127,28 @@ public class PasswordManagerView extends JFrame{
     }
 
     public boolean validatePassword(String password){
-        int uppercaseCtr = 0, lowercaseCtr = 0, numberCtr = 0;
-        int length = password.length();
         boolean valid = true;
 
-        if (length < 8 || length > 25){  // check if password is 8 to 25 characters long
+        if (validatePasswordCharacters(password) == false){
+            passwordErrorLabel.setText("Does not meet password requirements.");
+            valid = false;
+        }
+
+        if (validateLength(password) == false){
             passwordErrorLabel.setText("Password must be 8 to 25 charactes long.");
             valid = false;
-        } else {  // check if password contains at least one number
-            for (int x = 0; x <= 9; x++){
-                String number = Integer.toString(x);
-                if (password.contains(number))
-                    numberCtr++;
-            }
-            if (numberCtr == 0){
-                passwordErrorLabel.setText("Does not meet password requirements.");
-                valid = false;
-            } else { // check if password contains at least one symbol
-                if (!(password.contains("@") || password.contains("#")
-                        || password.contains("!") || password.contains("~")
-                        || password.contains("$") || password.contains("%")
-                        || password.contains("^") || password.contains("&")
-                        || password.contains("*") || password.contains("(")
-                        || password.contains(")") || password.contains("-")
-                        || password.contains("+") || password.contains("/")
-                        || password.contains(":") || password.contains(".")
-                        || password.contains(",") || password.contains("<")
-                        || password.contains(">") || password.contains("?")
-                        || password.contains("|"))) {
-                    passwordErrorLabel.setText("Does not meet password requirements.");
-                    valid = false;
-                } else { // check if password contains at least one uppercase letter
-                    for (int x = 65; x <= 90; x++){
-                        char ascii = (char)x;
-                        String upper = Character.toString(ascii);
-                        if (password.contains(upper))
-                            uppercaseCtr++;
-                    }
-                    if (uppercaseCtr == 0){
-                        passwordErrorLabel.setText("Does not meet password requirements.");
-                        valid = false;
-                    } else { // check if password contains at least one lowercase letter
-                        for (int x = 97; x <= 122; x++){
-                            char ascii = (char)x;
-                            String lower = Character.toString(ascii);
-                            if (password.contains(lower))
-                                lowercaseCtr++;
-                        }
-                        if (lowercaseCtr == 0){
-                            passwordErrorLabel.setText("Does not meet password requirements.");
-                            valid = false;
-                        } else {
-                            if (password.contains(" ")){ // check if password contains whitespaces
-                                passwordErrorLabel.setText("Does not meet password requirements.");
-                                valid = false;
-                            }
-                        }
-                    }
-                }
-            }
         }
+
         return valid;
     }
 
     public void setChangePasswordButtonListener(ActionListener listener) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setChangePasswordButtonListener'");
+        changePasswordButton.addActionListener(listener);
     }
 
-    public void setErrorMessages(boolean setVisible) {
-        // define
+    public void setBackButtonListener(ActionListener listener) {
+        backButton.addActionListener(listener);
     }
-
-    public String getUsername() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getUsername'");
-    }
-
-    public String getPassword() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-
-    public String getSecurityQuestion() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getSecurityQuestion'");
-    }
-
-    public String getSecurityPassword() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getSecurityPassword'");
-    }
-
-	public void setBackButtonListener(ActionListener listener) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'setBackButtonListener'");
-	}
-
 }
 
 

@@ -6,6 +6,7 @@ import ServiceClassPackage.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import Pathfinding.*;
 
 public class Controller {
 
@@ -484,8 +485,9 @@ public class Controller {
                 LocalDate today = LocalDate.now();
                 DateClass dateTaken = new DateClass(today.getMonthValue(), today.getDayOfMonth(), today.getYear()); 
 
-                Survey survey = new Survey(rtsv.getAnswers(), respondent.getUsername(), rtsv.getComment(), dateTaken, rtsv.getPlace(), rtsv.getDay(), rtsv.getTime());
-                instances[idx].takeSurvey(survey);
+                // must be converted to an IDX
+                Survey survey = new Survey(rtsv.getAnswers(), respondent.getUsername(), rtsv.getComment(), dateTaken, idx);
+                instances[idx-1].takeSurvey(survey);
                 rtsv.dispose();
                 RespondentWelcome(respondent);
             }
@@ -493,6 +495,11 @@ public class Controller {
 
         rtsv.setBackButtonListener(e -> {rtsv.dispose(); RespondentWelcome(respondent); } );
     }
+
+    public void PlaceNameToPlaceID() {
+
+    }
+
 
     public void RespondentViewHistory(Respondent respondent) {
         ArrayList<Survey> surveys = Instance.fetchByRespondentUsername(respondent.getUsername());
@@ -506,17 +513,15 @@ public class Controller {
         
         // iterate through each survey
         for (int i=0; i<surveyCounter; i++) {
-            places[i] = surveys.get(i).getPlaceName();
-            days[i] = surveys.get(i).getDayName();
-            times[i] = surveys.get(i).getDayName();
+            places[i] = instances[surveys.get(i).getInstanceID()-1].getPlaceName();
+            days[i] = instances[surveys.get(i).getInstanceID()-1].getDayName();
+            times[i] = instances[surveys.get(i).getInstanceID()-1].getTimeName();
             DateClass tempDate = surveys.get(i).getDateTaken();
             dateTakens[i] = tempDate.convertToString();
 
             int[] tempAnswers = new int[20]; // Declare and initialize the array
             tempAnswers = surveys.get(i).getAnswers(); // Assign the answers from the survey to tempAnswers
-            for (int j=0; j<20; j++) {
-                answers[i][j] = tempAnswers[j];
-            } 
+            System.arraycopy(tempAnswers, 0, answers[i], 0, 20); 
         }
         
         RespondentViewHistoryView rvhv = new RespondentViewHistoryView(answers,places,days,times,dateTakens);
@@ -527,52 +532,29 @@ public class Controller {
     }
     
     public void RespondentProfile(Respondent respondent) {
-        RespondentProfileView rpv = new RespondentProfileView(respondent);
-        
+        //
+        RespondentProfileView rpv = new RespondentProfileView();
+        // RespondentProfileView(String name, String email, String username, int[] birthday, int age, int[] dateJoined)
+        // kulang error ng kapag all fields empty
+
         rpv.setUpdateDetailsButtonListener(e -> {
             rpv.setErrorMessages(false);
 
             if (validateFields() == true) {
-                if (checkUsernameValid() == true) {
+                if (ProgramUser.checkUsernameValid(rpv.getUsername()) == true) {
                     rpv.dispose();
                     RespondentWelcome(respondent);
                 }
                 else
-                rpv.;notUniqueUsername();
+                rpv.notUniqueUsername();
             }
-
         } );
         
         rpv.setBackButtonListener(e -> {rpv.dispose(); RespondentWelcome(respondent); } );
     }
     
     
-    // as guest
-    public void GuestChooseLRecommendedPath(Instance[] instances) {
-        service.zTestComputation(instances);
-        guestChooseLRecommendedPathView gclrpv = new guestChooseLRecommendedPathView();
-        
-        gclrpv.setSubmitButtonListener( e -> {
-            gclrpv.setErrorMessages(false);
-
-            if (validateField() == true) {
-            
-                //ArrayList<String> placesToFind
-            
-                GuestRecommendedPath();
-            }
-
-
-
-        } );
-    }
-
-    public void GuestRecommendedPath() {
-        
-    }
-
-
-    // if all, return all names in an arraylist ha
+       // if all, return all names in an arraylist ha
     public void GuestSelectSurveyData(Instance[] instances) {
         service.zTestComputation(instances);
         GuestSelectSurveyDataView gssdv = new GuestSelectSurveyDataView();
@@ -634,8 +616,8 @@ public class Controller {
         return temp;
     }
 
-    public void GuestSurveyData(ArrayList<Instance> x) {
-        final Instance[] instances = x.toArray(Instance[]::new);
+    public void GuestGeneralData(ArrayList<Instance> filteredData) {
+        final Instance[] instances = filteredData.toArray(Instance[]::new);
         String[] places = new String[Constants.MAX_INSTANCE];
         String[] days = new String[Constants.MAX_INSTANCE];
         String[] times = new String[Constants.MAX_INSTANCE];
@@ -669,12 +651,53 @@ public class Controller {
 
         }
 
-
-        GuestSurveyDataView gsdv = new GuestSurveyDataView(places,days,times,interpretations,commentSummaries,counterCS,tags,counterTag);
+        GuestGeneralDataView gsdv = new GuestGeneralDataView(places,days,times,interpretations,commentSummaries,counterCS,tags,counterTag);
         gsdv.setBackButtonListener(e -> {gsdv.dispose(); Homepage(); } ); 
-
     }
 
+    
 
+
+
+
+
+
+
+
+
+
+
+
+    // as guest
+    public void GuestChooseLRecommendedPath(Instance[] instances) {
+        service.zTestComputation(instances);
+        guestChooseLRecommendedPathView gclrpv = new guestChooseLRecommendedPathView();
+        
+        gclrpv.setSubmitButtonListener( e -> {
+            gclrpv.setErrorMessages(false);
+
+            if (validateField() == true) {
+                Path shortestPath = new Path(start, goal);
+                Path zScorePath = new Path(start, goal);
+                String shortestPathString;
+                String zScorePathString;
+
+                shortestPath.modifiedAStar(false, 0);
+                zScorePath.modifiedAStar(true, 3);
+                shortestPathString = shortestPath.getPathDetails(shortestPath.getPath);
+                zScorePathString = zScorePath.getPathDetails(zScorePath.getPath);
+                    
+                
+                GuestRecommendedPath(pathIndexes);
+            }
+
+
+
+        } );
+    }
+
+    public void GuestRecommendedPath() {
+        
+    }
 
 }

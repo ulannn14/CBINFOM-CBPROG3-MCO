@@ -1,7 +1,7 @@
 package View;
 
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
 import java.awt.event.*;
 
 public class SignupView extends ViewAbstract {
@@ -57,12 +57,14 @@ public class SignupView extends ViewAbstract {
     final private JLabel passwordErrorLabel = new JLabel("");
         // Does not meet password requirements.
         // Password must be 8 to 25 characters long.
-    final private JLabel securityQuestionErrorLabel = new JLabel("Security Question cannot be blank.");
+    final private JLabel securityQuestionErrorLabel = new JLabel("Please select a valid security question.");
     final private JLabel securityPasswordErrorLabel = new JLabel("Security Password must be 8 to 25 characters long.");
     final private JLabel birthdayErrorLabel = new JLabel("Must be at least 16 years old.");
     
     public SignupView() {
         super();
+
+        setTitle("Sign Up");
 
         signupButton.setBounds(595,590,132,41);
         panel.add(signupButton);
@@ -141,43 +143,58 @@ public class SignupView extends ViewAbstract {
         frameSetVisible();
     }
 
+    // Visibility of Error Messages
     public void setErrorMessages(boolean visible) {
-        nameErrorLabel.setVisible(visible);
-        emailErrorLabel.setVisible(visible);
-        usernameErrorLabel.setVisible(visible);
-        passwordErrorLabel.setVisible(visible);
+        nameErrorLabel.setText("");
+        emailErrorLabel.setText("");
+        usernameErrorLabel.setText("");
+        passwordErrorLabel.setText("");
         securityQuestionErrorLabel.setVisible(visible);
         securityPasswordErrorLabel.setVisible(visible);
         birthdayErrorLabel.setVisible(visible);
     }
+    
+    public void notUniqueUsername() {
+        usernameErrorLabel.setText("Username is already taken.");
+    }
 
-    // CHECK ALL NECESSARY SHITTT TAS GAWA
     public boolean validateForm() {
         boolean valid = true;
         setErrorMessages(false); // Reset error visibility
         
         // Validate name
-        if (nameField.getText().length() == 0 || nameField.getText().length() > 30) {
-            nameErrorLabel.setVisible(true);
+        if (nameField.getText().length() == 0) {
+            nameErrorLabel.setText("Name cannot be blank.");
+            valid = false;
+        }
+        if (nameField.getText().length() > 30) {
+            nameErrorLabel.setText("Name cannot be over 30 characters long.");
             valid = false;
         }
         
         // Validate email
-        if (emailField.getText().length() == 0 || emailField.getText().length() > 30) {
-            emailErrorLabel.setVisible(true);
+        if (emailField.getText().length() == 0) {
+            emailErrorLabel.setText("Email cannot be blank.");
+            valid = false;
+        }
+        if (emailField.getText().length() > 50) {
+            emailErrorLabel.setText("Email cannot be over 50 characters long.");
             valid = false;
         }
         
         // Validate username
-        if (usernameField.getText().length() == 0 || usernameField.getText().length() > 15) {
-            usernameErrorLabel.setVisible(true);
+        if (validateLength(usernameField.getText()) == false) {
+            usernameErrorLabel.setText("Username must be 8 to 25 characters long.");
             valid = false;
         }
         
         // Validate password
-        String password = new String(passwordField.getPassword());
-        if (password.length() == 0 || !password.matches(".*[A-Z].*") || !password.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
-            passwordErrorLabel.setVisible(true);
+        if (validateLength(new String(passwordField.getPassword())) == false) {
+            passwordErrorLabel.setText("Password must be 8 to 25 characters long.");
+            valid = false;
+        }
+        if (validatePasswordCharacters(new String(passwordField.getPassword())) == false) {
+            passwordErrorLabel.setText("Does not meet password requirements.");
             valid = false;
         }
         
@@ -188,21 +205,12 @@ public class SignupView extends ViewAbstract {
         }
         
         // Validate birthday
-        if (daysDropdown.getSelectedIndex() == -1 || monthsDropdown.getSelectedIndex() == -1 || yearsDropdown.getSelectedIndex() == -1) {
-            birthdayErrorLabel.setVisible(true);
+        if (validateBirthday(getMonth(), getDay(), getYear()) == false){
+            birthdayErrorLabel.setText("Must be at least 16 years old.");
             valid = false;
         }
         
         return valid;
-    }
-
-    // Action listener methods
-    public void setSignupButtonListener(ActionListener listener) {
-        signupButton.addActionListener(listener);
-    }
-
-    public void setBackButtonListener(ActionListener listener) {
-        backButton.addActionListener(listener);
     }
 
     // Getter methods for the form data
@@ -227,16 +235,28 @@ public class SignupView extends ViewAbstract {
         return (String) securityQuestionsDropdown.getSelectedItem();
     }
 
-    public String getBirthday() {
-        return daysDropdown.getSelectedItem() + "/" + monthsDropdown.getSelectedItem() + "/" + yearsDropdown.getSelectedItem();
+    public int getMonth(){
+        return (int) monthsDropdown.getSelectedItem();
+    }
+
+    public int getDay(){
+        return (int) daysDropdown.getSelectedItem();
+    }
+
+    public int getYear(){
+        return (int) yearsDropdown.getSelectedItem();
     }
 
     public String getSecurityPassword() {
         return securityPasswordField.getText();
     }
 
-    public void notUniqueUsername() {
-        boolean valid;
+    // Action listener methods
+    public void setSignupButtonListener(ActionListener listener) {
+        signupButton.addActionListener(listener);
     }
-    
+
+    public void setBackButtonListener(ActionListener listener) {
+        backButton.addActionListener(listener);
+    }
 }

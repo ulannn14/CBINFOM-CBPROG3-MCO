@@ -1,21 +1,19 @@
 package View;
 
-import javax.swing.*;
-import javax.swing.table.*;
-import java.awt.*;
-import java.util.ArrayList;
-import java.awt.event.ActionListener;
 import Model.*;
+import java.awt.*;
+import java.util.*;
+import javax.swing.*;
+import java.awt.event.*;
+import javax.swing.table.*;
 
-public class AdminViewAnalystDataView extends JFrame {
+public class AdminViewAnalystDataView extends ViewAbstract {
     final private JButton backButton = new JButton("Back");
 
     public AdminViewAnalystDataView(ArrayList<String> allUsernames, ArrayList<String> allSQs, ArrayList<DateClass> allDateJoineds) {
-        
+        super();
+
         setTitle("Analysts Data");
-        setSize(1200, 700);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setResizable(false);
         setLocationRelativeTo(null);
 
         JLabel titleLabel = new JLabel("Analysts Data", SwingConstants.CENTER);
@@ -66,11 +64,10 @@ public class AdminViewAnalystDataView extends JFrame {
         tablePanel.add(scrollPane, BorderLayout.CENTER);
         add(tablePanel, BorderLayout.CENTER);
 
-        setVisible(true);
+        frameSetVisible();
     }   
 
     public void setBackButtonListener(ActionListener listener) {
         backButton.addActionListener(listener);
     }
-
 }

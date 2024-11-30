@@ -1,7 +1,7 @@
 package View;
 
 import java.awt.*;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import javax.swing.*;
 
 public class HomepageView extends ViewAbstract {
@@ -15,17 +15,20 @@ public class HomepageView extends ViewAbstract {
     final private JPasswordField passwordField = new JPasswordField(15);
 
     final private JLabel titleLabel1 = new JLabel("ISSPa:");
-    final private JLabel titleLabel2 = new JLabel("<html>Intramuros Safety Survey & Pathfinder</html>");
+    final private JLabel titleLabel2 = new JLabel("Intramuros Safety Survey & Pathfinder");
     final private JLabel usernameLabel = new JLabel("Username: ");
     final private JLabel passwordLabel = new JLabel("Password: ");
-    final private JLabel wrongCredentialsLabel = new JLabel("Wrong credentials");
-    final private JLabel invalidUsernamePasswordLabel = new JLabel("Invalid username or password");
     final private JLabel signupLabel = new JLabel("No account yet?");
     final private JLabel guestLabel = new JLabel("Continue as Guest?");
     final private JLabel descriptionLabel = new JLabel("<html>ISSPa empowers visually-impaired<br>individuals to safely navigate Intramuros<br>by providing survey data on the safest<br>paths and times for walking.<br><br>Log in or sign up to create an account<br>and participate in the survey.</html>");
 
+    final private JLabel wrongCredentialsLabel = new JLabel("Wrong credentials");
+    final private JLabel invalidUsernamePasswordLabel = new JLabel("Invalid username or password");
+
     public HomepageView() {
         super();
+
+        setTitle("ISSPa: Intramuros Safety Survey & Pathfinder");
 
         forgotPasswordButton.setBounds(718,385,154,18);
         panel.add(forgotPasswordButton);
@@ -80,6 +83,18 @@ public class HomepageView extends ViewAbstract {
         invalidUsernamePasswordLabel.setVisible(visible);
     }
 
+    public String getUsername() {
+        return usernameField.getText();
+    }
+
+    public String getPassword() {
+        return new String(passwordField.getPassword());
+    }
+
+    public void failedLogin() {
+        setErrorMessages(true);
+    }
+
     public void setForgotPasswordButtonListener(ActionListener listener) {
         forgotPasswordButton.addActionListener(listener);
     }
@@ -98,18 +113,5 @@ public class HomepageView extends ViewAbstract {
 
     public void setGeneralResultButtonListener(ActionListener listener) {
         viewSurveyDataButton.addActionListener(listener);
-    }
-
-    public String getUsername() {
-        return usernameField.getText();
-    }
-
-    public String getPassword() {
-        return new String(passwordField.getPassword());
-    }
-
-    public void failedLogin() {
-        wrongCredentialsLabel.setVisible(true);
-        invalidUsernamePasswordLabel.setVisible(true);
     }
 }

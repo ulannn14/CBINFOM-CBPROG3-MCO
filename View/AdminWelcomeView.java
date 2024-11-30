@@ -1,10 +1,10 @@
 package View;
 
 import java.awt.*;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import javax.swing.*;
 
-public class AdminWelcomeView extends JFrame {
+public class AdminWelcomeView extends ViewAbstract {
     final private JButton respondentsDataButton = new JButton("View Respondents' Data");
     final private JButton analystsDataButton = new JButton("View Analysts' Data");
     final private JButton addAnalystButton = new JButton("Add New Analyst");
@@ -28,18 +28,10 @@ public class AdminWelcomeView extends JFrame {
     final private JLabel recommendedPathLabel = new JLabel("<html>Discover the shortest and safest path to<br>your destination.</html>");
     final private JLabel generalDataLabel = new JLabel("<html>Access general data, including insights<br>on safety ratings and feedback from<br>respondents.</html>");
 
-    public void main(String[] args){
-        JFrame frame = new JFrame("Welcome, Admin");
+    public AdminWelcomeView(){
+        super();
 
-        // Create a custom JPanel
-        JPanel panel = new JPanel();
-
-        frame.setSize(1200, 700);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setResizable(false);
-        frame.add(panel);
-
-        panel.setLayout(null); 
+        setTitle("Welcome, Admin");
 
         respondentsDataButton.setBounds(70, 176, 280, 41);
         panel.add(respondentsDataButton);
@@ -86,10 +78,9 @@ public class AdminWelcomeView extends JFrame {
 		generalDataLabel.setBounds(849, 444, 280, 62);
 		panel.add(generalDataLabel);
 
-        frame.setVisible(true);
+        frameSetVisible();
     }
 
-	
     // Method for setting listeners
     public void setViewRespondentsDataButtonListener(ActionListener listener) {
         respondentsDataButton.addActionListener(listener);
@@ -130,8 +121,4 @@ public class AdminWelcomeView extends JFrame {
     public void setBackButtonListener(ActionListener listener) {
         logoutButton.addActionListener(listener);
     }
-
-
-
-
 }
