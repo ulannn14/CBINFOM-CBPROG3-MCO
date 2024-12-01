@@ -1,5 +1,12 @@
 {
-    "java.project.sourcePaths": ["."],
-    "java.project.outputPath": "bin", 
-    "java.project.referencedLibraries": ["lib/mysql-connector-j-8.0.33.jar"],
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "request": "launch",
+            "name": "Launch Main",
+            "mainClass": "com.myapp.Main",
+            "classPaths": ["bin", "lib/mysql-connector-j-8.0.33.jar"]
+        }
+    ]
 }
