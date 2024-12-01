@@ -38,14 +38,6 @@ public class Controller {
         homepageView.setForgotPasswordButtonListener(e -> {  homepageView.dispose(); PasswordManager(); } );
         homepageView.setFindRecommendedPathButtonListener(e -> { homepageView.dispose(); GuestChooseRecommendedPath();  });
         homepageView.setGeneralResultButtonListener(e -> { homepageView.dispose(); GuestSelectGeneralData();  } );
-        homepageView.setWindowCloseListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                service.zTestComputation(instances);
-                // Close the database
-                homepageView.dispose();
-            }
-        });
     }
     
     private void validateLogin(HomepageView homepageView, String username, String password) {

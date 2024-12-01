@@ -62,9 +62,14 @@ public class Admin extends ProgramUser {
                 tempPassword = resultSet.getString("accountPassword");
 
                 if(tempUsername.equals(username) && tempPassword.equals(password)) {
+                    admin = new Admin();
+                    admin.setUsername(username);
+                    admin.setAccountPassword(password);
                     securityQuestion = resultSet.getString("securityQuestion");
                     securityPassword = resultSet.getString("securityPassword");
-                    admin = new Admin(username, password, securityQuestion, securityPassword, 1);
+                    admin.setSecurityQuestion(securityQuestion);
+                    admin.setSecurityPassword(securityPassword);
+                    admin.setUserType(1);
                 }                                                       
             }
             

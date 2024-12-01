@@ -19,10 +19,10 @@ public class Instance extends TimeCategory {
     private Day day;
     private TimeCategory time;
 
-    private ArrayList<Survey> surveys;
-    private ArrayList<Observation> tags;
-    private ArrayList<Observation> summaries;
-    private ArrayList<IncidentReport> incidentReports;
+    private ArrayList<Survey> surveys = new ArrayList();
+    private ArrayList<Observation> tags = new ArrayList();
+    private ArrayList<Observation> summaries = new ArrayList();
+    private ArrayList<IncidentReport> incidentReports = new ArrayList();
 
     private boolean updated;
 
@@ -42,7 +42,6 @@ public class Instance extends TimeCategory {
         this.tags = new ArrayList<>();
         this.summaries = new ArrayList<>();
         this.incidentReports = new ArrayList<>();
-
     }
 
     public Instance() {
@@ -50,9 +49,15 @@ public class Instance extends TimeCategory {
     }
 
     public ArrayList<Survey> getSurveys() {
-        return surveys;
+        if (surveys == null) {
+            return new ArrayList<>();  // Return an empty ArrayList if surveys is null
+        }
+        return surveys;  // Return the surveys if not null
     }
 
+    public String getInstancePlaceName() { return place.getPlaceName(); }
+    public String getInstanceDayName() { return day.getDayName(); }
+    public String getInstanceTimeName() { return time.getTimeName(); }
 
     public int getInstanceID() { return instanceID; }
     public void setInstanceID(int instanceID) { this.instanceID = instanceID; }
@@ -124,31 +129,31 @@ public class Instance extends TimeCategory {
                 int tempID = (resultSet.getInt("instanceID") - 1);
                 instances[tempID] = new Instance();
                 instances[tempID].setInstanceID(tempID);
-                System.out.print(instances[tempID].getInstanceID());
+                System.out.print("iID " + instances[tempID].getInstanceID() + " : ");
                 double tempzScore = resultSet.getDouble("zScore");
                 instances[tempID].setZScore(tempzScore);
-                System.out.print(instances[tempID].getZScore());
+                System.out.print("zs " + instances[tempID].getZScore() + " : ");
                 double tempSampleMean = resultSet.getDouble("sampleMean");
                 instances[tempID].setSampleMean(tempSampleMean);
-                System.out.print(instances[tempID].getSampleMean());
+                System.out.print("sm " + instances[tempID].getSampleMean() + " : ");
                 int tempSampleSize = resultSet.getInt("sampleSize");
                 instances[tempID].setSampleSize(tempSampleSize);
-                System.out.println(instances[tempID].getSampleSize());
-                int tempStreetID = resultSet.getInt("streetID") - 1;
+                System.out.println("ss " + instances[tempID].getSampleSize() + " : ");
+                int tempStreetID = (resultSet.getInt("streetID") - 1);
                 String tempStreetName = resultSet.getString("streetName");
                 Place place = new Place(tempStreetID, tempStreetName);
-                System.out.print(place.getPlaceName());
-                System.out.print(place.getPlaceIdx());
-                int tempDayID = resultSet.getInt("dayID") - 1;
+                System.out.print("pn " + place.getPlaceName() + " : ");
+                System.out.print("pID " + place.getPlaceIdx() + " : ");
+                int tempDayID = (resultSet.getInt("dayID") - 1);
                 String tempDayName = resultSet.getString("dayName");
                 Day day = new Day(tempDayID, tempDayName);
-                System.out.print(day.getDayName());
-                System.out.print(day.getDayIdx());
-                int tempTimeID = resultSet.getInt("timeID") - 1;
+                System.out.print("dn " + day.getDayName() + " : ");
+                System.out.print("dID " + day.getDayIdx() + " : ");
+                int tempTimeID = (resultSet.getInt("timeID") - 1);
                 String tempTimeName = resultSet.getString("timeCategoryName");
                 TimeCategory time = new TimeCategory(tempTimeID, tempTimeName);
-                System.out.print(time.getTimeName());
-                System.out.print(time.getTimeIdx());
+                System.out.print("tn " + time.getTimeName() + " : ");
+                System.out.print("tID " + time.getTimeIdx() + " : ");
                 instances[tempID].setPlace(place);
                 instances[tempID].setDay(day);
                 instances[tempID].setTime(time);
@@ -392,17 +397,63 @@ public class Instance extends TimeCategory {
     public void takeSurvey(Survey survey) {
         this.surveys.add(survey);
         this.sampleSize++;
+
+        String insertSurveyQuery = "INSERT INTO `Survey` (`respondentID`, `instanceID`, `comment`, `surveyDateTakenID`, `surveyMean`, `respondentUsername`) "
+                                    + "VALUES (?, ?, ?, ?)";
+        String insertDateQuery = "INSERT INTO `Date` (`Year`, `Month`, `Day`) " + "VALUES (?, ?, ?);";
+
+        try (Connection connection = createConnection();
+             PreparedStatement insertSummaryStatement = connection.prepareStatement(insertSurveyQuery);
+             PreparedStatement dateStatement = connection.prepareStatement(insertDateQuery);
+             Statement statement = connection.createStatement();) {
+
+                String query2 = "SELECT * FROM Date";
+                ResultSet resultSet2 = statement.executeQuery(query2);
+
+                boolean dFlag = false;
+                int dateID = 0, day, month, year;
+
+                while (resultSet2.next() && !dFlag) {
+                    dateID = resultSet2.getInt("dateID");
+                    day = resultSet2.getInt("Day");
+                    month = resultSet2.getInt("Month");
+                    year = resultSet2.getInt("Year");
+
+                    if(survey.getDateTaken().getDay() == day && survey.getDateTaken().getMonth() == month && survey.getDateTaken().getYear() == year){
+                        dFlag = true;
+                    }
+                }
+
+            if(dFlag == false){
+                dateStatement.setInt(1, survey.getDateTaken().getYear());
+                dateStatement.setInt(2, survey.getDateTaken().getMonth());
+                dateStatement.setInt(3, survey.getDateTaken().getDay());
+                dateStatement.executeUpdate();
+                dateID += 1;
+            }
+
+                insertSummaryStatement.setInt(1, respondentID);
+                insertSummaryStatement.setInt(2, survey.getInstanceID());
+                insertSummaryStatement.setString(3, survey.getComment());
+                insertSummaryStatement.setInt(4, dateID);
+                insertSummaryStatement.setDouble(5, survey.getSurveyMean());
+                insertSummaryStatement.setString(6, survey.getRespondentUsername());
+        } catch (SQLException e) {
+            System.err.println("Error inserting data: " + e.getMessage());
+        }
     }
 
     public double getSampleMean() {
         double temp = 0;  
         for (int i = 0; i < this.sampleSize; i++)
-            temp += this.surveys.get(i).getSurveyMean();  // add the mean of each survey
+            if (surveys != null) {
+                temp += this.surveys.get(i).getSurveyMean();
+            }
         return temp / this.sampleSize; 
     }
 
     public static ArrayList<Survey> fetchByRespondentUsername(String username) {
-        ArrayList<Survey> surveys = new ArrayList();
+        ArrayList<Survey> surveys = new ArrayList<>();
         Survey tempSurvey = new Survey();
 
         try (Connection connection = createConnection();

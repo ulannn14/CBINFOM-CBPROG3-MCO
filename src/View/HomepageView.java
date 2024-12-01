@@ -86,9 +86,9 @@ public class HomepageView extends FrameCanvas  {
         return this;
     }
 
-    public void setWindowCloseListener(WindowListener listener) {
-        addWindowListener(listener); // Attach the listener to the frame
-    }
+    /* public void setWindowCloseListener(WindowListener listener) {
+    addWindowListener(listener); // Attach the listener to the frame
+    // }*/
       
 
     public void setErrorMessages(boolean visible){
