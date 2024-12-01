@@ -70,7 +70,7 @@ public class Observation extends DatabaseConnection{
                             "AND username = \"" + username + "\"";
             ResultSet resultSet2 = statement.executeQuery(query2);
 
-            int day, month, year, cDateID = 0, analystID;
+            int day, month, year, cDateID = 0, analystID = 1;
             boolean cFlag = false;
             LocalDate date = LocalDate.now();
 

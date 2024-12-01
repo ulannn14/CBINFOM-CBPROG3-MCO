@@ -130,9 +130,10 @@ abstract public class ProgramUser extends DatabaseConnection {
          */
 
 
+
         try (Connection connection = createConnection();
              Statement statement = connection.createStatement();
-             PreparedStatement CSStatement = connection.prepareStatement(insertCSQuery);) {
+             PreparedStatement updatePassStatement = connection.prepareStatement(insertCSQuery);) {
             
             String query1 = "SELECT * FROM Date";
             ResultSet resultSet1 = statement.executeQuery(query1);

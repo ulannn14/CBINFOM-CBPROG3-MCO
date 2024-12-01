@@ -20,9 +20,8 @@ public class ServiceClass {
 
         for (int i = 0; i < Constants.MAX_INSTANCE; i++) {
             if (instances[i].getSurveys().size() > 0) {
-                double instanceMean = instances[i].calculateInstanceMean();
+                double instanceMean = instances[i].getSampleMean();
                 instances[i].setZScore((instanceMean - populationMean) / populationStdDev);
-                instances[i].setSampleSize(instances[i].getSurveys().size());
                 instances[i].setUpdated(true);
             }
         }
