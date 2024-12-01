@@ -4,7 +4,7 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 
-public class PasswordManagerView extends ViewAbstract{
+public class PasswordManagerView extends FrameCanvas{
     final private JButton changePasswordButton = new JButton("Change Password");
     final private JButton backButton = new JButton("Back");
 
@@ -21,7 +21,7 @@ public class PasswordManagerView extends ViewAbstract{
         "What is the name of the street you grew up on?",
         "What is your favorite food?"
     };
-    final private JComboBox securityQuestionsDropdown = new JComboBox<String>(securityQuestions);
+    final private JComboBox<String> securityQuestionsDropdown = new JComboBox<>(securityQuestions);
 
     final private JTextField usernameField = new JTextField(15);
     final private JTextField securityPasswordField = new JTextField(15);
@@ -40,6 +40,7 @@ public class PasswordManagerView extends ViewAbstract{
         // "Does not meet password requirements"
         // "Password must be 8 to 25 charactes long"
 
+    @SuppressWarnings("OverridableMethodCallInConstructor")
     public PasswordManagerView(){
         super();
 

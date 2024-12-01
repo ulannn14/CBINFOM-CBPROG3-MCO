@@ -4,7 +4,7 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 
-public class AnalystWelcomeView extends ViewAbstract{
+public class AnalystWelcomeView extends FrameCanvas{
 	final private JButton viewInstancesDataButton = new JButton("View Instances Data");
 	final private JButton changePasswordButton = new JButton("Change Password");
 	final private JButton changeSecurityQuesAndPassButton = new JButton("Change Security Ques. and Pass.");
@@ -65,7 +65,7 @@ public class AnalystWelcomeView extends ViewAbstract{
 		viewGeneralDataLabel.setBounds(849, 216, 280, 40);
 		panel.add(viewGeneralDataLabel);
 		
-        frameSetVisible(true);
+        frameSetVisible();
     }
 	
 	public void setViewInstancesDataButtonListener(ActionListener listener){

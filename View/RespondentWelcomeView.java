@@ -4,7 +4,7 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 
-public class RespondentWelcomeView extends ViewAbstract{
+public class RespondentWelcomeView extends FrameCanvas{
 	final private JButton takeSurveyButton = new JButton("Take Survey");
 	final private JButton viewSurveyHistoryButton = new JButton("View Survey History");
 	final private JButton viewOrUpdateProfileButton = new JButton("View or Update Profile");

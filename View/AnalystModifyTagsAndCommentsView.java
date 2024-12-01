@@ -1,34 +1,32 @@
-import javax.swing.*;
+package View;
+
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.*;
 
-public class AnalystModifyTagsAndCommentsView extends JFrame {
+public class AnalystModifyTagsAndCommentsView extends FrameCanvas {
 
-    private JPanel tagsPanel;
-    private JPanel commentsPanel;
-    private JTextArea inputField;
-    private JButton backButton;
-    private JLabel errorLabel; // Error label for displaying messages
-    private ArrayList<JCheckBox> tagCheckBoxes = new ArrayList<>();
-    private ArrayList<JCheckBox> commentCheckBoxes = new ArrayList<>();
-    private Map<JCheckBox, Integer> tagIdMap = new HashMap<>();     // Map to store tag IDs
-    private Map<JCheckBox, Integer> commentIdMap = new HashMap<>(); // Map to store comment IDs
-    private int instanceID;
-    private String[] summaries;
-    private String[] tags;
+    final private JPanel tagsPanel;
+    final private JPanel commentsPanel;
+    final private JTextArea inputField;
+    final private JButton backButton;
+    final private JLabel errorLabel; // Error label for displaying messages
+    final private ArrayList<JCheckBox> tagCheckBoxes = new ArrayList<>();
+    final private ArrayList<JCheckBox> commentCheckBoxes = new ArrayList<>();
+    final private Map<JCheckBox, Integer> tagIdMap = new HashMap<>();     // Map to store tag IDs
+    final private Map<JCheckBox, Integer> commentIdMap = new HashMap<>(); // Map to store comment IDs
+    final private JButton addTagButton;
+    final private JButton addCommentSummaryButton;
+    final private JButton deleteButton;
 
-    public AnalystModifyTagsAndCommentsView(int instanceID, String[][] summaries, String[][] tags,
-                                            int counterCS, int counterTag) {
-        this.instanceID = instanceID;
+    public AnalystModifyTagsAndCommentsView(int instanceID, String[] summaries, String[] tags, int counterCS, int counterTag) {
+        super();
 
         setTitle("Modify Tags and Comment Summaries");
-        setSize(1200, 700);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setResizable(false);
 
         // Title Label
         JLabel titleLabel = new JLabel("Modify Tags and Comment Summaries", SwingConstants.CENTER);
@@ -46,18 +44,16 @@ public class AnalystModifyTagsAndCommentsView extends JFrame {
         // Tags Panel
         tagsPanel = new JPanel();
         tagsPanel.setLayout(new BoxLayout(tagsPanel, BoxLayout.Y_AXIS));
-        tagsPanel.add(new JLabel("Tags"));
-        tagsPanel.setBorder(BorderFactory.createEmptyBorder());
-        populateTags(tags); // Populate the tags
+        tagsPanel.setBorder(BorderFactory.createTitledBorder("Tags"));
+        populateTags(tags, counterTag); // Populate the tags
         JScrollPane tagsScrollPane = new JScrollPane(tagsPanel);
         contentPanel.add(tagsScrollPane);
 
         // Comments Panel
         commentsPanel = new JPanel();
         commentsPanel.setLayout(new BoxLayout(commentsPanel, BoxLayout.Y_AXIS));
-        commentsPanel.add(new JLabel("Comment Summaries"));
-        commentsPanel.setBorder(BorderFactory.createEmptyBorder());
-        populateComments(summaries); // Populate the comments
+        commentsPanel.setBorder(BorderFactory.createTitledBorder("Comment Summaries"));
+        populateComments(summaries, counterCS); // Populate the comments
         JScrollPane commentsScrollPane = new JScrollPane(commentsPanel);
         contentPanel.add(commentsScrollPane);
 
@@ -70,7 +66,6 @@ public class AnalystModifyTagsAndCommentsView extends JFrame {
         // Input Panel
         JPanel inputPanel = new JPanel(new BorderLayout());
         inputPanel.add(new JLabel("Add New Entry"), BorderLayout.NORTH);
-        inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         inputField = new JTextArea(3, 35);
         inputField.setLineWrap(true);
         inputField.setWrapStyleWord(true);
@@ -79,50 +74,40 @@ public class AnalystModifyTagsAndCommentsView extends JFrame {
 
         // Error Label
         errorLabel = new JLabel();
-        errorLabel.setForeground(Color.RED); // Red for errors
-        errorLabel.setVisible(false); // Initially hidden
+        errorLabel.setForeground(Color.RED);
+        errorLabel.setVisible(false);
         inputPanel.add(errorLabel, BorderLayout.SOUTH);
-
         bottomPanel.add(inputPanel, BorderLayout.NORTH);
 
         // Button Panel
         JPanel buttonPanel = new JPanel(new FlowLayout());
-        JButton addTagButton = new JButton("Add Tag");
-        JButton addCommentSummaryButton = new JButton("Add Comment Summary");
-        JButton deleteButton = new JButton("Delete Selected");
+        addTagButton = new JButton("Add Tag");
+        addCommentSummaryButton = new JButton("Add Comment Summary");
+        deleteButton = new JButton("Delete Selected");
         buttonPanel.add(addTagButton);
         buttonPanel.add(addCommentSummaryButton);
         buttonPanel.add(deleteButton);
-
         bottomPanel.add(buttonPanel, BorderLayout.CENTER);
 
         // Back Button
         backButton = new JButton("Back");
         bottomPanel.add(backButton, BorderLayout.WEST);
 
-        // Button Actions
-        addTagButton.addActionListener(e -> addTag());
-        addCommentSummaryButton.addActionListener(e -> addComment());
-        deleteButton.addActionListener(e -> deleteSelectedItems());
-
-        setVisible(true);
+        frameSetVisible();
     }
 
     // Populate tags panel
-    private void populateTags(String[][] tags) {
-        for (int i = 0; i < tags.length; i++) {
-            String tagId = tags[i][0];
-            String tagName = tags[i][1];
-            String username = tags[i][2];
-            String displayText = String.format("ID: %s | Tag: %s | User: %s", tagId, tagName, username);
+    private void populateTags(String[] tags, int counterTag) {
+        for (int i = 0; i < counterTag; i++) {
+            String tag = tags[i];
 
-            JCheckBox checkBox = new JCheckBox(displayText);
+            JCheckBox checkBox = new JCheckBox(tag);
             tagCheckBoxes.add(checkBox);
-            tagIdMap.put(checkBox, Integer.parseInt(tagId)); // Map the checkbox to the Tag ID
+            tagIdMap.put(checkBox, i); // Using index as the ID, or update accordingly
             checkBox.addItemListener(e -> {
                 if (e.getStateChange() == ItemEvent.SELECTED) {
                     int tagIdSelected = tagIdMap.get(checkBox);
-                    System.out.println("Tag ID selected: " + tagIdSelected); // Do something with the Tag ID
+                    System.out.println("Tag ID selected: " + tagIdSelected);
                 }
             });
             tagsPanel.add(checkBox);
@@ -130,48 +115,98 @@ public class AnalystModifyTagsAndCommentsView extends JFrame {
     }
 
     // Populate comments panel
-    private void populateComments(String[][] summaries) {
-        for (int i = 0; i < summaries.length; i++) {
-            String commentId = summaries[i][0];
-            String commentText = summaries[i][1];
-            String username = summaries[i][2];
-            String displayText = String.format("ID: %s | Comment: %s | User: %s", commentId, commentText, username);
+    private void populateComments(String[] summaries, int counterCS) {
+        for (int i = 0; i < counterCS; i++) {
+            String summary = summaries[i];
 
-            JCheckBox checkBox = new JCheckBox(displayText);
+            JCheckBox checkBox = new JCheckBox(summary);
             commentCheckBoxes.add(checkBox);
-            commentIdMap.put(checkBox, Integer.parseInt(commentId)); // Map the checkbox to the Comment ID
+            commentIdMap.put(checkBox, i); // Using index as the ID, or update accordingly
             checkBox.addItemListener(e -> {
                 if (e.getStateChange() == ItemEvent.SELECTED) {
                     int commentIdSelected = commentIdMap.get(checkBox);
-                    System.out.println("Comment ID selected: " + commentIdSelected); // Do something with the Comment ID
+                    System.out.println("Comment ID selected: " + commentIdSelected);
                 }
             });
             commentsPanel.add(checkBox);
         }
     }
 
-    private void addTag() {
-        // Implementation for adding a new tag
+    public void setDeleteButtonListener(java.awt.event.ActionListener listener) {
+        deleteButton.addActionListener(listener);
     }
 
-    private void addComment() {
-        // Implementation for adding a new comment
+    public void setAddTagButtonListener(java.awt.event.ActionListener listener) {
+        addTagButton.addActionListener(listener);
     }
 
-    private void deleteSelectedItems() {
-        // Implementation for deleting selected items
+    public void setAddSummaryButtonListener(java.awt.event.ActionListener listener) {
+        addCommentSummaryButton.addActionListener(listener);
     }
 
-    public static void main(String[] args) {
-        String[][] summaries = {
-            {"1", "Heavy traffic on route 1", "AnalystA"},
-            {"2", "Road construction causing delays", "AnalystB"},
-            {"3", "Long comment summary example", "AnalystC"}
-        };
-        String[][] tags = {
-            {"1", "Traffic", "AnalystA"},
-            {"2", "Construction", "AnalystB"}
-        };
-        new AnalystModifyTagsAndCommentsView(123, summaries, tags, summaries.length, tags.length);
+    public void setBackButtonListener(java.awt.event.ActionListener listener) {
+        backButton.addActionListener(listener);
+    }
+
+    public ArrayList<Integer> getTagIDsToDelete() {
+        ArrayList<Integer> selectedTagIds = new ArrayList<>();
+        for (JCheckBox checkBox : tagCheckBoxes) {
+            if (checkBox.isSelected()) {
+                selectedTagIds.add(tagIdMap.get(checkBox));
+            }
+        }
+        return selectedTagIds;
+    }
+
+    public ArrayList<Integer> getSummariesIDsToDelete() {
+        ArrayList<Integer> selectedCommentIds = new ArrayList<>();
+        for (JCheckBox checkBox : commentCheckBoxes) {
+            if (checkBox.isSelected()) {
+                selectedCommentIds.add(commentIdMap.get(checkBox));
+            }
+        }
+        return selectedCommentIds;
+    }
+
+    public String getNewTag() {
+        return inputField.getText().trim();
+    }
+
+    public String getNewCS() {
+        return inputField.getText().trim();
+    }
+
+    public boolean validateDelete() {
+        if (!getTagIDsToDelete().isEmpty() || !getSummariesIDsToDelete().isEmpty()) {
+            return true;
+        } else {
+            errorLabel.setText("Please select tags or comments to delete.");
+            errorLabel.setVisible(true);
+            return false;
+        }
+    }
+
+    public boolean validateAddTag() {
+        if (!getNewTag().isEmpty()) {
+            return true;
+        } else {
+            errorLabel.setText("Please input a tag.");
+            errorLabel.setVisible(true);
+            return false;
+        }
+    }
+
+    public boolean validateAddCS() {
+        if (!getNewCS().isEmpty()) {
+            return true;
+        } else {
+            errorLabel.setText("Please input a comment summary.");
+            errorLabel.setVisible(true);
+            return false;
+        }
+    }
+
+    public void setErrorMessages(boolean visible) {
+        errorLabel.setVisible(visible);
     }
 }

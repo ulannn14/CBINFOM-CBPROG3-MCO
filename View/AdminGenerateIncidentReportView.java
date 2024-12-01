@@ -1,11 +1,12 @@
 package View;
 
-import Model.*;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
+import java.util.stream.*;
+import ServiceClassPackage.*;
 
-public class AdminGenerateIncidentReportView extends ViewAbstract {
+public class AdminGenerateIncidentReportView extends FrameCanvas {
     final private JLabel instanceLabel = new JLabel("Choose the instance you would like to make a report about.");
     final private JLabel toLabel = new JLabel("To: ");
     final private JLabel fromLabel = new JLabel("From: ");
@@ -21,14 +22,13 @@ public class AdminGenerateIncidentReportView extends ViewAbstract {
     final private JTextField toField = new JTextField(30);
     final private JTextField fromField = new JTextField(30);
     final private JTextArea reportField = new JTextArea(10, 50);
-    
-    final private Place place = new Place();
-    final private String[] locations = {
-        "Location", // Placeholder option
-        place.fetchPlaceNames().toArray(new String[0])
-    };  
-    final private String[] days = {"Day of the Week", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-    final private String[] times = {
+
+    String[] locations = Stream.concat(
+            Stream.of("Location"),
+            Constants.fetchPlaceNames().stream()
+        ).toArray(String[]::new);
+    String[] days = {"Day of the Week", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+    String[] times = {
         "Time",
         "Morning Rush Hour [6:00 to 8:59]",
         "Mid-morning [9:00 to 10:59]",
@@ -37,10 +37,10 @@ public class AdminGenerateIncidentReportView extends ViewAbstract {
         "Night Rush Hour [17:00 to 21:59]",
         "Rest of the Day [22:00 to 5:59]"
     };
-
-    final private JComboBox<String> locationDropdown = new JComboBox<>(locations);
-    final private JComboBox<String> dayOfTheWeekDropdown = new JComboBox<>(days);
-    final private JComboBox<String> timeOfDayDropdown = new JComboBox<>(times);
+    
+    final private JComboBox<String> locationDropdown;
+    final private JComboBox<String> dayOfTheWeekDropdown;
+    final private JComboBox<String> timeOfDayDropdown;
 
     final private JButton submitButton = new JButton("Submit");
     final private JButton backButton = new JButton("Back");
@@ -49,6 +49,10 @@ public class AdminGenerateIncidentReportView extends ViewAbstract {
         super();
 
         setTitle("Generate Incident Report");
+
+        locationDropdown = new JComboBox<>(locations);
+        dayOfTheWeekDropdown = new JComboBox<>(days);
+        timeOfDayDropdown = new JComboBox<>(times);
         
         JLabel titleLabel = new JLabel("Generate Incident Report", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Garamond", Font.BOLD, 30));
@@ -146,37 +150,40 @@ public class AdminGenerateIncidentReportView extends ViewAbstract {
     }
 
     public boolean validateFields() {
-        setErrorMessages(false);
         boolean valid = true;
 
+        // Validate 'To' field
         if (!validateNameField(toField, toBlankLabel, "To field cannot be blank.")) {
             valid = false;
         }
 
+        // Validate 'From' field
         if (!validateNameField(fromField, fromBlankLabel, "From field cannot be blank.")) {
             valid = false;
         }
 
+        // Validate report field
         if (reportField.getText().trim().isEmpty()) {
             showError(reportBlankLabel, "Report cannot be blank.");
-            blankReportField();
             valid = false;
         } else if (reportField.getText().length() > 500) {
-            showError(reportBlankLabel, "Report must be at most 280 characters.");
-            blankReportField();
+            showError(reportBlankLabel, "Report must be at most 500 characters.");
             valid = false;
         }
 
+        // Validate location selection
         if (locationDropdown.getSelectedItem().equals("Location")) {
             blankLocationDropdown();
             valid = false;
         }
 
+        // Validate day selection
         if (dayOfTheWeekDropdown.getSelectedItem().equals("Day of the Week")) {
             blankDayDropdown();
             valid = false;
         }
 
+        // Validate time selection
         if (timeOfDayDropdown.getSelectedItem().equals("Time")) {
             blankTimeDropdown();
             valid = false;
@@ -189,12 +196,10 @@ public class AdminGenerateIncidentReportView extends ViewAbstract {
         if (field.getText().trim().isEmpty()) {
             showError(errorLabel, errorMessage);
             return false;
-        } 
-		else if (field.getText().length() > 30) {
+        } else if (field.getText().length() > 30) {
             showError(errorLabel, "Name must be at most 30 characters.");
             return false;
-        } 
-		else if (field.getText().matches(".*[^a-zA-Z ].*")) {
+        } else if (field.getText().matches(".*[^a-zA-Z ].*")) {
             showError(errorLabel, "Name cannot have numbers or special characters.");
             return false;
         }
@@ -204,18 +209,6 @@ public class AdminGenerateIncidentReportView extends ViewAbstract {
     public void showError(JLabel label, String errorMessage) {
         label.setText(errorMessage);
         label.setVisible(true);
-    }
-
-    public void blankToField() {
-        toBlankLabel.setVisible(true);
-    }
-
-    public void blankFromField() {
-        fromBlankLabel.setVisible(true);
-    }
-
-    public void blankReportField() {
-        reportBlankLabel.setVisible(true);
     }
 
     public void blankLocationDropdown() {
@@ -242,9 +235,9 @@ public class AdminGenerateIncidentReportView extends ViewAbstract {
         return reportField.getText();
     }
 
-	public String getPlaceName() {
-		return (String) locationDropdown.getSelectedItem();
-	}
+    public String getPlaceName() {
+        return (String) locationDropdown.getSelectedItem();
+    }
 
     public String getDayName() {
         return (String) dayOfTheWeekDropdown.getSelectedItem();

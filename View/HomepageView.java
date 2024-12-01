@@ -4,7 +4,8 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-public class HomepageView extends ViewAbstract {
+
+public class HomepageView extends FrameCanvas  {
     final private JButton forgotPasswordButton = new JButton("Forgot password?");
     final private JButton loginButton = new JButton("Login");
     final private JButton signupButton = new JButton("Sign up");
@@ -25,6 +26,7 @@ public class HomepageView extends ViewAbstract {
     final private JLabel wrongCredentialsLabel = new JLabel("Wrong credentials");
     final private JLabel invalidUsernamePasswordLabel = new JLabel("Invalid username or password");
 
+    @SuppressWarnings("OverridableMethodCallInConstructor")
     public HomepageView() {
         super();
 
@@ -76,7 +78,18 @@ public class HomepageView extends ViewAbstract {
         setErrorMessages(false);
 
         frameSetVisible();
+
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);  // Don't close the frame automatically
     }
+
+    public JFrame getFrame() {
+        return this;
+    }
+
+    public void setWindowCloseListener(WindowListener listener) {
+        addWindowListener(listener); // Attach the listener to the frame
+    }
+      
 
     public void setErrorMessages(boolean visible){
         wrongCredentialsLabel.setVisible(visible);

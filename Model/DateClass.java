@@ -16,7 +16,9 @@ public class DateClass {
     }
 
     public DateClass(String month, String day, String year) {
-        // algo to onvert to int 
+        this.month = Integer.parseInt(month);
+        this.day = Integer.parseInt(day);
+        this.year = Integer.parseInt(year);
     }
 
     public void setYear(int year){
@@ -71,6 +73,10 @@ public class DateClass {
         whole = monthName + " " + day + ", " + year;
         return whole;
     }
-
-
+    
+// 
+    public String convertToStringNumber () {
+        String temp = (String.format("%02d", month).concat("/").concat(String.format("%02d", day)).concat("/").concat(String.format("%02d", year)));
+        return temp;
+    }
 }

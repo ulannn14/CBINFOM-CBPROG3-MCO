@@ -4,16 +4,16 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 
-public class RespondentProfileView extends ViewAbstract{
+public class RespondentProfileView extends FrameCanvas{
     final private JButton updateButton = new JButton("Update Detials");
     final private JButton backButton = new JButton("Back");
 
     final private String[] months = {"Select month...","01","02","03","04","05","06","07","08","09","10","11","12"};
-    final private JComboBox monthsDropdown = new JComboBox<String>(months);
+    final private JComboBox<String> monthsDropdown = new JComboBox<>(months);
     final private String[] days = {"Select day...","01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31"};
-    final private JComboBox daysDropdown = new JComboBox<String>(days);
+    final private JComboBox<String> daysDropdown = new JComboBox<>(days);
     final private String[] years = {"Select year...","2024","2023","2022","2021","2020","2019","2018","2017","2016","2015","2014","2013","2012","2011","2010","2009","2008","2007","2006","2005","2004","2003","2002","2001","2000","1999","1998","1997","1996","1995","1994","1993","1992","1991","1990","1989","1988","1987","1986","1985","1984","1983","1982","1981","1980","1979","1978","1977","1976","1975","1974","1973","1972","1971","1970","1969","1968","1967","1966","1965","1964","1963","1962","1961","1960","1959","1958","1957","1956","1955","1954","1953","1952","1951","1950","1949","1948","1947","1946","1945","1944","1943","1942","1941","1940","1939","1938","1937","1936","1935","1934","1933","1932","1931","1930","1929","1928","1927","1926","1925"};
-    final private JComboBox yearsDropdown = new JComboBox<String>(years);
+    final private JComboBox<String> yearsDropdown = new JComboBox<>(years);
 
     final private JTextField nameField = new JTextField(15);
     final private JTextField emailField = new JTextField(15);
@@ -33,7 +33,7 @@ public class RespondentProfileView extends ViewAbstract{
     final private JLabel usernameFieldLabel = new JLabel("Username");
     final private JLabel birthdayDropdownLabel = new JLabel("Birthday");
 
-    private JLabel usernameErrorLabel = new JLabel("");
+    final private JLabel usernameErrorLabel = new JLabel("");
         // Username is already taken.
         // Username must be 8 to 25 characters long.
     final private JLabel birthdayErrorLabel = new JLabel("");
@@ -41,6 +41,7 @@ public class RespondentProfileView extends ViewAbstract{
         // Please choose a valid choice.
     final private JLabel updateErrorLabel = new JLabel("At least one field must be edited.");
     
+    @SuppressWarnings("OverridableMethodCallInConstructor")
     public RespondentProfileView(String name, String email, String username, int[] birthday, int age, int[] dateJoined){
         super();
 

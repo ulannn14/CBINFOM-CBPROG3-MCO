@@ -6,13 +6,17 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.DriverManager;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 abstract public class ProgramUser extends DatabaseConnection {
     protected String username;
     protected String accountPassword;
     protected String securityQuestion;
     protected String securityPassword;
+    protected int userID;
     protected int userType;
+    protected boolean notAnUpdate = true;
 
     // SETTERS
 
@@ -32,6 +36,10 @@ abstract public class ProgramUser extends DatabaseConnection {
         }
     }
 
+    public void setAccountPassword(String accountPassword, boolean notAnUpdate){
+        this.accountPassword = accountPassword;
+    }
+
     public void setSecurityQuestion(String securityQuestion){
         this.securityQuestion = securityQuestion;
         
@@ -47,6 +55,11 @@ abstract public class ProgramUser extends DatabaseConnection {
             System.err.println("Error inserting data: " + e.getMessage());
         }
     }
+
+    public void setSecurityQuestion(String securityQuestion, boolean notAnUpdate){
+        this.securityQuestion = securityQuestion;
+    }
+
 
     public void setSecurityPassword(String securityPassword){
         this.securityPassword = securityPassword;
@@ -64,8 +77,24 @@ abstract public class ProgramUser extends DatabaseConnection {
         }
     }
 
+    public void setSecurityPassword(String securityPassword, boolean notAnUpdate){
+        this.securityPassword = securityPassword;
+    }
+
+    public void setUsername(String username){
+        this.username = username;
+    }
+
     public void setUserType(int userType){
         this.userType = userType;
+    }
+
+    public void setUserID(int x){
+        userID = x;
+    }
+
+    public int getUserID(){
+        return userID;
     }
 
     // GETTERS
@@ -99,7 +128,18 @@ abstract public class ProgramUser extends DatabaseConnection {
                  2. if yes, update the password in the database
             --- return the following (1. Successful - match lahat, 2. No username exists, 3. Mismatch security question, 4. Wrong Security Password, in that hierarchy)
          */
-        return -1;
+
+
+        try (Connection connection = createConnection();
+             Statement statement = connection.createStatement();
+             PreparedStatement CSStatement = connection.prepareStatement(insertCSQuery);) {
+            
+            String query1 = "SELECT * FROM Date";
+            ResultSet resultSet1 = statement.executeQuery(query1);
+
+            String query2 = "SELECT * FROM ProgramUser WHERE userType = 2" + 
+                            "AND username = \"" + username + "\"";
+            ResultSet resultSet2 = statement.executeQuery(query2);
     }
 
     public static boolean checkUsernameValid(String username) {

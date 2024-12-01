@@ -1,46 +1,37 @@
 package View;
 
-import Model.*;
+import java.awt.*;
 import javax.swing.*;
 import javax.swing.table.*;
-import java.awt.*;
-import java.util.ArrayList;
 import java.awt.event.ActionListener;
 
-public class AdminViewRespondentDataView extends JFrame {
+public class AdminViewRespondentDataView extends FrameCanvas {
     final private JButton backButton = new JButton("Back");
-    final private Image backgroundImage;
 
-    public AdminViewRespondentDataView(ArrayList<String> allNames, ArrayList<DateClass> allBirthdates, ArrayList<Integer> allAges, ArrayList<String> allEmails,
-                                        ArrayList<String> allUsernames, ArrayList<String> allSQs, ArrayList<DateClass> allDateJoineds) {
-        backgroundImage = new ImageIcon("fadminViewRespondentDataView.png").getImage();
+    public AdminViewRespondentDataView(String[] allNames, String[] allBirthdates, int[] allAges, String[] allEmails, String[] allUsernames, String[] allSQs, String[] allDateJoineds) {
+        super();
         
         setTitle("Respondents Data");
-        setSize(1200, 700);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
         JLabel titleLabel = new JLabel("Respondents Data", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Garamond", Font.BOLD, 30));
         add(titleLabel, BorderLayout.NORTH);
 
-        String[] columnHeaders = {
-            "Name", "Birthday", "Age", "Email", "Username", "Security Question", "Date Joined"
-        };
+        String[] columnHeaders = {"Name", "Birthday", "Age", "Email", "Username", "Security Question", "Date Joined"};
 
         DefaultTableModel tableModel = new DefaultTableModel(columnHeaders, 0);
 
-        for (int i = 0; i < allNames.size(); i++) {
+        for (int i = 0; i < allNames.length; i++) {
             Object[] row = {
-                allNames.get(i),
-                allBirthdates.get(i), 
-                allAges.get(i),
-                allEmails.get(i),
-                allUsernames.get(i),
-                allSQs.get(i),
-                allDateJoineds.get(i) 
+                allNames[i],
+                allBirthdates[i], 
+                allAges[i],
+                allEmails[i],
+                allUsernames[i],
+                allSQs[i],
+                allDateJoineds[i] 
             };
-            
             tableModel.addRow(row);
         }
 
@@ -80,7 +71,7 @@ public class AdminViewRespondentDataView extends JFrame {
         tablePanel.add(scrollPane, BorderLayout.CENTER);
         add(tablePanel, BorderLayout.CENTER);
 
-        setVisible(true);
+        frameSetVisible();
     }   
 
     public void setBackButtonListener(ActionListener listener) {

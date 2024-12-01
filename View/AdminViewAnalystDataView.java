@@ -1,16 +1,14 @@
 package View;
 
-import Model.*;
 import java.awt.*;
-import java.util.*;
 import javax.swing.*;
 import java.awt.event.*;
 import javax.swing.table.*;
 
-public class AdminViewAnalystDataView extends ViewAbstract {
+public class AdminViewAnalystDataView extends FrameCanvas {
     final private JButton backButton = new JButton("Back");
 
-    public AdminViewAnalystDataView(ArrayList<String> allUsernames, ArrayList<String> allSQs, ArrayList<DateClass> allDateJoineds) {
+    public AdminViewAnalystDataView(String[] allUsernames, String[] allSQs, String[] allDateJoineds) {
         super();
 
         setTitle("Analysts Data");
@@ -26,11 +24,11 @@ public class AdminViewAnalystDataView extends ViewAbstract {
 
         DefaultTableModel tableModel = new DefaultTableModel(columnHeaders, 0);
 
-        for (int i = 0; i < allUsernames.size(); i++) {
+        for (int i = 0; i < allUsernames.length; i++) {
             Object[] row = {
-                allUsernames.get(i),
-                allSQs.get(i),
-                allDateJoineds.get(i) 
+                allUsernames[i],
+                allSQs[i],
+                allDateJoineds[i]
             };
             
             tableModel.addRow(row);
@@ -54,9 +52,9 @@ public class AdminViewAnalystDataView extends ViewAbstract {
         dateJoinedColumn.setPreferredWidth(100);
         dateJoinedColumn.setMaxWidth(100);
 
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panel.add(backButton);
-        add(panel, BorderLayout.SOUTH);
+        JPanel innerpanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        innerpanel.add(backButton);
+        add(innerpanel, BorderLayout.SOUTH);
 
         JPanel tablePanel = new JPanel(new BorderLayout());
         tablePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));

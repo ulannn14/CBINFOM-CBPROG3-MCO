@@ -14,7 +14,11 @@ public class IncidentReport {
     DateClass dateCreated;
 
     public void setDateCreated(DateClass dateCreated) {
-        this.dateCreated = new dateCreated;
+        this.dateCreated = dateCreated;
+    }
+    
+    public DateClass getDateCreated() {
+        return dateCreated;
     }
 
 

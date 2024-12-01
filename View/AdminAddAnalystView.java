@@ -4,7 +4,7 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 
-public class AdminAddAnalystView extends ViewAbstract {
+public class AdminAddAnalystView extends FrameCanvas {
     final private JButton addButton = new JButton("Add");
     final private JButton backButton = new JButton("Back");
 

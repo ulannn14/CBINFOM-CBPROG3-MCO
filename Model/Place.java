@@ -15,19 +15,15 @@ public class Place extends DatabaseConnection{
     // Attributes
     private int placeIdx; // Unique identifier for the place
     private String placeName; // Name of the place
-	private int placeType; // 0 for Landmark, 1 for Street
 
     public Place() {
         
     }
 
     // Constructor
-    public Place(int placeIdx, String placeName, int placeType) {
+    public Place(int placeIdx, String placeName) {
         this.placeIdx = placeIdx;
         this.placeName = placeName;
-		this.placeType = placeType;
-        this.connectedPlaces = new Place[44]; // 19 landmarks, 25 streets = 44 places
-        this.numConnectedPlaces = 0;
     }
 
     // Method to add a connected place
@@ -39,51 +35,56 @@ public class Place extends DatabaseConnection{
     }
 
     public ArrayList<Integer> fetchPlaceIDs(){
-        ArrayList<Integer> placeIDs = new ArrayList();
+        ArrayList<Integer> streetIDs = new ArrayList();
         int temp;
 
         try (Connection connection = createConnection();
              Statement statement = connection.createStatement();) {
 
             // Execute a Query
-            String query = "SELECT * FROM Place";
+            String query = "SELECT * FROM Streets";
             ResultSet resultSet = statement.executeQuery(query);
 
             while (resultSet.next()) {
-                temp = resultSet.getInt("placeID");
+                temp = resultSet.getInt("streetID");
                 temp -= 1;
-                placeIDs.add(temp);
+                streetIDs.add(temp);
             }
         } catch (SQLException e) {
             System.err.println("Error inserting data: " + e.getMessage());
         }
 
-        return placeIDs;
+        return streetIDs;
     }
 
-    public ArrayList<String> fetchPlaceNames(){
-        ArrayList<String> placeNames = new ArrayList();
+    public static ArrayList<String> fetchPlaceNames(){
+        ArrayList<String> streetNames = new ArrayList<>();
         String temp = "";
 
         try (Connection connection = createConnection();
              Statement statement = connection.createStatement();) {
 
             // Execute a Query
-            String query = "SELECT S1.streetName AS streetName1, S2.streetName AS streetName2 " +
-                            "FROM  Place P " +
-                            "JOIN Streets S1 ON P.streetID1 = S1.streetID " +
-                            "JOIN  Streets S2 ON P.streetID2 = S2.streetID";
+            String query = "SELECT * FROM Streets";
             ResultSet resultSet = statement.executeQuery(query);
 
             while (resultSet.next()) {
-                temp.concat(resultSet.getString("streetName1")).concat(" - ").concat(resultSet.getString("streetName2")).concat(" Intersection");
-                placeNames.add(temp);
+                temp = resultSet.getString("streetName");
+                streetNames.add(temp);
             }
         } catch (SQLException e) {
             System.err.println("Error inserting data: " + e.getMessage());
         }
 
-        return placeNames;
+        return streetNames;
+    }
+
+    public void setPlaceIdx(int placeIdx) {
+        this.placeIdx = placeIdx;
+    }
+
+    public void setPlaceName(String placeName) {
+        this.placeName = placeName;
     }
 
     // Getter for placeIdx

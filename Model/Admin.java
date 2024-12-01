@@ -1,10 +1,10 @@
 package Model;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.sql.SQLException;
-import java.sql.Connection;
+import java.sql.Statement;
 
 public class Admin extends ProgramUser {
 
@@ -18,8 +18,6 @@ public class Admin extends ProgramUser {
         this.securityQuestion = securityQuestion;
         this.securityPassword = securityPassword;
         this.userType = userType;
-        
-        createQuery();
     }
 
     @Override
@@ -43,7 +41,8 @@ public class Admin extends ProgramUser {
         }
     }
 
-    public static Admin fetchUser(String username, String password) {
+    @Override
+    public Admin fetchUser(String username, String password) {
         Admin admin = new Admin();
         boolean flag = false;
 

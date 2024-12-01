@@ -1,7 +1,5 @@
 package Model;
 
-import java.util.ArrayList;
-
 public class Survey {
     private int[] answers = new int[20];
     private double surveyMean;
@@ -10,6 +8,11 @@ public class Survey {
     private String respondentUsername;
     private int instanceID;
 
+
+    public Survey() {
+
+    }
+    
     public int getInstanceID() {
         return instanceID;
     }
@@ -18,7 +21,7 @@ public class Survey {
         instanceID = x;
     }
 
-    public Survey(int[] answers, String respondentUsername, String comment, DateClass dateTaken, Int id) {
+    public Survey(int[] answers, String respondentUsername, String comment, DateClass dateTaken, int id) {
         this.answers = answers;
         this.comment = comment;
         this.dateTaken = dateTaken;
@@ -41,15 +44,6 @@ public class Survey {
     public String getComment() { return comment; }
     public DateClass getDateTaken() { return dateTaken; }
     public double getSurveyMean() { return surveyMean; }
-    public String getRespondentUsername() { return respondentUsername; }
-
-    public String getTimeName() { return timeName; }
-    public void setTimeName(String timeName) { this.timeName = timeName; }
-
-    public static ArrayList<Survey> fetchByRespondentId(String respondentID) {
-        // sa survey na table, query lahat ng may ganon, also match yung IDS ng instance names
-        
-        throw new UnsupportedOperationException("Not supported yet.");
-    }    
+    public String getRespondentUsername() { return respondentUsername; }   
 }
 

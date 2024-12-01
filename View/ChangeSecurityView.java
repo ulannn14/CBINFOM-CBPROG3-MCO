@@ -1,16 +1,14 @@
 package View;
 
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import javax.swing.*;
+import java.awt.event.*;
 
-public class ChangeSecurityView extends JFrame{
+public class ChangeSecurityView extends FrameCanvas{
 	final private JButton changeSecurityDetailsButton = new JButton("Change Security Details");
     final private JButton backButton = new JButton("Back");
 
-    private final String[] securityQuestions = {
+     final private String[] securityQuestions = {
         "Select security question...",
         "What is your mother's maiden name?",
         "What is the name of your first pet?",
@@ -25,40 +23,22 @@ public class ChangeSecurityView extends JFrame{
     };
     final private JComboBox<String> securityQuestionsDropdown = new JComboBox<>(securityQuestions);
 
-    final private JPasswordField newSecurityPasswordField = new JPasswordField(15);
+    final private JTextField newSecurityPasswordField = new JTextField(15);
     final private JPasswordField accountPasswordField = new JPasswordField(15);
 
     final private JLabel header = new JLabel("Security Question and Password Manager");
-    final private JLabel usernameLabel = new JLabel("Username: ");
     final private JLabel newSecurityQuestionLabel = new JLabel("New Security Question");
     final private JLabel newSecurityPasswordLabel = new JLabel("New Security Password");
     final private JLabel accountPasswordLabel = new JLabel("Account Password");
 	
-    final private JLabel blankNewSecQuesLabel = new JLabel("New Security Question cannot be blank.");
+    final private JLabel blankNewSecQuesLabel = new JLabel("Please select a valid security question.");
     final private JLabel incorrectAccountPasswordLabel = new JLabel("Incorrect password.");
     final private JLabel newSecPassErrorLabel = new JLabel("Does not meet password requirements.");
-	
-	final private Image backgroundImage;
     
-    public ChangeSecurityView(){
-		JFrame frame = new JFrame("Change Security Question and Password");
-		
-		backgroundImage = new ImageIcon("fchangeSecurityView.png").getImage();
-        
-		JPanel panel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
-            }
-        }; 		
-		
-		frame.setSize(1200, 700);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setResizable(false);
-        frame.add(panel);
+    public ChangeSecurityView(String username){
+		super();
 
-        panel.setLayout(null); 
+        setTitle("Security Question and Password Manager"); 
 
         changeSecurityDetailsButton.setBounds(490, 550, 220, 40);
         panel.add(changeSecurityDetailsButton);
@@ -72,7 +52,7 @@ public class ChangeSecurityView extends JFrame{
 
         newSecurityPasswordField.setBounds(400, 260, 400, 30);
         panel.add(newSecurityPasswordField);
-        addPasswordPlaceholder(newSecurityPasswordField, " It must be 8 to 25 characters long");
+        addPlaceholder(newSecurityPasswordField, " It must be 8 to 25 characters long");
 
         accountPasswordField.setBounds(400, 340, 400, 30);
         panel.add(accountPasswordField);
@@ -83,6 +63,7 @@ public class ChangeSecurityView extends JFrame{
         header.setHorizontalAlignment(SwingConstants.CENTER);
         panel.add(header);
 
+        JLabel usernameLabel = new JLabel("Username: " + username);
         usernameLabel.setBounds(400, 128, 235, 20);
         panel.add(usernameLabel);
 
@@ -110,8 +91,36 @@ public class ChangeSecurityView extends JFrame{
         newSecPassErrorLabel.setVisible(false);
         panel.add(newSecPassErrorLabel);
 
-		
-        frame.setVisible(true);
+        setErrorMessages(false);
+
+        frameSetVisible();
+    }
+
+    public void setErrorMessages(boolean visible) {
+        blankNewSecQuesLabel.setVisible(visible);
+        incorrectAccountPasswordLabel.setVisible(visible);
+        newSecPassErrorLabel.setVisible(visible);
+    }
+
+    public boolean validateFields() {
+        boolean valid = true;
+        setErrorMessages(false);
+
+        if (securityQuestionsDropdown.getSelectedIndex() == 0) {
+            blankNewSecQuesLabel.setVisible(true);
+            valid = false;
+        }
+        
+        if (validateLength(getSecurityPassword()) == false){
+            newSecPassErrorLabel.setVisible(true);
+            valid = false;
+        }
+
+        return valid;
+    }
+
+    public void wrongPassword() {
+        incorrectAccountPasswordLabel.setVisible(true);
     }
 
     public void blankNewSecurityQuestion(){
@@ -120,32 +129,6 @@ public class ChangeSecurityView extends JFrame{
 
     public void incorrectAccountPassword() {
         incorrectAccountPasswordLabel.setVisible(true);
-    }
-	
-	private static void addPasswordPlaceholder(JPasswordField passwordField, String placeholder) {
-        passwordField.setText(placeholder);
-        passwordField.setEchoChar((char) 0); // Disable masking
-        passwordField.setForeground(Color.GRAY);
-
-        passwordField.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                if (String.valueOf(passwordField.getPassword()).equals(placeholder)) {
-                    passwordField.setText("");
-                    passwordField.setEchoChar('\u2022'); // Enable masking
-                    passwordField.setForeground(Color.BLACK);
-                }
-            }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                if (String.valueOf(passwordField.getPassword()).isEmpty()) {
-                    passwordField.setText(placeholder);
-                    passwordField.setEchoChar((char) 0); // Disable masking
-                    passwordField.setForeground(Color.GRAY);
-                }
-            }
-        });
     }
 	
 	public void setChangeSecurityDetailsButtonListener(ActionListener listener){
@@ -161,42 +144,10 @@ public class ChangeSecurityView extends JFrame{
 	}
 	
 	public String getSecurityPassword(){
-		return new String (newSecurityPasswordField.getPassword());
+		return newSecurityPasswordField.getText();
 	}
 	
 	public String getPassword(){
 		return new String (accountPasswordField.getPassword());
 	}
-
-    public boolean validateSecurityQuestion() {
-        if (    securityQuestionsDropdown.getSelectedItem().equals("Select security question...")) {
-            return false;
-        }
-        else
-            return true;
-    }
-
-    public boolean validateSecurityPassword(){
-        String password = getSecurityPassword();
-        int length = password.length();
-
-        if (password.length() < 8 || password.length() > 25) {
-            newSecPassErrorLabel.setText("Password must be 8 to 25 characters long.");
-            newSecPassErrorLabel.setVisible(true);
-            return false;
-        }
-        else
-            return true;
-    }
-
-    public void setErrorMessages(boolean visible) {
-        blankNewSecQuesLabel.setVisible(visible);
-        incorrectAccountPasswordLabel.setVisible(visible);
-        newSecPassErrorLabel.setVisible(visible);
-    }	
-
-    public void wrongPassword() {
-        incorrectAccountPasswordLabel.setVisible(true);
-    }
-    
 }

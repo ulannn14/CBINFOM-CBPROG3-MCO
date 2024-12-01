@@ -1,14 +1,12 @@
 package Model;
 
-import java.sql.Date;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.DriverManager;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 
 public class Respondent extends ProgramUser {
     private String name;
@@ -64,56 +62,55 @@ public class Respondent extends ProgramUser {
 
             boolean cFlag = false, bFlag = false;
             // 0 - birthdate, 1 - current date
-            int[] dateID = new int[2], day = new int[2], month = new int[2], year = new int[2], dateCtr = new int[2];
+            int[] day = new int[2], month = new int[2], year = new int[2];
+            int bDateID = 0, cDateID = 0;
             LocalDate date = LocalDate.now();
 
             while (resultSet.next() && !bFlag && !cFlag) {
                 if(!bFlag) {
-                    dateCtr[0] = resultSet.getInt("dateID");
+                    bDateID = resultSet.getInt("dateID");
                     day[0] = resultSet.getInt("Day");
                     month[0] = resultSet.getInt("Month");
                     year[0] = resultSet.getInt("Year");
                 }
 
                 if(!cFlag) {
-                    dateCtr[1] = resultSet.getInt("dateID");
+                    cDateID = resultSet.getInt("dateID");
                     day[1] = resultSet.getInt("Day");
                     month[1] = resultSet.getInt("Month");
                     year[1] = resultSet.getInt("Year");
                 }
 
                 if(birthdate.getDay() == day[0] && birthdate.getMonth() == month[0] && birthdate.getYear() == year[0]){
-                    dateID[0] = resultSet.getInt("dateID");
                     bFlag = true;
                 }
 
                 if(date.getDayOfMonth() == day[1] && date.getMonthValue() == month[1] && date.getYear() == year[1]){
-                    dateID[1] = resultSet.getInt("dateID");
                     cFlag = true;
                 }
             }
 
             if(bFlag == false){
-                dateStatement.setInt(1, year[0]);
-                dateStatement.setInt(2, month[0]);
-                dateStatement.setInt(3, day[0]);
+                dateStatement.setInt(1, birthdate.getDay());
+                dateStatement.setInt(2, birthdate.getMonth());
+                dateStatement.setInt(3, birthdate.getYear());
                 dateStatement.executeUpdate();
-                dateID[0] = dateCtr[0];
+                bDateID += 1;
             }
 
             if(cFlag == false){
-                dateStatement.setInt(1, year[1]);
-                dateStatement.setInt(2, month[1]);
-                dateStatement.setInt(3, day[1]);
+                dateStatement.setInt(1, date.getYear());
+                dateStatement.setInt(2, date.getMonthValue());
+                dateStatement.setInt(3, date.getDayOfMonth());
                 dateStatement.executeUpdate();
-                dateID[1] = dateCtr[1];
+                cDateID += 1;
             }
 
             // Set values for Respondent table
             respondentStatement.setString(1, name);
             respondentStatement.setString(2, emailAddress);
-            respondentStatement.setInt(3, dateID[0]);
-            respondentStatement.setInt(4, dateID[1]); 
+            respondentStatement.setInt(3, bDateID);
+            respondentStatement.setInt(4, cDateID); 
             respondentStatement.setInt(5, 0);
 
             // Set values for ProgramUser table
@@ -130,7 +127,7 @@ public class Respondent extends ProgramUser {
         }
     }
 
-    public static Respondent fetchUser(String username, String password) {
+    public Respondent fetchUser(String username, String password) {
         // find the matched username and password of userType = 3 in the database
         // return null if no match,
         // return the whole user if a match is found (populate an instance of the user then return it)
@@ -153,11 +150,6 @@ public class Respondent extends ProgramUser {
 
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
-    }
-
-    public void addSurvey(Survey survey) {
-        surveyHistory[numSurveyHistory] = survey;
-        numSurveyHistory++;
     }
 
     // GETTERS
@@ -195,10 +187,6 @@ public class Respondent extends ProgramUser {
 
         if (!flag) age -= 1;
         return age;
-    }
-
-    public Survey getHistory(int historyIdx) {
-        return surveyHistory[historyIdx];
     }
 
     public void takeSurvey() {

@@ -1,38 +1,62 @@
-import javax.swing.*;
+package View;
+
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.*;
+import javax.swing.*;
+import java.awt.event.*;
+import java.util.stream.*;
+import ServiceClassPackage.*;
 
-public class RespondentTakeSurveyView extends JFrame {
+public class RespondentTakeSurveyView extends FrameCanvas {
 
-    private JComboBox<String> locationDropdown, dayDropdown, timeDropdown;
-    private JLabel locationError, dayError, timeError;
-    private ArrayList<JPanel> questionPanels;
-    private JTextArea commentField;
-    private JButton backButton, submitButton;
+	String[] locations = Stream.concat(
+            Stream.of("Location"),
+            Constants.fetchPlaceNames().stream()
+        ).toArray(String[]::new);
+    String[] days = {"Day of the Week", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+    String[] times = {
+        "Time",
+        "Morning Rush Hour [6:00 to 8:59]",
+        "Mid-morning [9:00 to 10:59]",
+        "Lunchtime [11:00 to 12:59]",
+        "Afternoon [13:00 to 16:59]",
+        "Night Rush Hour [17:00 to 21:59]",
+        "Rest of the Day [22:00 to 5:59]"
+    };
+
+    final private JComboBox<String> locationDropdown, dayDropdown, timeDropdown;
+    final private JLabel locationError, dayError, timeError, questionsError, commentsError;
+    final private ArrayList<JPanel> questionPanels;
+    final private JTextArea commentField;
+    final private JButton backButton, submitButton;
+	final private JRadioButton[][] radioButton = new JRadioButton[20][5];
+	final private ButtonGroup[] group = new ButtonGroup[20];
 
     public RespondentTakeSurveyView() {
+		super();
+
         setTitle("Take Survey");
-        setSize(1200, 700);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-		setResizable(false);
+
+        locationDropdown = new JComboBox<>(locations);
+        dayDropdown = new JComboBox<>(days);
+        timeDropdown = new JComboBox<>(times);
 
         // Main Panel
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        add(mainPanel);
+        panel.setLayout(new BorderLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         // Title
         JLabel titleLabel = new JLabel("Take Survey", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Garamond", Font.BOLD, 30));
-        mainPanel.add(titleLabel, BorderLayout.NORTH);
+        panel.add(titleLabel, BorderLayout.NORTH);
 
         // Content Panel (with ScrollPane)
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
         JScrollPane scrollPane = new JScrollPane(contentPanel);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        panel.add(scrollPane, BorderLayout.CENTER);
 
         // Dropdown Panel with GridBagLayout
 		JPanel dropdownPanel = new JPanel(new GridBagLayout());
@@ -47,10 +71,9 @@ public class RespondentTakeSurveyView extends JFrame {
 		locationPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		JLabel locationLabel = new JLabel("Location:");
 		locationLabel.setHorizontalAlignment(SwingConstants.LEFT);
-		locationDropdown = new JComboBox<>(new String[]{"Select Location", "Location A", "Location B"});
 		locationPanel.add(locationLabel, BorderLayout.NORTH);
 		locationPanel.add(locationDropdown, BorderLayout.CENTER);
-		locationError = createErrorLabel();
+		locationError = createErrorLabel("Please select a location.");
 		locationPanel.add(locationError, BorderLayout.SOUTH);
 		gbc.gridx = 0; // Column position
 		gbc.weightx = 0.45; // 45% of total width
@@ -63,10 +86,9 @@ public class RespondentTakeSurveyView extends JFrame {
 		dayPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		JLabel dayLabel = new JLabel("Day of the Week:");
 		dayLabel.setHorizontalAlignment(SwingConstants.LEFT);
-		dayDropdown = new JComboBox<>(new String[]{"Select Day", "Monday", "Tuesday", "Wednesday"});
 		dayPanel.add(dayLabel, BorderLayout.NORTH);
 		dayPanel.add(dayDropdown, BorderLayout.CENTER);
-		dayError = createErrorLabel();
+		dayError = createErrorLabel("Please select a day.");
 		dayPanel.add(dayError, BorderLayout.SOUTH);
 		gbc.gridx = 1; // Column position
 		gbc.weightx = 0.3; // 30% of total width
@@ -79,10 +101,9 @@ public class RespondentTakeSurveyView extends JFrame {
 		timePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		JLabel timeLabel = new JLabel("Time:");
 		timeLabel.setHorizontalAlignment(SwingConstants.LEFT);
-		timeDropdown = new JComboBox<>(new String[]{"Select Time", "Morning", "Afternoon", "Evening"});
 		timePanel.add(timeLabel, BorderLayout.NORTH);
 		timePanel.add(timeDropdown, BorderLayout.CENTER);
-		timeError = createErrorLabel();
+		timeError = createErrorLabel("Please select a time.");
 		timePanel.add(timeError, BorderLayout.SOUTH);
 		gbc.gridx = 2; // Column position
 		gbc.weightx = 0.25; // 25% of total width
@@ -139,6 +160,9 @@ public class RespondentTakeSurveyView extends JFrame {
             "The width of the sidewalk (1 for narrow, 5 for wide).",
             "There are a lot of road humps/rocks in the area."
         });
+		
+		questionsError = createErrorLabel("Some questions are unanswered.");
+		contentPanel.add(questionsError, BorderLayout.SOUTH);
 
         // Comment Section
         JPanel commentPanel = new JPanel(new BorderLayout());
@@ -147,11 +171,15 @@ public class RespondentTakeSurveyView extends JFrame {
         commentField = new JTextArea(5, 40);
         commentField.setLineWrap(true);
         commentField.setWrapStyleWord(true);
+		addPlaceholder(commentField, " Type here...");
         JScrollPane commentScrollPane = new JScrollPane(commentField);
 
         commentPanel.add(commentLabel, BorderLayout.NORTH);
         commentPanel.add(commentScrollPane, BorderLayout.CENTER);
         contentPanel.add(commentPanel);
+
+		commentsError = createErrorLabel("Comment cannot be over 280 characters long.");
+		commentsError.add(commentsError, BorderLayout.SOUTH);
 
         // Bottom Panel
         JPanel bottomPanel = new JPanel(new BorderLayout());
@@ -159,17 +187,27 @@ public class RespondentTakeSurveyView extends JFrame {
         submitButton = new JButton("Submit");
         bottomPanel.add(backButton, BorderLayout.WEST);
         bottomPanel.add(submitButton, BorderLayout.EAST);
-        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
+        panel.add(bottomPanel, BorderLayout.SOUTH);
 
-        setVisible(true);
+		setErrorMessages(false);
+
+        frameSetVisible();
     }
 
     // Helper method to create error labels
-    private JLabel createErrorLabel() {
-        JLabel errorLabel = new JLabel(" ");
+    private JLabel createErrorLabel(String text) {
+        JLabel errorLabel = new JLabel(text);
         errorLabel.setForeground(Color.RED);
         return errorLabel;
     }
+
+	public void setErrorMessages(boolean visible){
+		locationError.setVisible(visible);
+		dayError.setVisible(visible);
+		timeError.setVisible(visible);
+		questionsError.setVisible(visible);
+		commentsError.setVisible(visible);
+	}
 
     // Helper method to add survey sections with border around each question section
 	private void addSurveySection(JPanel contentPanel, String sectionTitle, String[] questions) {
@@ -190,21 +228,21 @@ public class RespondentTakeSurveyView extends JFrame {
 		questionsPanel.setBorder(BorderFactory.createEmptyBorder(20, 15, 20, 0)); // Padding
 
 		// Loop through each question and add radio buttons
-		for (String question : questions) {
+		for (int x = 0; x < 20; x++) {
 			JPanel questionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); // FlowLayout for question label
 
 			// Question Label
-			JLabel questionLabel = new JLabel(question);
+			JLabel questionLabel = new JLabel(questions[x]);
 			questionLabel.setPreferredSize(new Dimension(900, 20)); // Set a fixed width for the question label
 			questionPanel.add(questionLabel);
 
 			// Panel for radio buttons (aligned to the right of the panel)
 			JPanel radioPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT)); // FlowLayout with RIGHT alignment
-			ButtonGroup group = new ButtonGroup();
+			group[x] = new ButtonGroup();
 			for (int i = 1; i <= 5; i++) {
-				JRadioButton radioButton = new JRadioButton(String.valueOf(i));
-				group.add(radioButton);
-				radioPanel.add(radioButton);
+				radioButton[x][i] = new JRadioButton(String.valueOf(i));
+				group[x].add(radioButton[x][i]);
+				radioPanel.add(radioButton[x][i]);
 			}
 
 			// Add the radio button panel to the question panel
@@ -222,11 +260,80 @@ public class RespondentTakeSurveyView extends JFrame {
 		questionPanels.add(sectionPanel);
 	}
 
+	public String getPlaceName(){
+		return (String) locationDropdown.getSelectedItem();
+	}
 
+	public String getPlaceDay(){
+		return (String) dayDropdown.getSelectedItem();
+	}
 
+	public String getPlaceTime(){
+		return (String) timeDropdown.getSelectedItem();
+	}
 
+	public boolean validateAnswers(int[] answers){
+		boolean valid = true, stop;
+		int idx = 0;
 
-    public static void main(String[] args) {
-        new RespondentTakeSurveyView();
-    }
+		for (int x = 0; x < group.length && valid == true; x++) { 			// Loop through each ButtonGroup (row)
+			ButtonModel selectedModel = group[x].getSelection(); 			// Get the selected model for the row
+			if (selectedModel != null) { 									// Check if a button is selected
+				stop = false;
+				for (int i = 1; i <= 5 && stop == false; i++) { 			// Loop through each button in the row
+					if (radioButton[x][i].getModel() == selectedModel) { 	// Match the model
+						answers[idx] = Integer.parseInt(radioButton[x][i].getText());
+						stop = true;
+					}
+				}
+			} else {
+				valid = false;
+			}
+		}
+
+		return valid;
+	}
+
+	public boolean validateForm(int[] answers){
+		boolean valid = true;
+
+		if (validateAnswers(answers) == false){
+			questionsError.setVisible(true);
+			valid = false;
+		}
+
+		if (commentField.getText().length() > 280){
+			commentsError.setVisible(true);
+			valid = false;
+		}
+
+		if (locationDropdown.getSelectedIndex() == 0){
+			locationError.setVisible(true);
+			valid = false;
+		}
+
+		if (dayDropdown.getSelectedIndex() == 0){
+			dayError.setVisible(true);
+			valid = false;
+		}
+
+		if (timeDropdown.getSelectedIndex() == 0){
+			timeError.setVisible(true);
+			valid = false;
+		}
+
+		return valid;
+	}
+
+	public String getComment(){
+		return commentField.getText();
+	}
+
+	public void setSubmitButtonListener(ActionListener listener) {
+        submitButton.addActionListener(listener);
+    } 
+
+	public void setBackButtonListener(ActionListener listener) {
+        backButton.addActionListener(listener);
+    } 
 }

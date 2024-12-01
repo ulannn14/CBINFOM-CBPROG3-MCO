@@ -1,10 +1,10 @@
 package View;
 
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
+import java.awt.event.*;
 
-public class AdminWelcomeView extends ViewAbstract {
+public class AdminWelcomeView extends FrameCanvas {
     final private JButton respondentsDataButton = new JButton("View Respondents' Data");
     final private JButton analystsDataButton = new JButton("View Analysts' Data");
     final private JButton addAnalystButton = new JButton("Add New Analyst");
