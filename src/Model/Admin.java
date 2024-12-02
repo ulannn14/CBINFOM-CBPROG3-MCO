@@ -42,7 +42,6 @@ public class Admin extends ProgramUser {
         }
     }
 
-    @Override
     public Admin fetchUser(String username, String password) {
         Admin admin = null;
 

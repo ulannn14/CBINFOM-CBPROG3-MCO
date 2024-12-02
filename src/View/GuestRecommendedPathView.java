@@ -1,115 +1,97 @@
 package View;
-/*
-public class GuestRecommendedPathView extends FrameCanvas {
 
-    private int disclaimerFlag = 0; // 0 or 1 to toggle disclaimer text
-    private String from = "Location A"; // Placeholder location for "From"
-    private String to = "Location B"; // Placeholder location for "To"
-    private String day = "Monday"; // Placeholder day
-    private String time = "10:00 AM"; // Placeholder time
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
+public class GuestRecommendedPathView extends FrameCanvas {
+    private ArrayList<Integer> path;
+    private int flag;
+    private String day, time, start, goal;
+    private JButton backButton;
 
     public GuestRecommendedPathView(ArrayList<Integer> path, int flag, String day, String time, String start, String goal) {
         super();
 
-        if (flag == 0)
-            setTitle("Shortest Path");
-        else 
-            setTitle("Safest Path");
+        this.path = path;
+        this.flag = flag;
+        this.day = day;
+        this.time = time;
+        this.start = start;
+        //this.goal = goal;
+        setTitle("Recommended Path");
+        setLocationRelativeTo(null);
 
-        panel.setLayout(new BorderLayout());
+        // Main title
+        JLabel titleLabel = new JLabel("Recommended Path", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Garamond", Font.BOLD, 30));
+        add(titleLabel, BorderLayout.NORTH);
 
-        // Top panel
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        topPanel.add(new JLabel("From: " + from)); // Displaying actual "From"
-        topPanel.add(new JLabel("To: " + to)); // Displaying actual "To"
-        topPanel.add(new JLabel("Day: " + day)); // Displaying actual "Day"
-        topPanel.add(new JLabel("Time: " + time)); // Displaying actual "Time"
+        // Create labels for From, To, Day, Time
+        JPanel infoPanel = new JPanel(new GridLayout(4, 1));
+        JLabel fromLabel = new JLabel("From: " + start);
+        JLabel toLabel = new JLabel("To: " + goal);
+        JLabel dayLabel = new JLabel("Day: " + day);
+        JLabel timeLabel = new JLabel("Time: " + time);
 
-        panel.add(topPanel, BorderLayout.NORTH);
+        infoPanel.add(fromLabel);
+        infoPanel.add(toLabel);
+        infoPanel.add(dayLabel);
+        infoPanel.add(timeLabel);
 
-        // Disclaimer panel on the left
-        JPanel disclaimerPanel = new JPanel();
-        disclaimerPanel.setLayout(new BoxLayout(disclaimerPanel, BoxLayout.Y_AXIS));
-        JLabel disclaimerLabel = new JLabel(getDisclaimerText());
-        disclaimerLabel.setForeground(Color.RED);
-        disclaimerLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        disclaimerPanel.add(disclaimerLabel);
-        panel.add(disclaimerPanel, BorderLayout.WEST);
-
-        // Map panel in the center (no scrollable map)
-        panel.add(drawMap(lineData), BorderLayout.CENTER);
-
-        // Bottom panel
-        JPanel bottomPanel = new JPanel(new BorderLayout());
-        JButton backButton = new JButton("Back");
-        bottomPanel.add(backButton, BorderLayout.WEST);
-        panel.add(bottomPanel, BorderLayout.SOUTH);
-
-        frameSetVisible();
-    }
-
-    private String getDisclaimerText() {
-        return disclaimerFlag == 0
-                ? "Disclaimer: There is no enough data about the safeness of the path generated."
-                : "Disclaimer: The safeness of the path generated may not be up to date.";
-    }
-
-    private JPanel drawMap(Object[][] lineData) {
+        // Create the map placeholder
         JPanel mapPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                ImageIcon icon = new ImageIcon("C:\\Users\\Axl Roel\\Documents\\CBPROG3 MP\\MAP\\maps.png");
-                g.drawImage(icon.getImage(), 0, 0, getWidth(), getHeight(), this);
-                Graphics2D g2d = (Graphics2D) g;
-
-                // Enable anti-aliasing
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-                // Draw lines with labels from lineData
-                for (int i = 0; i < lineData.length; i++) {
-                    int x1 = (int) lineData[i][0];
-                    int y1 = (int) lineData[i][1];
-                    int x2 = (int) lineData[i][2];
-                    int y2 = (int) lineData[i][3];
-                    String name = (String) lineData[i][4];
-
-                    // Draw the line
-                    g2d.setStroke(new BasicStroke(5));
-                    g2d.setColor(Color.BLACK);
-                    g2d.drawLine(x1, y1, x2, y2);
-
-                    // Midpoint of the line for label placement
-                    int midX = (x1 + x2) / 2;
-                    int midY = (y1 + y2) / 2;
-
-                    // Text width and height
-                    FontMetrics metrics = g2d.getFontMetrics();
-                    int textWidth = metrics.stringWidth(name);
-                    int textHeight = metrics.getHeight();
-
-                    // Position the label
-                    int textX = midX - (textWidth / 2);
-                    int textY = midY + (textHeight / 4);
-
-                    // Rotate text to align with the line
-                    double angle = Math.atan2(y2 - y1, x2 - x1);
-                    g2d.setColor(Color.RED);
-                    g2d.rotate(angle, midX, midY);
-                    g2d.drawString(name, textX, textY);
-                    g2d.rotate(-angle, midX, midY); // Reset rotation
+                // For illustration, this will simply draw a rectangle
+                // Replace this with the actual map rendering logic
+                g.setColor(Color.LIGHT_GRAY);
+                g.fillRect(50, 50, 600, 600);
+                // You could draw the path here, based on the `path` data
+                g.setColor(Color.RED);
+                // Example of drawing a path (you should adapt based on your actual path data)
+                for (int i = 0; i < path.size(); i++) {
+                    g.fillRect(50 + i * 10, 50 + i * 10, 5, 5);
                 }
             }
         };
+        mapPanel.setPreferredSize(new Dimension(600, 600));
+        
+        // Create the disclaimers based on the flag
+        JPanel disclaimerPanel = new JPanel();
+        String disclaimerText = flag == 0 ?
+                "Disclaimer: There is no enough data about the safeness of the path generated." :
+                "Disclaimer: The safeness of the path generated may not be up to date.";
+        JLabel disclaimerLabel = new JLabel(disclaimerText);
+        disclaimerPanel.add(disclaimerLabel);
 
-        // Set preferred size of the panel to fit the map
-        mapPanel.setMaximumSize(new Dimension(400, 400));
-		mapPanel.setMinimumSize(new Dimension(400, 400));
-		mapPanel.setPreferredSize(new Dimension(400, 400));
-        mapPanel.setBackground(Color.WHITE);
+        // Create the back button
+        backButton = new JButton("Back");
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.add(backButton, BorderLayout.WEST);
 
-        return mapPanel;
+        // Assemble all components into the layout
+        JPanel leftPanel = new JPanel();
+        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
+        leftPanel.add(infoPanel);
+        leftPanel.add(disclaimerPanel);
+
+
+        // Add everything to the frame
+        add(leftPanel, BorderLayout.WEST);
+        add(mapPanel, BorderLayout.CENTER);
+        add(bottomPanel, BorderLayout.SOUTH);
+    }
+
+    // Method to show the frame
+    public void display() {
+        setVisible(true);
+    }
+
+    public void setBackButtonActionListener(ActionListener listener) {
+        backButton.addActionListener(listener);
     }
 }
-
-}*/

@@ -1,12 +1,10 @@
 package Model;
 
 import DatabaseConnection.*;
-
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.DriverManager;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 abstract public class ProgramUser extends DatabaseConnection {
@@ -124,48 +122,37 @@ abstract public class ProgramUser extends DatabaseConnection {
         return userType;
     }
 
-    public abstract <User extends ProgramUser> User fetchUser(String username, String password);
+    //public abstract <User extends ProgramUser> User fetchUser(String username, String password);
 
     // static since we cannot create an instance of 
     public static int changePassword(String username, String newPassword, String securityQuestion, String securityPassword) {
-        int indicator = 2; // No username exists, default because query results are based on existing username.
+        int indicator = 2; // Default: Username does not exist.
 
-        String insertDateQuery = "UPDATE ProgramUser SET accountPassword = ? WHERE username = ?";
+        String selectQuery = "SELECT * FROM ProgramUser WHERE username = ? AND securityQuestion = ? AND securityPassword = ?";
+        String updateQuery = "UPDATE ProgramUser SET accountPassword = ? WHERE username = ?";
 
         try (Connection connection = createConnection();
-             Statement statement = connection.createStatement();
-             PreparedStatement updatePassStatement = connection.prepareStatement(insertDateQuery);) {
-            
+            PreparedStatement selectStatement = connection.prepareStatement(selectQuery);
+            PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
 
-            String query = "SELECT * FROM ProgramUser " + 
-                            "WHERE username = \"" + username + "\"";
-            ResultSet resultSet = statement.executeQuery(query);
+            // Set parameters for SELECT query
+            selectStatement.setString(1, username);
+            selectStatement.setString(2, securityQuestion);
+            selectStatement.setString(3, securityPassword);
 
-            String tempSecQues, tempSecPass;
-
-            while (resultSet.next()) {
-                System.out.print("inside while");
-                tempSecQues = resultSet.getString("securityQuestion");
-                tempSecPass = resultSet.getString("securityPassword");
-
-                if(tempSecQues.equals(securityQuestion)){
-                    if(tempSecPass.equals(securityPassword)) {
-                        indicator = 1;
-                        updatePassStatement.setString(1, newPassword);
-                        updatePassStatement.setString(2, username);
-
-                        updatePassStatement.executeUpdate();
-                    } else {
-                        indicator = 4;
-                    }
-                } else {
-                    indicator = 3;
+            try (ResultSet resultSet = selectStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    // Match found, update password
+                    indicator = 1; // Success
+                    updateStatement.setString(1, newPassword);
+                    updateStatement.setString(2, username);
+                    updateStatement.executeUpdate();
                 }
             }
 
             connection.close();
         } catch (SQLException e) {
-            System.err.println("Error inserting data: " + e.getMessage());
+            System.err.println("Error updating password: " + e.getMessage());
         }
 
         return indicator;

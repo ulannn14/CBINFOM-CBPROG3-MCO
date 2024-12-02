@@ -15,13 +15,11 @@ public class GuestSelectGeneralDataView extends FrameCanvas {
     final private JRadioButton worstToBestRadio;
     final private ButtonGroup rankingGroup = new ButtonGroup();
 
-    String[] locations = Stream.concat(
-            Stream.of("Location"),
+    String[] locations = (
             Constants.fetchPlaceNames().stream()
         ).toArray(String[]::new);
-    String[] days = {"Day of the Week", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+    String[] days = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
     String[] times = {
-        "Time",
         "Morning Rush Hour [6:00 to 8:59]",
         "Mid-morning [9:00 to 10:59]",
         "Lunchtime [11:00 to 12:59]",

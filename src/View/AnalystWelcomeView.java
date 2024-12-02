@@ -59,10 +59,10 @@ public class AnalystWelcomeView extends FrameCanvas{
 		changeSecurityQuesAndPassLabel.setBounds(459, 330, 280, 62);
 		panel.add(changeSecurityQuesAndPassLabel);
 		
-		findRecommendedPathLabel.setBounds(70, 216, 280, 62); 
+		findRecommendedPathLabel.setBounds(459, 216, 280, 40); 
 		panel.add(findRecommendedPathLabel);
 		
-		viewGeneralDataLabel.setBounds(849, 216, 280, 40);
+		viewGeneralDataLabel.setBounds(849, 216, 280, 62);
 		panel.add(viewGeneralDataLabel);
 		
         frameSetVisible();

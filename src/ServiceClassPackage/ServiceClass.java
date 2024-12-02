@@ -9,7 +9,8 @@ public class ServiceClass {
         // Step 2: Flatten all survey means into a single list for population calculations
         ArrayList<Double> allSurveyMeans = new ArrayList<>();
         for (Instance instance : instances) {
-            allSurveyMeans.addAll(instance.getSurveyMeans());
+            if (!instance.getSurveyMeans().isEmpty()) 
+                allSurveyMeans.addAll(instance.getSurveyMeans());
         }
 
         // Step 3: Calculate population mean
@@ -19,14 +20,15 @@ public class ServiceClass {
         double populationStdDev = calculateStandardDeviation(allSurveyMeans, populationMean);
 
         for (int i = 0; i < Constants.MAX_INSTANCE; i++) {
-            if (instances[i].getSurveys().size() > 0) {
-                double instanceMean = instances[i].getSampleMean();
-                instances[i].setZScore((instanceMean - populationMean) / populationStdDev);
-                instances[i].setUpdated(true);
+            if (!instances[i].getSurveyMeans().isEmpty()) {
+                if (!instances[i].getSurveys().isEmpty()) {
+                    double instanceMean = instances[i].getSampleMean();
+                    instances[i].setZScore((instanceMean - populationMean) / populationStdDev);
+                    instances[i].setUpdated(true);
+                }
             }
         }
     }
-
     // calculate the mean of a list
     private static double calculateMean(ArrayList<Double> data) {
         double sum = 0.0;

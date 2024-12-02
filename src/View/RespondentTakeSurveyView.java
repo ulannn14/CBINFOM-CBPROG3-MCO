@@ -1,11 +1,11 @@
 package View;
 
-import java.awt.*;
-import java.util.*;
-import javax.swing.*;
-import java.awt.event.*;
-import java.util.stream.*;
 import ServiceClassPackage.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
+import java.util.stream.*;
+import javax.swing.*;
 
 public class RespondentTakeSurveyView extends FrameCanvas {
 
@@ -29,8 +29,8 @@ public class RespondentTakeSurveyView extends FrameCanvas {
     final private ArrayList<JPanel> questionPanels;
     final private JTextArea commentField;
     final private JButton backButton, submitButton;
-	final private JRadioButton[][] radioButton = new JRadioButton[20][5];
-	final private ButtonGroup[] group = new ButtonGroup[20];
+	private ButtonGroup[] group;  
+	private JRadioButton[][] radioButton;
 
     public RespondentTakeSurveyView() {
 		super();
@@ -134,7 +134,8 @@ public class RespondentTakeSurveyView extends FrameCanvas {
         // Survey Questions
         questionPanels = new ArrayList<>();
         addSurveySection(contentPanel, "Route Efficiency", new String[]{
-            "The different types of flooring or paving surfaces (tactile, cement, tiles, bricks) are not safe to walk on.",
+            "The floor design is not flat.",
+			"The different types of flooring or paving surfaces (tactile, cement, tiles, bricks) are not safe to walk on.",
             "There are unexpected holes in the ground that could trip you over.",
             "There are poles around or near the line guide.",
             "There are vehicular roads around the line guide.",
@@ -144,7 +145,7 @@ public class RespondentTakeSurveyView extends FrameCanvas {
             "There is a need to pass in footbridges.",
             "There is no indicator for the blind to cross the street, e.g. sound, traffic enforcer.",
             "The crossing time is not enough for a blind person."
-        });
+        });	
 
         addSurveySection(contentPanel, "Activity Level", new String[]{
             "The place is crowded with people.",
@@ -179,7 +180,7 @@ public class RespondentTakeSurveyView extends FrameCanvas {
         contentPanel.add(commentPanel);
 
 		commentsError = createErrorLabel("Comment cannot be over 280 characters long.");
-		commentsError.add(commentsError, BorderLayout.SOUTH);
+		commentPanel.add(commentsError, BorderLayout.SOUTH);
 
         // Bottom Panel
         JPanel bottomPanel = new JPanel(new BorderLayout());
@@ -211,64 +212,58 @@ public class RespondentTakeSurveyView extends FrameCanvas {
 
     // Helper method to add survey sections with border around each question section
 	private void addSurveySection(JPanel contentPanel, String sectionTitle, String[] questions) {
-		// Create a panel for each section with 20px padding around the section
+		// Create arrays to store groups and radio buttons
+		group = new ButtonGroup[questions.length];
+		radioButton = new JRadioButton[questions.length][5]; // 5 options for each question (1-5)
+
 		JPanel sectionPanel = new JPanel();
 		sectionPanel.setLayout(new BoxLayout(sectionPanel, BoxLayout.Y_AXIS));
 
-		// Section Title (Center-aligned)
 		JLabel sectionLabel = new JLabel(sectionTitle);
 		sectionLabel.setFont(new Font("Arial", Font.BOLD, 14));
 		sectionLabel.setHorizontalAlignment(SwingConstants.LEFT); // Align the title to the center
 		sectionLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0)); // Padding below the title
 		sectionPanel.add(sectionLabel);
 
-		// Create a panel for questions with a border around it
 		JPanel questionsPanel = new JPanel();
 		questionsPanel.setLayout(new BoxLayout(questionsPanel, BoxLayout.Y_AXIS));
 		questionsPanel.setBorder(BorderFactory.createEmptyBorder(20, 15, 20, 0)); // Padding
 
-		// Loop through each question and add radio buttons
-		for (int x = 0; x < 20; x++) {
+		for (int x = 0; x < questions.length; x++) {
 			JPanel questionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); // FlowLayout for question label
 
-			// Question Label
 			JLabel questionLabel = new JLabel(questions[x]);
-			questionLabel.setPreferredSize(new Dimension(900, 20)); // Set a fixed width for the question label
+			questionLabel.setPreferredSize(new Dimension(750, 20)); // Set a fixed width for the question label
 			questionPanel.add(questionLabel);
 
-			// Panel for radio buttons (aligned to the right of the panel)
-			JPanel radioPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT)); // FlowLayout with RIGHT alignment
-			group[x] = new ButtonGroup();
-			for (int i = 1; i <= 5; i++) {
-				radioButton[x][i] = new JRadioButton(String.valueOf(i));
-				group[x].add(radioButton[x][i]);
-				radioPanel.add(radioButton[x][i]);
+			JPanel radioPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+			group[x] = new ButtonGroup(); // Create a new group for each question
+
+			for (int i = 0; i < 5; i++) { // Create 5 radio buttons for the options (1-5)
+				radioButton[x][i] = new JRadioButton(String.valueOf(i + 1));
+				radioButton[x][i].setPreferredSize(new Dimension(40, 30)); // Set the preferred size for the radio button
+				group[x].add(radioButton[x][i]); // Add the radio button to the group
+				radioPanel.add(radioButton[x][i]); // Add radio button to the panel
 			}
 
-			// Add the radio button panel to the question panel
 			questionPanel.add(radioPanel);
-
-			// Add the question panel (with label and radio buttons) to the questions panel
 			questionsPanel.add(questionPanel);
 		}
 
-		// Add the questions panel (with border) to the section panel
 		sectionPanel.add(questionsPanel);
-
-		// Add the completed section panel to the content panel
 		contentPanel.add(sectionPanel);
-		questionPanels.add(sectionPanel);
 	}
 
-	public String getPlaceName(){
+
+	public String getPlace(){
 		return (String) locationDropdown.getSelectedItem();
 	}
 
-	public String getPlaceDay(){
+	public String getDay(){
 		return (String) dayDropdown.getSelectedItem();
 	}
 
-	public String getPlaceTime(){
+	public String getTime(){
 		return (String) timeDropdown.getSelectedItem();
 	}
 
@@ -276,11 +271,11 @@ public class RespondentTakeSurveyView extends FrameCanvas {
 		boolean valid = true, stop;
 		int idx = 0;
 
-		for (int x = 0; x < group.length && valid == true; x++) { 			// Loop through each ButtonGroup (row)
+		for (int x = 0; x < group.length && valid; x++) { 					// Loop through each ButtonGroup (row)
 			ButtonModel selectedModel = group[x].getSelection(); 			// Get the selected model for the row
 			if (selectedModel != null) { 									// Check if a button is selected
 				stop = false;
-				for (int i = 1; i <= 5 && stop == false; i++) { 			// Loop through each button in the row
+				for (int i = 0; i < 5 && !stop; i++) { 					// Loop through each button in the row
 					if (radioButton[x][i].getModel() == selectedModel) { 	// Match the model
 						answers[idx] = Integer.parseInt(radioButton[x][i].getText());
 						stop = true;

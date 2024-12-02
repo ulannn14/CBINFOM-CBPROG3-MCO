@@ -27,7 +27,7 @@ public class Respondent extends ProgramUser {
     }
 
     public Respondent(String username, String accountPassword, String securityQuestion, String securityPassword, 
-                      int userType, String name, DateClass birthdate, String emailAddress) {
+                      int userType, String name, DateClass birthdate, String emailAddress, DateClass dateJoined) {
         this.username = username;
         this.accountPassword = accountPassword;
         this.securityQuestion = securityQuestion;
@@ -36,6 +36,7 @@ public class Respondent extends ProgramUser {
         this.name = name;
         this.birthdate = birthdate;
         this.emailAddress = emailAddress;
+        this.dateJoined = dateJoined;
     }
 
     @Override
@@ -145,11 +146,13 @@ public class Respondent extends ProgramUser {
         DateClass birthDate = new DateClass(), dateJoined = new DateClass();
 
         try (Connection connection = createConnection();
-             Statement statement = connection.createStatement();) {
+             Statement statement = connection.createStatement();
+             Statement statement2 = connection.createStatement();
+             Statement statement3 = connection.createStatement();) {
 
              // Execute a Query
             String query = "SELECT * " + 
-                            "FROM ProgramUser P" +
+                            "FROM ProgramUser P " +
                             "JOIN Respondent R ON P.userID = R.userID " + 
                             "WHERE userType = 3 AND P.username = \"" + username + "\" AND P.accountPassword = \"" + password + "\"";
             ResultSet resultSet = statement.executeQuery(query);
@@ -178,7 +181,7 @@ public class Respondent extends ProgramUser {
                             "FROM Date " +
                             "WHERE dateID = " + tempBirthID;
 
-                ResultSet resultSet2 = statement.executeQuery(query2);
+                ResultSet resultSet2 = statement2.executeQuery(query2);
 
                 while(resultSet2.next()) {
                     birthDate.setYear(resultSet2.getInt("Year"));
@@ -190,7 +193,7 @@ public class Respondent extends ProgramUser {
                             "FROM Date " +
                             "WHERE dateID = " + tempJoinedID;
 
-                ResultSet resultSet3 = statement.executeQuery(query3);
+                ResultSet resultSet3 = statement3.executeQuery(query3);
 
                 while(resultSet3.next()) {
                     dateJoined.setYear(resultSet3.getInt("Year"));

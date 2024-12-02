@@ -1,24 +1,22 @@
 package Controller;
 
 import Model.*;
-import View.*;
 import ServiceClassPackage.*;
+import View.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.awt.event.*;
 //import javax.swing.JOptionPane;
 
 @SuppressWarnings("unused")
 public class Controller {
-
-    final private Instance[] instances = new Instance[Constants.MAX_INSTANCE];
+    private Instance[] instances = new Instance[Constants.MAX_INSTANCE];
     ServiceClass service = new ServiceClass();
 
-    // Will populate the instances of Controller
-    public void initializeInstancesController() {
-        Instance.initializeInstances(this.instances);
+    public Controller () {
+        instances = Instance.initializeInstances();
+        System.out.print(instances[2].getInstancePlaceName());
     }
-
+    
     public String convertDateToStringNumber (DateClass date) {
         String temp = (String.format("%02d", date.getMonth()).concat("/").concat(String.format("%02d", date.getDay())).concat("/").concat(String.format("%02d", date.getYear())));
         return temp;
@@ -45,13 +43,17 @@ public class Controller {
         Admin admin = new Admin();
         Analyst analyst = new Analyst();
         Respondent respondent = new Respondent();
-        if (admin.fetchUser(username, password) != null) {
+        boolean adminValid = admin.fetchUser(username, password);
+        boolean analystValid = analyst.fetchUser(username, password);
+        boolean respondentValid = respondent.fetchUser(username, password);
+
+        if (adminValid) {
             homepageView.dispose();
             AdminWelcome(admin);
-        } else if (analyst.fetchUser(username, password) != null) {
+        } else if (analystValid) {
             homepageView.dispose();
             AnalystWelcome(analyst);
-        } else if (respondent.fetchUser(username, password) != null) {
+        } else if (respondentValid) {
             homepageView.dispose();
             RespondentWelcome(respondent);
         } else {
@@ -72,12 +74,14 @@ public class Controller {
                 String securityQuestion = signupView.getSecurityQuestion();
                 String securityPassword = signupView.getSecurityPassword();
                 DateClass birthdate = new DateClass(signupView.getMonth(), signupView.getDay(), signupView.getYear());
+                LocalDate today = LocalDate.now();
+                DateClass dateJoined = new DateClass(today.getYear(), today.getMonthValue(), today.getDayOfMonth());  
                 int userType = 3;
 
                 boolean validUsername = ProgramUser.checkUsernameValid(username);
 
                 if (validUsername) {
-                    Respondent respondent = new Respondent(username, password, securityQuestion, securityPassword, userType, name, birthdate, email);
+                    Respondent respondent = new Respondent(username, password, securityQuestion, securityPassword, userType, name, birthdate, email, dateJoined);
                     signupView.dispose();
                     RespondentWelcome(respondent);
                     respondent.createQuery();
@@ -113,6 +117,7 @@ public class Controller {
 
     // change password
     public void PasswordManager(ProgramUser user) {
+        System.out.println(user.getUsername());
         PasswordManagerView pmv = new PasswordManagerView();
 
         pmv.setChangePasswordButtonListener(e -> { 
@@ -168,7 +173,7 @@ public class Controller {
                     csv.wrongPassword();
                 } else if (password.equals(user.getAccountPassword()) == true) {
                     // should be updated sa databse
-                    user.setSecurityQuestion(csv.getSecurityPassword());
+                    user.setSecurityQuestion(csv.getSecurityQuestion());
                     user.setSecurityPassword(csv.getSecurityPassword());
                     csv.dispose();
                     switch (user) {
@@ -316,10 +321,12 @@ public class Controller {
                 String sender = agirv.getFromField();
                 String body = agirv.getReportField();
                 LocalDate today = LocalDate.now();
-                DateClass dateCreated = new DateClass(today.getMonthValue(), today.getDayOfMonth(), today.getYear()); 
+                DateClass dateCreated = new DateClass(today.getYear(), today.getMonthValue(), today.getDayOfMonth());                
                 IncidentReport incidentReport = new IncidentReport(recipient, sender, body, dateCreated);
 
                 int idx = getInstanceID(agirv.getPlaceName(), agirv.getDayName(), agirv.getTimeName());
+                System.out.println(idx); //////////
+                System.out.println(agirv.getPlaceName() + agirv.getDayName() + agirv.getTimeName());
                 instances[idx].addIncidentReport(incidentReport);
                 incidentReport.saveToFile(instances[idx].getPlaceName(), instances[idx].getDayName(), instances[idx].getTimeName(), instances[idx].getIncidentReportCount());
                 
@@ -334,7 +341,7 @@ public class Controller {
     public int getInstanceID(String place, String day, String time) {
         for (int i=0; i<Constants.MAX_INSTANCE; i++) {
             Instance instance = instances[i];
-            if (instance.getPlaceName().equals(place) && instance.getTimeName().equals(day) && instance.getDayName().equals(time))
+            if (instance.getInstancePlaceName().equals(place) && instance.getInstanceDayName().equals(day) && instance.getInstanceTimeName().equals(time))
                 return i;
         }
         return -1;
@@ -493,7 +500,6 @@ public class Controller {
         rwv.setBackButtonListener(e -> {rwv.dispose(); Homepage(); } );
     }
 
-    // mali pa to !!!
     public void RespondentTakeSurvey(Respondent respondent) {
         RespondentTakeSurveyView rtsv = new RespondentTakeSurveyView();
         int[] answers = new int[20];
@@ -502,8 +508,7 @@ public class Controller {
             rtsv.setErrorMessages(false);
             if (rtsv.validateForm(answers) == true) {
                 // must be able to give the following:
-                            
-                int idx = getInstanceID(rtsv.getPlaceName(), rtsv.getPlaceDay(), rtsv.getPlaceTime());
+                int idx = getInstanceID(rtsv.getPlace(), rtsv.getDay(), rtsv.getTime());
                 LocalDate today = LocalDate.now();
                 DateClass dateTaken = new DateClass(today.getMonthValue(), today.getDayOfMonth(), today.getYear()); 
 
@@ -703,7 +708,7 @@ public class Controller {
                     if (tempNodes[i].getNodeName().equals(gclrpv.getGoalNode()))
                         goalNodeID = i;
                 }
-                Path path = new Path(Day.getDayIdxFromName(gclrpv.getDay()), TimeCategory.getTimeIndex(gclrpv.getTime()), startNodeID, goalNodeID, 0);    
+                Path path = new Path(Day.getDayIdxFromName(gclrpv.getDay()), TimeCategory.getTimeIndex(gclrpv.getTime()), startNodeID, goalNodeID, 0, instances);    
                 if (path.getPathByZScore().isEmpty()) {
                     gclrpv.dispose();
                     GuestRecommendedPath(path.getShortestPath(), 0, gclrpv.getDay(), gclrpv.getTime(),gclrpv.getStartNode(), gclrpv.getGoalNode());
@@ -723,12 +728,12 @@ public class Controller {
 
         Node[] tempNodes = Path.getAllNodes(); 
         ArrayList<String> allNodesNames = new ArrayList<>();
-        GuestChooseRecommendedPathView gclrpv = new GuestChooseRecommendedPathView(allNodesNames);
+        
         for (int i=0; i<72; i++) {
-            if (tempNodes[i].getNodeName().equals(gclrpv.getStartNode()))
-                allNodesNames.add(tempNodes[i].getNodeName());            
+            allNodesNames.add(tempNodes[i].getNodeName());            
         } 
-
+        GuestChooseRecommendedPathView gclrpv = new GuestChooseRecommendedPathView(allNodesNames);
+        
         gclrpv.setSubmitButtonListener(e -> {
             int startNodeID = -1, goalNodeID = -1;
             if (gclrpv.validateFields() == true) {
@@ -739,10 +744,10 @@ public class Controller {
                         goalNodeID = i;
                 }
 
-                Path path = new Path(Day.getDayIdxFromName(gclrpv.getDay()), TimeCategory.getTimeIndex(gclrpv.getTime()), startNodeID, goalNodeID, 0);    
+                Path path = new Path(Day.getDayIdxFromName(gclrpv.getDay()), TimeCategory.getTimeIndex(gclrpv.getTime()), startNodeID, goalNodeID, 0,instances);    
                 if (path.getPathByZScore().isEmpty()) { 
                     gclrpv.dispose();
-                    GuestRecommendedPath(path.getShortestPath(), 0, user, gclrpv.getDay(), gclrpv.getTime(),gclrpv.getStartNode(), gclrpv.getGoalNode());
+                    GuestRecommendedPath(path.getShortestPath(), 0, user, gclrpv.getDay(), gclrpv.getTime(), gclrpv.getStartNode(), gclrpv.getGoalNode());
                 }
                 else {
                     gclrpv.dispose();
@@ -759,22 +764,15 @@ public class Controller {
                   default -> Homepage();  // This handles any other cases, like when user is not an Admin, Analyst, or Respondent
           } } );
     }
-
-
-    public void GuestRecommendedPath(ArrayList<Integer> path, int flag, String day, String time, String start, String goal) {
-        //GuestRecommendedPathView grpv = new GuestRecommendedPathView(path, flag, day, time, start, goal);
-        //grpv.setBackButtonListener(e -> { grpv.dispose(); Homepage(); } );
+    
+    public void GuestRecommendedPath(ArrayList<Integer> path, int flag, String day, String time, String start, String goal) {         
+        GuestRecommendedPathView grpv = new GuestRecommendedPathView(path, flag, day, time, start, goal);  // need rin yung params ng from, to, day, time
+        grpv.setBackButtonActionListener(e -> { grpv.dispose(); Homepage(); } ); 
     }
 
-    public void GuestRecommendedPath(ArrayList<Integer> path, int flag, ProgramUser user, String day, String time, String start, String goal) { 
-        /*
-        path : 
-        flag = 0 : shortest path
-        flag = 1 : safest path
-        user : kung sino nag-generate
-        
+    public void GuestRecommendedPath(ArrayList<Integer> path, int flag, ProgramUser user, String day, String time, String start, String goal) {         
         GuestRecommendedPathView grpv = new GuestRecommendedPathView(path, flag, day, time, start, goal);  // need rin yung params ng from, to, day, time
-        grpv.setBackButtonListener(e -> {
+        grpv.setBackButtonActionListener(e -> {
             switch (user) {
                 case Admin admin -> AdminWelcome(admin);
                 case Analyst analyst -> AnalystWelcome(analyst);
@@ -782,6 +780,5 @@ public class Controller {
                 default -> Homepage();  // This handles any other cases, like when user is not an Admin, Analyst, or Respondent
             }
         } );
-        */
     }
 }

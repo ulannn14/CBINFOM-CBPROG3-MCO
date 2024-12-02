@@ -1,5 +1,6 @@
 package Model;
 
+import ServiceClassPackage.Constants;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,10 +20,10 @@ public class Instance extends TimeCategory {
     private Day day;
     private TimeCategory time;
 
-    private ArrayList<Survey> surveys = new ArrayList();
-    private ArrayList<Observation> tags = new ArrayList();
-    private ArrayList<Observation> summaries = new ArrayList();
-    private ArrayList<IncidentReport> incidentReports = new ArrayList();
+    private ArrayList<Survey> surveys = new ArrayList<>();
+    private ArrayList<Observation> tags = new ArrayList<>();
+    private ArrayList<Observation> summaries = new ArrayList<>();
+    private ArrayList<IncidentReport> incidentReports = new ArrayList<>();
 
     private boolean updated;
 
@@ -49,7 +50,7 @@ public class Instance extends TimeCategory {
     }
 
     public ArrayList<Survey> getSurveys() {
-        if (surveys == null) {
+        if (surveys.isEmpty()) {
             return new ArrayList<>();  // Return an empty ArrayList if surveys is null
         }
         return surveys;  // Return the surveys if not null
@@ -68,7 +69,7 @@ public class Instance extends TimeCategory {
     public void setSampleMean(double sampleMean) { this.sampleMean = sampleMean; }
 
     public int getSampleSize() { return sampleSize; }
-    public void setSampleSize(int sampleSize) { this.sampleSize = sampleSize; }
+    public void setSampleSize(int sampleSize) { this.sampleSize = surveys.size(); }
 
     public Place getPlace() { return place; }
     public void setPlace(Place place) { this.place = place; }
@@ -81,12 +82,10 @@ public class Instance extends TimeCategory {
 
     public ArrayList<Double> getSurveyMeans() {
         ArrayList<Double> newSurveyMeans = new ArrayList<>();        
-        if (surveys != null) {
+        if (!surveys.isEmpty()) {
             for (Survey cSurvey : surveys) {
                 newSurveyMeans.add(cSurvey.getSurveyMean());
             }
-        } else {
-            System.out.println("Surveys list is null.");
         }
         return newSurveyMeans;
     }
@@ -94,7 +93,7 @@ public class Instance extends TimeCategory {
     public void setSurveys(ArrayList<Survey> surveys) { this.surveys = surveys; }
 
     public ArrayList<Observation> getTags() {
-        if (tags == null) {
+        if (tags.isEmpty()) {
             tags = new ArrayList<>(); // Return an empty list if it's null
         }
         return tags;
@@ -102,7 +101,7 @@ public class Instance extends TimeCategory {
     public void setTags(ArrayList<Observation> tags) { this.tags = tags; }
 
     public ArrayList<Observation> getSummaries() {
-        if (summaries == null) {
+        if (summaries.isEmpty()) {
             summaries = new ArrayList<>(); // Return an empty list if it's null
         }
         return summaries;
@@ -110,18 +109,20 @@ public class Instance extends TimeCategory {
     public void setSummaries(ArrayList<Observation> summaries) { this.summaries = summaries; }
 
 
-    public static void initializeInstances(Instance[] instances) {
+    public static Instance[] initializeInstances() {
+        Instance[] instances = new Instance[Constants.MAX_INSTANCE];
+        
         try (Connection connection = createConnection();
             Statement statement = connection.createStatement()) {
             System.out.println("CONNECTED TO DATABASE! ! ! ");
             statement.executeUpdate("USE ISSPa");
 
-            String query = "SELECT * " + 
-                            "FROM Instance I " +
-                            "JOIN Streets S ON S.streetID = I.streetID " +
-                            "JOIN Day D ON I.dayID = D.dayID " +
-                            "JOIN TimeCategory T ON I.timeID = T.timeCategoryID " +
-                            "ORDER BY instanceID";
+            String query = "SELECT * " +
+                        "FROM Instance I " +
+                        "JOIN Streets S ON S.streetID = I.streetID " +
+                        "JOIN Day D ON I.dayID = D.dayID " +
+                        "JOIN TimeCategory T ON I.timeID = T.timeCategoryID " +
+                        "ORDER BY instanceID";
 
             ResultSet resultSet = statement.executeQuery(query);
 
@@ -129,40 +130,39 @@ public class Instance extends TimeCategory {
                 int tempID = (resultSet.getInt("instanceID") - 1);
                 instances[tempID] = new Instance();
                 instances[tempID].setInstanceID(tempID);
-                System.out.print("iID " + instances[tempID].getInstanceID() + " : ");
+
                 double tempzScore = resultSet.getDouble("zScore");
                 instances[tempID].setZScore(tempzScore);
-                System.out.print("zs " + instances[tempID].getZScore() + " : ");
+
                 double tempSampleMean = resultSet.getDouble("sampleMean");
                 instances[tempID].setSampleMean(tempSampleMean);
-                System.out.print("sm " + instances[tempID].getSampleMean() + " : ");
+
                 int tempSampleSize = resultSet.getInt("sampleSize");
                 instances[tempID].setSampleSize(tempSampleSize);
-                System.out.println("ss " + instances[tempID].getSampleSize() + " : ");
+
                 int tempStreetID = (resultSet.getInt("streetID") - 1);
                 String tempStreetName = resultSet.getString("streetName");
                 Place place = new Place(tempStreetID, tempStreetName);
-                System.out.print("pn " + place.getPlaceName() + " : ");
-                System.out.print("pID " + place.getPlaceIdx() + " : ");
+
                 int tempDayID = (resultSet.getInt("dayID") - 1);
                 String tempDayName = resultSet.getString("dayName");
                 Day day = new Day(tempDayID, tempDayName);
-                System.out.print("dn " + day.getDayName() + " : ");
-                System.out.print("dID " + day.getDayIdx() + " : ");
+
                 int tempTimeID = (resultSet.getInt("timeID") - 1);
                 String tempTimeName = resultSet.getString("timeCategoryName");
                 TimeCategory time = new TimeCategory(tempTimeID, tempTimeName);
-                System.out.print("tn " + time.getTimeName() + " : ");
-                System.out.print("tID " + time.getTimeIdx() + " : ");
+
                 instances[tempID].setPlace(place);
                 instances[tempID].setDay(day);
                 instances[tempID].setTime(time);
             }
-            connection.close();
         } catch (SQLException e) {
             System.err.println("Error loading data: " + e.getMessage());
         }
+
+        return instances;
     }
+
 
     public void addIncidentReport(IncidentReport incidentReport) {
         incidentReports.add(incidentReport);
@@ -257,15 +257,15 @@ public class Instance extends TimeCategory {
             }
 
             boolean dFlag = false;
-            int dateID = 0, day, month, year;
+            int dateID = 0, d, m, y;
 
             while (resultSet2.next() && !dFlag) {
                 dateID = resultSet2.getInt("dateID");
-                day = resultSet2.getInt("Day");
-                month = resultSet2.getInt("Month");
-                year = resultSet2.getInt("Year");
+                d = resultSet2.getInt("Day");
+                m = resultSet2.getInt("Month");
+                y = resultSet2.getInt("Year");
 
-                if(dateAdded.getDay() == day && dateAdded.getMonth() == month && dateAdded.getYear() == year){
+                if(dateAdded.getDay() == d && dateAdded.getMonth() == m && dateAdded.getYear() == y){
                     dFlag = true;
                 }
             }
@@ -396,19 +396,24 @@ public class Instance extends TimeCategory {
 
     public void takeSurvey(Survey survey) {
         this.surveys.add(survey);
-        this.sampleSize++;
+        int instanceID = survey.getInstanceID();
+        String comment = survey.getComment();
+        double surveyMean = survey.getSurveyMean();
+        String username = survey.getRespondentUsername();
+        DateClass dateTaken = survey.getDateTaken();
 
-        String insertSurveyQuery = "INSERT INTO `Survey` (`respondentID`, `instanceID`, `comment`, `surveyDateTakenID`, `surveyMean`, `respondentUsername`) "
-                                    + "VALUES (?, ?, ?, ?)";
-        String insertDateQuery = "INSERT INTO `Date` (`Year`, `Month`, `Day`) " + "VALUES (?, ?, ?);";
+        String insertSurveyQuery = "INSERT INTO `Survey` (`respondentID`, `instanceID`, `comment`, `surveyDateTakenID`, `surveyMean`, `respondentUsername`) " 
+        + "VALUES (?, ?, ?, ?, ?, ?)";
+        String insertDateQuery = "INSERT INTO `Date` (`Year`, `Month`, `Day`) " + "VALUES (?, ?, ?, ?);";
 
         try (Connection connection = createConnection();
-             PreparedStatement insertSummaryStatement = connection.prepareStatement(insertSurveyQuery);
+             PreparedStatement insertSurveyStatement = connection.prepareStatement(insertSurveyQuery);
              PreparedStatement dateStatement = connection.prepareStatement(insertDateQuery);
-             Statement statement = connection.createStatement();) {
+             Statement statement1 = connection.createStatement();
+             Statement statement2 = connection.createStatement();) {
 
                 String query2 = "SELECT * FROM Date";
-                ResultSet resultSet2 = statement.executeQuery(query2);
+                ResultSet resultSet2 = statement2.executeQuery(query2);
 
                 boolean dFlag = false;
                 int dateID = 0, day, month, year;
@@ -419,25 +424,38 @@ public class Instance extends TimeCategory {
                     month = resultSet2.getInt("Month");
                     year = resultSet2.getInt("Year");
 
-                    if(survey.getDateTaken().getDay() == day && survey.getDateTaken().getMonth() == month && survey.getDateTaken().getYear() == year){
+                    if(dateTaken.getDay() == day && dateTaken.getMonth() == month && dateTaken.getYear() == year){
                         dFlag = true;
                     }
                 }
 
             if(dFlag == false){
-                dateStatement.setInt(1, survey.getDateTaken().getYear());
-                dateStatement.setInt(2, survey.getDateTaken().getMonth());
-                dateStatement.setInt(3, survey.getDateTaken().getDay());
+                dateStatement.setInt(1, dateTaken.getYear());
+                dateStatement.setInt(2, dateTaken.getMonth());
+                dateStatement.setInt(3, dateTaken.getDay());
                 dateStatement.executeUpdate();
                 dateID += 1;
             }
 
-                insertSummaryStatement.setInt(1, respondentID);
-                insertSummaryStatement.setInt(2, survey.getInstanceID());
-                insertSummaryStatement.setString(3, survey.getComment());
-                insertSummaryStatement.setInt(4, dateID);
-                insertSummaryStatement.setDouble(5, survey.getSurveyMean());
-                insertSummaryStatement.setString(6, survey.getRespondentUsername());
+                String query1 = "SELECT userID " +
+                            "FROM ProgramUser " +
+                            "WHERE username = \"" + username + "\"";
+                ResultSet resultSet1 = statement1.executeQuery(query1);
+
+                
+                int userID = -1;
+                while (resultSet1.next()) {
+                    userID = resultSet1.getInt("userID");
+                }
+
+                insertSurveyStatement.setInt(1, userID);        
+                insertSurveyStatement.setInt(2, instanceID);
+                insertSurveyStatement.setString(3, comment);
+                insertSurveyStatement.setInt(4, dateID);
+                insertSurveyStatement.setDouble(5, surveyMean);
+                insertSurveyStatement.setString(6, username);
+
+                connection.close();
         } catch (SQLException e) {
             System.err.println("Error inserting data: " + e.getMessage());
         }
@@ -449,7 +467,7 @@ public class Instance extends TimeCategory {
             if (surveys != null) {
                 temp += this.surveys.get(i).getSurveyMean();
             }
-        return temp / this.sampleSize; 
+        return (double) temp / this.sampleSize; 
     }
 
     public static ArrayList<Survey> fetchByRespondentUsername(String username) {
@@ -518,14 +536,14 @@ public class Instance extends TimeCategory {
             System.err.println("Error inserting data: " + e.getMessage());
         }
 
-        if(surveys.size() == 0)
+        if(surveys.isEmpty())
             return null;
         else
             return surveys;
     }
     
     public static ArrayList<Survey> fetchAnalystSurveyData() {
-        ArrayList<Survey> surveys = new ArrayList();
+        ArrayList<Survey> surveys = new ArrayList<>();
         Survey tempSurvey = new Survey();
 
         try (Connection connection = createConnection();
@@ -610,6 +628,4 @@ public class Instance extends TimeCategory {
         else
             return "SAFE";
     }
-
-    
 }

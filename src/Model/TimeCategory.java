@@ -49,22 +49,22 @@ public class TimeCategory extends Day {
     }
 
     public static int getTimeIndex(String timePeriod) {
-    switch (timePeriod) {
-        case "Morning Rush Hour [6:00 to 8:59]":
-            return 1;
-        case "Mid-morning [9:00 to 10:59]":
-            return 2;
-        case "Lunchtime [11:00 to 12:59]":
-            return 3;
-        case "Afternoon [13:00 to 16:59]":
-            return 4;
-        case "Night Rush Hour [17:00 to 21:59]":
-            return 5;
-        case "Rest of the Day [22:00 to 5:59]":
-            return 6;
-        default:
-            return -1; // Invalid time period
-    }
+        switch (timePeriod) {
+            case "Morning Rush Hour [6:00 to 8:59]":
+                return 1;
+            case "Mid-morning [9:00 to 10:59]":
+                return 2;
+            case "Lunchtime [11:00 to 12:59]":
+                return 3;
+            case "Afternoon [13:00 to 16:59]":
+                return 4;
+            case "Night Rush Hour [17:00 to 21:59]":
+                return 5;
+            case "Rest of the Day [22:00 to 5:59]":
+                return 6;
+            default:
+                return -1; // Invalid time period
+        }
     }
 
 }

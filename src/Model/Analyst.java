@@ -30,7 +30,7 @@ public class Analyst extends ProgramUser {
         this.accountPassword = accountPassword;
         this.securityQuestion = "What is your mother's maiden name?";
         this.securityPassword = "admin1234";
-        this.userType = 3;
+        this.userType = 2;
     }
 
     @Override
@@ -103,7 +103,7 @@ public class Analyst extends ProgramUser {
         }
     }
 
-
+    
     public Analyst fetchUser(String username, String password) {
         Analyst tempAnalyst = null;
         int tempUserID, tempJoinedID;
@@ -112,7 +112,8 @@ public class Analyst extends ProgramUser {
         boolean notAnUpdate = true;
 
         try (Connection connection = createConnection();
-             Statement statement = connection.createStatement();) {
+             Statement statement = connection.createStatement();
+             Statement statement2 = connection.createStatement();) {
 
              // Execute a Query
             String query = "SELECT * " +
@@ -139,12 +140,12 @@ public class Analyst extends ProgramUser {
                             "FROM Date " +
                             "WHERE dateID = " + tempJoinedID;
 
-                ResultSet resultSet3 = statement.executeQuery(query2);
+                ResultSet resultSet2 = statement2.executeQuery(query2);
 
-                while(resultSet3.next()) {
-                    dateJoined.setYear(resultSet3.getInt("Year"));
-                    dateJoined.setMonth(resultSet3.getInt("Month"));
-                    dateJoined.setDay(resultSet3.getInt("Day"));
+                while(resultSet2.next()) {
+                    dateJoined.setYear(resultSet2.getInt("Year"));
+                    dateJoined.setMonth(resultSet2.getInt("Month"));
+                    dateJoined.setDay(resultSet2.getInt("Day"));
                 }
 
                 tempAnalyst.setDateJoined(dateJoined);

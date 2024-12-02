@@ -10,7 +10,7 @@ public class HomepageView extends FrameCanvas  {
     final private JButton loginButton = new JButton("Login");
     final private JButton signupButton = new JButton("Sign up");
     final private JButton findRecommendedPathButton = new JButton("Find Recommended Path");
-    final private JButton viewSurveyDataButton = new JButton("View Survey Data");
+    final private JButton viewSurveyDataButton = new JButton("View General Data");
 
     final private JTextField usernameField = new JTextField(15);
     final private JPasswordField passwordField = new JPasswordField(15);
@@ -79,7 +79,7 @@ public class HomepageView extends FrameCanvas  {
 
         frameSetVisible();
 
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);  // Don't close the frame automatically
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  // Don't close the frame automatically
     }
 
     public JFrame getFrame() {

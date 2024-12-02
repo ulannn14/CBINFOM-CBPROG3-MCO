@@ -26,7 +26,7 @@ public class IncidentReport {
         this.sender = sender;
         this.recipient = recipient;
         this.body = body;
-
+        this.dateCreated = dateCreated;
         wholeText = "Dear " + recipient + "\n\n" + "          " + body + "\n\n" + "Sincerely,\n" + sender + "\n";
     }
 
